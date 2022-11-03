@@ -16,6 +16,7 @@ public class TestPlot {
         CMatrix cm = CMatrix.getInstance()
                 .linspace(-360, 360, 360)
                 .toRadians()
+                
                 .sin()
                 .jitter(0.05f)
                 .plot()
