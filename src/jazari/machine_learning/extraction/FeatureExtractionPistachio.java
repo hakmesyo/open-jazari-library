@@ -136,7 +136,7 @@ public class FeatureExtractionPistachio {
 
         //***********************************************
         if (showFigure) {
-            FrameImage frm2 = new FrameImage(cm2,"");
+            FrameImage frm2 = new FrameImage(cm2,"","");
             frm2.setVisible(true);
             frm2.setTitle(index + ".Proposed Pistachio");
             float[][] rg = regionGrowingByBreadthFirst(frm2.getPicturePanel(), cm2.toFloatArray2D(), lst, 15, otsuThr * 0.9f);
@@ -154,7 +154,7 @@ public class FeatureExtractionPistachio {
     public static float[][] regionGrowingByBreadthFirst(PanelPicture pan, float[][] d, float[] lst, float t1, float t2) {
         d = regionGrowingByBreadthFirst(d, lst, t1, t2);
         BufferedImage img = ImageProcess.pixelsToImageGray(d);
-        pan.setImage(img,"");
+        pan.setImage(img,"","");
         return d;
     }
 

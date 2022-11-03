@@ -310,7 +310,7 @@ public class ProblemliTemplateFrameCameraObserver extends javax.swing.JFrame imp
                 bf = doOnline(bf);
             }
             bf = camObject.showFPS(webcam, bf);
-            getPanel().setImage(bf,"");
+            getPanel().setImage(bf,"","");
                             
             fps=FactoryUtils.fps(t);
             t = System.nanoTime();
@@ -336,7 +336,7 @@ public class ProblemliTemplateFrameCameraObserver extends javax.swing.JFrame imp
         if (webcam != null) {
             bf = webcam.getImage();
             bf = ImageProcess.toHSVColorSpace(bf);
-            getPanel().setImage(bf,"");
+            getPanel().setImage(bf,"","");
         }
     }
 

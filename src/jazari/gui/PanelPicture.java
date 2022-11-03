@@ -105,6 +105,7 @@ public class PanelPicture extends JPanel implements KeyListener {
     private File[] imageFiles;
     private int imageIndex = 0;
     private JFrame frame;
+    private String caption;
 
     public PanelPicture(JFrame frame) {
         this.frame = frame;
@@ -154,7 +155,8 @@ public class PanelPicture extends JPanel implements KeyListener {
 
     }
 
-    public void setImage(BufferedImage image, String imagePath) {
+    public void setImage(BufferedImage image, String imagePath,String caption) {
+        this.caption=caption;
         if (imagePath != null && !imagePath.isEmpty()) {
             String fileName = FactoryUtils.getFileName(imagePath) + ".xml";
             String folderName = FactoryUtils.getFolderPath(imagePath);
@@ -736,7 +738,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                     loadPrevImage();
                     return;
                 } else if (obj.getText().equals("Clone")) {
-                    new FrameImage(CMatrix.getInstance(currBufferedImage), imagePath).setVisible(true);
+                    new FrameImage(CMatrix.getInstance(currBufferedImage), imagePath, caption).setVisible(true);
                     return;
                 } else if (obj.getText().equals("Load Image")) {
                     activateStatistics = false;
@@ -865,7 +867,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                     BufferedImage bf = ImageProcess.cropImage(currBufferedImage, cr);
 //                BufferedImage bf = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
 //                    new FrameImage(CMatrix.getInstance(bf), obj.getText()).setVisible(true);
-                    new FrameImage(CMatrix.getInstance(bf), null).setVisible(true);
+                    new FrameImage(CMatrix.getInstance(bf), imagePath, caption).setVisible(true);
                 } else if (obj.getText().equals("DROI")) {
                     activateDrawableROI = true;
                     activateROI = false;
@@ -920,7 +922,7 @@ public class PanelPicture extends JPanel implements KeyListener {
             return;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-        setImage(bf, imagePath);
+        setImage(bf, imagePath,caption);
         frm.setTitle(imageFiles[imageIndex].getPath());
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
@@ -933,7 +935,7 @@ public class PanelPicture extends JPanel implements KeyListener {
             return;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-        setImage(bf, imagePath);
+        setImage(bf, imagePath,caption);
         frm.setTitle(imageFiles[imageIndex].getPath());
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
@@ -997,7 +999,7 @@ public class PanelPicture extends JPanel implements KeyListener {
         } else if (key == KeyEvent.VK_S) {
             savePascalVocXML();
             BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-            setImage(bf, imagePath);
+            setImage(bf, imagePath,caption);
             frm.setTitle(imageFiles[imageIndex].getPath());
             fileName = imageFiles[imageIndex].getName();
             imagePath = imageFiles[imageIndex].getAbsolutePath();
@@ -1016,7 +1018,7 @@ public class PanelPicture extends JPanel implements KeyListener {
         listBBoxRect.clear();
         selectedBBox = null;
         setDefaultValues();
-        setImage(bf, imagePath);
+        setImage(bf, imagePath,caption);
     }
 
     @Override

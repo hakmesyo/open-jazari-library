@@ -43,12 +43,12 @@ public class FrameImage extends javax.swing.JFrame {
      * @param cm : image to be drawn
      * @param imagePath : image path
      */
-    public FrameImage(CMatrix cm, String imagePath) {
+    public FrameImage(CMatrix cm, String imagePath, String caption) {
         initComponents();
-        this.setTitle(imagePath);
+        this.setTitle(caption);
         this.cm = cm;
         this.img = cm.getImage();
-        getPicturePanel().setImage(img,imagePath);
+        getPicturePanel().setImage(img,imagePath,caption);
         //getPicturePanel().setImagePath(imagePath);
 //        if (img.getWidth()<150) {
 //            pw=50;
@@ -63,8 +63,8 @@ public class FrameImage extends javax.swing.JFrame {
         getPicturePanel().requestFocus();
     }
 
-    public void setImage(BufferedImage img, String imagePath) {
-        getPicturePanel().setImage(img, imagePath);
+    public void setImage(BufferedImage img, String imagePath,String caption) {
+        getPicturePanel().setImage(img, imagePath,caption);
         getPicturePanel().setFrame(this);
         this.setSize(img.getWidth()+300, img.getHeight() + 183);
         String[] s=FactoryUtils.splitPath(imagePath);

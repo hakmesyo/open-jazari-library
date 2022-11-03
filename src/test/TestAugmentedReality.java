@@ -40,7 +40,7 @@ public class TestAugmentedReality {
         webcam.setViewSize(new Dimension(640, 480));
         webcam.open();
         BufferedImage bf = webcam.getImage();
-        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"");
+        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"","");
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frm.setVisible(true);
         
@@ -121,7 +121,7 @@ public class TestAugmentedReality {
             t1 = FactoryUtils.toc("overlay image:", t1);
             bf = ImageProcess.drawText(bf, "True FPS:" + Math.round(1E9 / (System.nanoTime() - t2)), 5, 15, Color.yellow);
             t1 = FactoryUtils.toc("drawText:", t1);
-            frm.setImage(bf,null);
+            frm.setImage(bf,null,"");
             t1 = FactoryUtils.toc("frame set image:", t1);
             t2 = FactoryUtils.toc("each cycle:", t2);
         }

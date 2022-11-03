@@ -2032,7 +2032,7 @@ public final class CMatrix implements Serializable {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, this.imagePath);
+        FrameImage frm = new FrameImage(this, this.imagePath,"none");
         frm.setVisible(true);
         return this;
     }
@@ -2052,7 +2052,7 @@ public final class CMatrix implements Serializable {
         if (image == null || isUpdate) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, this.imagePath);
+        FrameImage frm = new FrameImage(this, this.imagePath,"none");
         frm.setVisible(true);
         return this;
     }
@@ -2096,7 +2096,7 @@ public final class CMatrix implements Serializable {
             frameImage = new FrameImage();
             frameImage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         }
-        frameImage.setImage(image,this.imagePath);
+        frameImage.setImage(image,this.imagePath,title);
         frameImage.setTitle(title);
         frameImage.setVisible(true);
         return this;
@@ -2135,7 +2135,7 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imshow(FrameImage frm) {
 //        image = ImageProcess.pixelsToBufferedImageGray(array);
-        frm.setImage(image,imagePath);
+        frm.setImage(image,imagePath,"none");
         frm.setVisible(true);
         return this;
     }
@@ -2169,7 +2169,7 @@ public final class CMatrix implements Serializable {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        frm.setImage(image,imagePath);
+        frm.setImage(image,imagePath,title);
         frm.setVisible(true);
         return this;
     }
@@ -2197,7 +2197,7 @@ public final class CMatrix implements Serializable {
         if (image == null) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, title);
+        FrameImage frm = new FrameImage(this,imagePath, title);
         frm.setVisible(true);
         return this;
     }

@@ -76,7 +76,7 @@ public class TestObjectRecognition {
         webcam.open();
 
         BufferedImage bf = webcam.getImage();
-        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"");
+        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"","");
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frm.setVisible(true);
         long t2 = FactoryUtils.tic();
@@ -88,7 +88,7 @@ public class TestObjectRecognition {
             bf = q.doOCL(bf);
 //            bf = q.doOpenCV(bf);
 //            bf = q.doOpenCV_via_OCL(bf);
-            frm.setImage(bf,"");
+            frm.setImage(bf,"","");
         }
     }
 

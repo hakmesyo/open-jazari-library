@@ -81,11 +81,11 @@ public class EdgeTracking {
                     prevX = p.x;
                     prevY = p.y;
                     img = ImageProcess.pixelsToImageGray(m);
-                    pp.setImage(img,"");
+                    pp.setImage(img,"","");
                 }
                 System.out.println((++k) + ". work list is building size of " + gcl.gCodeList.size());
                 img = ImageProcess.pixelsToImageGray(m);
-                pp.setImage(img,"");
+                pp.setImage(img,"","");
             }
         }
         w.img = img;

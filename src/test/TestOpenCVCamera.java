@@ -76,7 +76,7 @@ public class TestOpenCVCamera extends javax.swing.JPanel {
                 
                 if (camera.read(frame)) {
                     BufferedImage image = t.MatToBufferedImage(frame);
-                    frm.setImage(image,"");
+                    frm.setImage(image,"","");
                     t1=FactoryUtils.toc(t1);
                 }
             }

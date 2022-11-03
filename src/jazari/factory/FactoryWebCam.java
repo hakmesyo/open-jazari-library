@@ -86,7 +86,7 @@ public class FactoryWebCam {
                 while (true) {
                     try {
                         currentImage = webCam.getImage();
-                        frm.setImage(currentImage,"");
+                        frm.setImage(currentImage,"","");
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);
@@ -131,7 +131,7 @@ public class FactoryWebCam {
         //warming up
         for (int i = 0; i < 1; i++) {
             bf = webCam.getImage();
-            frm.setImage(bf,"");
+            frm.setImage(bf,"","");
             bf = ImageProcess.filterGaussian(bf, 5);
             bf = ImageProcess.toGrayLevel(bf);
 
@@ -145,7 +145,7 @@ public class FactoryWebCam {
             if (isFlipped) {
                 bf = ImageProcess.flipVertical(bf);
             }
-            frm.setImage(bf,"");
+            frm.setImage(bf,"","");
             bf_rgb = ImageProcess.clone(bf);
             bf = ImageProcess.filterGaussian(bf, 5);
             bf = ImageProcess.toGrayLevel(bf);

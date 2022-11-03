@@ -285,7 +285,7 @@ public class TemplateFrameCamera extends javax.swing.JFrame {
                         bf = ImageProcess.flipVertical(bf);
                     }
                     bf = ImageProcess.drawText(bf, "True FPS:" + fps, 10, 20, Color.yellow);
-                    getPanel().setImage(bf,"");
+                    getPanel().setImage(bf,"","");
                     fps = FactoryUtils.fps(t);
                     t = System.nanoTime();
                 }
@@ -310,7 +310,7 @@ public class TemplateFrameCamera extends javax.swing.JFrame {
 
             bf = ImageProcess.rgb2hsv(bf);
             bf = ImageProcess.drawText(bf, "True FPS:" + fps, 10, 20, Color.yellow);
-            getPanel().setImage(bf,"");
+            getPanel().setImage(bf,"","");
             fps = FactoryUtils.fps(t);
             t = System.nanoTime();
         }
@@ -320,7 +320,7 @@ public class TemplateFrameCamera extends javax.swing.JFrame {
     private void doOfflineProcessing() {
         bf = webcam.getImage();
         bf = ImageProcess.toHSVColorSpace(bf);
-        getPanel().setImage(bf,"");
+        getPanel().setImage(bf,"","");
     }
 
     public PanelPicture getPanel() {

@@ -146,7 +146,7 @@ public class TemplateFrameImage extends javax.swing.JFrame {
 
     private void btn_loadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loadActionPerformed
         BufferedImage bf=ImageProcess.imread(txt_filePath.getText());
-        getPanel().setImage(bf,"");
+        getPanel().setImage(bf,"","");
         setTitle(FactoryUtils.getFileNameFromPath(txt_filePath.getText()));
     }//GEN-LAST:event_btn_loadActionPerformed
 

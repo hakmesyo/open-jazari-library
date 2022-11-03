@@ -26,7 +26,7 @@ public class TestPicturePanel extends javax.swing.JFrame {
         initComponents();
         img=ImageProcess.readImageFromFile(".\\images\\kaplan1.jpg");
 //        img=FactoryUtils.readImageFromFileWithDirectoryPath(".");
-        ((PanelPicture)PanelPicture).setImage(img,".\\images\\kaplan1.jpg");
+        ((PanelPicture)PanelPicture).setImage(img,".\\images\\kaplan1.jpg","");
         this.setSize(img.getWidth()+50,img.getHeight()+100);
     }
 

@@ -179,11 +179,11 @@ public class TestIC_CameraObserver extends javax.swing.JFrame implements IC_Came
     public void sendVideoLiveFrame(BufferedImage img, int device_index) {
         img=ImageProcess.resize(img, 320, 240);
         if (device_index==0) {
-            ((PanelPicture)pan_1).setImage(img,"");
+            ((PanelPicture)pan_1).setImage(img,"","");
         }else if(device_index==1){
-            ((PanelPicture)pan_2).setImage(img,"");
+            ((PanelPicture)pan_2).setImage(img,"","");
         }else if(device_index==2){
-            ((PanelPicture)pan_3).setImage(img,"");
+            ((PanelPicture)pan_3).setImage(img,"","");
         }
     }
 

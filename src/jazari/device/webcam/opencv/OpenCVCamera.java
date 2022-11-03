@@ -59,7 +59,7 @@ public class OpenCVCamera {
                 while (true) {
                     if (flag_webcam_stop) {
                         bf = null;
-                        pan.setImage(null,"");
+                        pan.setImage(null,"","");
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException ex) {
@@ -73,7 +73,7 @@ public class OpenCVCamera {
                         if (isFlipped) {
                             bf = ImageProcess.flipVertical(bf);
                         }
-                        pan.setImage(bf,"");
+                        pan.setImage(bf,"","");
                         try {
                             Thread.sleep(1);
                         } catch (InterruptedException ex) {
