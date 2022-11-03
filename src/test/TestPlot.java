@@ -14,9 +14,10 @@ import jazari.matrix.CMatrix;
 public class TestPlot {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                .linspace(-10, 10, 360)
+                .linspace(-360, 360, 360)
+                .toRadians()
                 .sin()
-                .jitter(0.1f)
+                .jitter(0.05f)
                 .plot()
 //                .rand(10,5)
 //                .plot()
