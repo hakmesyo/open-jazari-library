@@ -1,0 +1,15 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl levha_yol_calismasi
+Ka 0.000000 0.000000 0.000000
+Kd 0.890196 0.662745 0.670588
+Ks 0.330000 0.330000 0.330000
+map_Kd trafik_levha_yol_calismasi/levha_yol_calismasi.jpg
+

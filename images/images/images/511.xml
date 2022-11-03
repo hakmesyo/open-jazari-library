@@ -1,0 +1,37 @@
+<annotation>
+	<folder>my-project-name</folder>
+	<filename>511.jpg</filename>
+	<path>/my-project-name/511.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>585</width>
+		<height>350</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>yaya_gecidi</name>
+		<pose>Unspecified</pose>
+		<truncated>Unspecified</truncated>
+		<difficult>Unspecified</difficult>
+		<bndbox>
+			<xmin>330</xmin>
+			<ymin>165</ymin>
+			<xmax>370</xmax>
+			<ymax>198</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>trafik_lambasi</name>
+		<pose>Unspecified</pose>
+		<truncated>Unspecified</truncated>
+		<difficult>Unspecified</difficult>
+		<bndbox>
+			<xmin>489</xmin>
+			<ymin>135</ymin>
+			<xmax>529</xmax>
+			<ymax>232</ymax>
+		</bndbox>
+	</object>
+</annotation>

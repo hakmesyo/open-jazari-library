@@ -1,0 +1,6 @@
+summary=Type your name and summary of the scenario here...
+asset=name:car_agent,uuid:1c17d5a0-c342-445f-b840-25d581323155,rot:0,mx:656,my:698,vx:39.6,vy:28.3
+asset=name:lamba_trafik,uuid:12ee209b-0d4d-437e-9498-313e99a35368,rot:0,mx:678,my:466,vx:42.7,vy:-3.6
+asset=name:lamba_trafik,uuid:7606d546-16e2-44a7-ae52-497b23b89b38,rot:90,mx:201,my:650,vx:-22.9,vy:21.7
+asset=name:lamba_trafik,uuid:c37d2ec2-2b8f-4980-9b6a-4eda2e2a1a57,rot:180,mx:218,my:327,vx:-20.5,vy:-22.6
+asset=name:lamba_trafik,uuid:90525b20-786f-4796-9671-bd82ac671c63,rot:-270,mx:602,my:648,vx:32.2,vy:21.4

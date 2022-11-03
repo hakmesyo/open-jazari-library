@@ -1,0 +1,15 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl levha_park_yapilmaz_2
+Ka 0.000000 0.000000 0.000000
+Kd 0.811765 0.560784 0.560784
+Ks 0.330000 0.330000 0.330000
+map_Kd trafik_levha_park_etmek_yasaktir_2/levha_park_yapilmaz_2.jpg
+

@@ -1,0 +1,10 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl siyah_dikey_durak
+Ka 0.000000 0.000000 0.000000
+Kd 0.317647 0.341176 0.329412
+Ks 0.330000 0.330000 0.330000
+map_Kd zemin_durak_siyah/siyah_dikey_durak.jpg
+
