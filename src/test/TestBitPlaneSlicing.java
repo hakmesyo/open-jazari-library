@@ -16,16 +16,16 @@ public class TestBitPlaneSlicing {
 
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance().imread("images\\kaplan1.jpg").rgb2gray().imshow();
-                cm.bitPlaneMSB().imshow("MSB image");
-                cm.bitPlane(7).add(cm.bitPlane(6)).add(cm.bitPlane(5)).imshow("first three msb image");
-                cm.bitPlane(0).imshow("first slice image");
-                cm.bitPlane(1).imshow("second slice image");
-                cm.bitPlane(2).imshow("third slice image");
-                cm.bitPlane(3).imshow("forth slice image");
-                cm.bitPlane(4).imshow("fifth slice image");
-                cm.bitPlane(5).imshow("sixth slice image");
-                cm.bitPlane(6).imshow("seventh slice image");
-                cm.bitPlane(7).imshow("eighth slice image the most significant bit");
+                cm.clone().bitPlaneMSB().imshow("MSB image");
+                cm.clone().bitPlane(7).add(cm.clone().bitPlane(6)).add(cm.clone().bitPlane(5)).imshow("first three msb image");
+                cm.clone().bitPlane(0).imshow("first slice image");
+                cm.clone().bitPlane(1).imshow("second slice image");
+                cm.clone().bitPlane(2).imshow("third slice image");
+                cm.clone().bitPlane(3).imshow("forth slice image");
+                cm.clone().bitPlane(4).imshow("fifth slice image");
+                cm.clone().bitPlane(5).imshow("sixth slice image");
+                cm.clone().bitPlane(6).imshow("seventh slice image");
+                cm.clone().bitPlane(7).imshow("eighth slice image the most significant bit");
 
 //        int a = 23;
 //        System.out.println("a = " + Integer.toBinaryString(a));

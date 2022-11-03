@@ -28,7 +28,8 @@ public class TestCMatrix {
 
     public static void main(String[] args) {
         
-        System.out.println("default dir:" + FactoryUtils.getDefaultDirectory());
+        System.out.println("current dir:" + FactoryUtils.getCurrentDirectory());
+        CMatrix.getInstance().range(10, 20).println();
         //CMatrix cm = CMatrix.getInstance().rand(3, 5).println();
         CMatrix cm = CMatrix.getInstance().diag(CMatrix.getInstance().range(10, 20)).println();
         //test_vector_or_range();

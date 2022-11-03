@@ -8041,7 +8041,7 @@ public final class CMatrix implements Serializable {
             return this;
         }
         float[] p = cm.getArray1Dfloat();
-        CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
+        CMatrix ret = range(p).replicateColumn(p.length-1).multiplyElement(CMatrix.getInstance().eye(p.length));
         return ret;
     }
 
