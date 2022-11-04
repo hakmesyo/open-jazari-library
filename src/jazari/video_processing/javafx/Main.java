@@ -23,6 +23,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 // launches the application
 public class Main extends Application {
@@ -30,14 +31,20 @@ public class Main extends Application {
     Player player;
     FileChooser fileChooser;
     private Line line;
+    private Rectangle rectangle;
+    private double anchorX;
+    private double anchorY;
+    private double mouseOffsetFromNodeZeroX;
+    private double mouseOffsetFromNodeZeroY;
+    private double lastx;
+    private double lasty;
 
     public void start(final Stage primaryStage) throws MalformedURLException {
-        Group root=new Group();
+        Group root = new Group();
         // setting up the stages
         MenuItem open = new MenuItem("Open");
         Menu file = new Menu("File");
         MenuBar menu = new MenuBar();
-        
 
         // Connecting the above three
         file.getItems().add(open); // it would connect open with file
@@ -54,7 +61,7 @@ public class Main extends Application {
                 // Choosing the file to play
                 if (file != null) {
                     try {
-                        player = new Player(file.toURI().toURL().toExternalForm(),root);
+                        player = new Player(file.toURI().toURL().toExternalForm(), root);
                         Scene scene = new Scene(player, 640, 430, Color.BLACK);
                         primaryStage.setScene(scene);
                     } catch (MalformedURLException e1) {
@@ -64,21 +71,49 @@ public class Main extends Application {
             }
         }
         );
-        
-        
+
         // here you can choose any video
         //player = new Player("file:/// F:/songs/srk.mp4");
         //player = new Player("data/temp_1.mp4");
-        player = new Player("C:\\Users\\cezerilab\\Desktop\\traffic_1.mp4",root);
+        player = new Player("C:\\Users\\cezerilab\\Desktop\\traffic_1.mp4", root);
 
         // Setting the menu at the top
-        player.setTop(menu);        
+        player.setTop(menu);
 
-        line = new Line();
+        rectangle = new Rectangle(50, 50, 150, 250);
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setStroke(Color.LIGHTGREEN);
+        rectangle.setStrokeWidth(3);
+        
+        rectangle.setOnMousePressed(event -> {
+            anchorX = event.getSceneX();
+            System.out.println("anchorX = " + anchorX);
+            anchorY = event.getSceneY();
+            System.out.println("anchorY = " + anchorY);
+            
+        });
+        rectangle.setOnMouseDragged(event -> {
+            rectangle.setTranslateX(event.getSceneX() - anchorX);
+            lastx=event.getSceneX() - anchorX;
+            rectangle.setTranslateY(event.getSceneY() - anchorY);
+            lasty=event.getSceneY() - anchorY;
+        });
+        rectangle.setOnMouseReleased(event -> {
+            //commit changes to LayoutX and LayoutY
+            //rectangle.setLayoutX(lastx);
+            //rectangle.setLayoutY(lasty);
+            //clear changes from TranslateX and TranslateY
+//            rectangle.setTranslateX(lastx);
+//            rectangle.setTranslateY(lasty);
+//            
+//            rectangle.setLayoutX(anchorX);
+//            rectangle.setLayoutY(anchorY);
+        });
+
         // Adding player to the Scene
         root.getChildren().add(player);
-        root.getChildren().add(line);
-        
+        root.getChildren().add(rectangle);
+
         Scene scene = new Scene(root, 640, 430, Color.WHEAT);
 
         // height and width of the video player

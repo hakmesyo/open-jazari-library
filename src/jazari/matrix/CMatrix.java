@@ -6285,7 +6285,7 @@ public final class CMatrix implements Serializable {
         int nCols = randData.getColumnNumber();
         int delta = nRows / nFolds;
         for (int i = 0; i < nFolds - 1; i++) {
-            ret[i] = randData.cmd(i * delta + ":" + ((i + 1) * delta - 1), ":");//.println((i + 1) + ".subset");
+            ret[i] = randData.clone().cmd(i * delta + ":" + ((i + 1) * delta), ":").println((i + 1) + ".subset");
         }
         CMatrix cm = CMatrix.getInstance().zeros(1, nCols);
         for (int i = (nFolds - 1) * delta; i < nRows; i++) {

@@ -132,11 +132,8 @@ public class MediaBar extends HBox { // MediaBar extends Horizontal Box
                         / player.getTotalDuration().toMillis()
                         * 100
                 );
-                Rectangle rect=new Rectangle(50, 50, 150, 250);
-                rect.setFill(Color.TRANSPARENT);
-                rect.setStroke(Color.LIGHTGREEN);
-                rect.setStrokeWidth(3);
-                root.getChildren().set(1, rect);
+                //Rectangle rect=(Rectangle) root.getChildren().get(1);
+                //root.getChildren().set(1, rect);
                 //root.getChildren().set(1, new Line(0, 0, 200, 200));
             }
         }
