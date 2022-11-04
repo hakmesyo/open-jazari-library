@@ -14,3 +14,10 @@ Example 2: A program that generates a vector of sine wave having radians value o
 ![image](https://user-images.githubusercontent.com/3868513/199502231-66dd788d-9c55-438c-8e1c-31ef7d74b08f.png)
 
 ![image](https://user-images.githubusercontent.com/3868513/199502359-deb4e55f-8cda-401f-8def-7e3b852b5066.png)
+
+Example 3: A program that generates a 2D vector/range from 0 to 10 with step=2 nrows=20. Then, split the matrix into 5 disjoint sub-matrices along rows or dim=0. Then, print each submatrices.
+
+![image](https://user-images.githubusercontent.com/3868513/199965929-62dd1fbf-3082-4c55-b572-563649ce94a5.png)
+
+![image](https://user-images.githubusercontent.com/3868513/199966016-4426c325-583e-498b-82d1-6406ea982ca8.png)
+
