@@ -3389,7 +3389,7 @@ public final class FactoryMatrix implements Serializable {
             for (int j = 0; j < delta; j++) {
                 ret[i][j] = from_inclusive + j * step;
             }
-            ret[i][0] = from_inclusive + i * step;
+            //ret[i][0] = from_inclusive + i * step;
         }
 
         return ret;

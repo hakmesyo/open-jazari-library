@@ -19,5 +19,5 @@ Example 3: A program that generates a 2D vector/range from 0 to 10 with step=2 n
 
 ![image](https://user-images.githubusercontent.com/3868513/199965929-62dd1fbf-3082-4c55-b572-563649ce94a5.png)
 
-![image](https://user-images.githubusercontent.com/3868513/199966016-4426c325-583e-498b-82d1-6406ea982ca8.png)
+![image](https://user-images.githubusercontent.com/3868513/199981169-280fa331-b07e-42d2-a774-69caab0ed03b.png)
 

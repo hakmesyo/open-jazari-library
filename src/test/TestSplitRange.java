@@ -14,7 +14,7 @@ import jazari.matrix.CMatrix;
 public class TestSplitRange {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                .range2D(0, 10,2, 20)
+                .range2D(0, 10, 2, 20)
                 .println()
                 
                 ;
