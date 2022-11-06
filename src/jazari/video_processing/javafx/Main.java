@@ -38,6 +38,8 @@ public class Main extends Application {
     private double mouseOffsetFromNodeZeroY;
     private double lastx;
     private double lasty;
+    private double px;
+    private double py;
 
     public void start(final Stage primaryStage) throws MalformedURLException {
         Group root = new Group();
@@ -85,20 +87,24 @@ public class Main extends Application {
         rectangle.setStroke(Color.LIGHTGREEN);
         rectangle.setStrokeWidth(3);
         
+        
+        
         rectangle.setOnMousePressed(event -> {
             anchorX = event.getSceneX();
-            System.out.println("anchorX = " + anchorX);
             anchorY = event.getSceneY();
-            System.out.println("anchorY = " + anchorY);
-            
+            px=rectangle.getX();
+            py=rectangle.getY();
+            //System.out.println("px = " + anchorX+" py = " + anchorY);
         });
         rectangle.setOnMouseDragged(event -> {
-            rectangle.setTranslateX(event.getSceneX() - anchorX);
-            lastx=event.getSceneX() - anchorX;
-            rectangle.setTranslateY(event.getSceneY() - anchorY);
-            lasty=event.getSceneY() - anchorY;
+            rectangle.setX(event.getSceneX() - anchorX + px);
+            rectangle.setY(event.getSceneY() - anchorY + py);
+            //System.out.println("x = " + event.getSceneX()+" y = " + event.getSceneY());
         });
         rectangle.setOnMouseReleased(event -> {
+            anchorX = event.getSceneX();
+            anchorY = event.getSceneY();
+            //System.out.println("lx = " + anchorX+" ly = " + anchorY);
             //commit changes to LayoutX and LayoutY
             //rectangle.setLayoutX(lastx);
             //rectangle.setLayoutY(lasty);

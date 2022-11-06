@@ -5,6 +5,7 @@
  */
 package jazari.nd4j;
 
+import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -18,7 +19,7 @@ public class TestBenchMark {
         int n = 1000;
         CMatrix.getInstance().randn(n, n).mul(100).round();
         CMatrix.getInstance().randn(n, n).mul(100).round();
-        long t = System.currentTimeMillis();
+        long t = FactoryUtils.tic();
         for (int i = 0; i < 10; i++) {
 //            long t1 = System.currentTimeMillis();
 ////            INDArray zeros = Nd4j.zeros(n, n);
@@ -38,15 +39,17 @@ public class TestBenchMark {
 //            long t2 = System.currentTimeMillis() - t1;
 //            System.out.println("\nnd4j cost = " + t2);
             
-            long cmt=System.currentTimeMillis();
+            long cmt=FactoryUtils.tic();
             CMatrix cm1=CMatrix.getInstance().randn(n, n).multiplyScalar(100).round();
             CMatrix cm2=CMatrix.getInstance().randn(n, n).multiplyScalar(100).round();
-            CMatrix cm3=cm1.dot(cm2);            
-            System.out.println("\ncmatrix cost = " + (System.currentTimeMillis() - cmt));
-            System.out.println("val:"+cm1.getFloat(1,2));
+            CMatrix cm3=cm1.dot(cm2);  
+            cmt=FactoryUtils.toc(cmt);
+            //System.out.println("\ncmatrix cost = " + (System.currentTimeMillis() - cmt));
+            //System.out.println("val:"+cm1.getFloat(1,2));
             System.gc();
         }
-        System.out.println("\noverall cost = " + (System.currentTimeMillis() - t));
+        t=FactoryUtils.toc(t);
+        //System.out.println("\noverall cost = " + (System.currentTimeMillis() - t));
     }
     
 }

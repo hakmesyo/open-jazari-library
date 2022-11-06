@@ -1600,6 +1600,44 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    /**
+     * generate a nr x nc-size matrix with a fixed value of val
+     *
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param val: value
+     * @return : CMatrix
+     */
+    public CMatrix values(int nr, int nc, int val) {
+        array = Nd4j.ones(nr, nc).muli(val);
+        return this;
+    }
+    /**
+     * generate a nr x nc-size matrix with a fixed value of val
+     *
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param val: value
+     * @return : CMatrix
+     */
+    public CMatrix values(int nr, int nc, float val) {
+        array = Nd4j.ones(nr, nc).muli(val);
+        return this;
+    }
+
+    /**
+     * generate a nr x nc-size matrix with a fixed value of val
+     *
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param val: value
+     * @return : CMatrix
+     */
+    public CMatrix values(int nr, int nc, double val) {
+        array = Nd4j.ones(nr, nc).muli(val);
+        return this;
+    }
+
     public CMatrix zeros(int nr, int nc) {
         array = Nd4j.zeros(nr, nc);
         return this;
@@ -2979,7 +3017,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix pow(float n) {
-        array = Transforms.pow(array, n);
+        array = Transforms.pow(array, n, false);
         return this;
     }
 
