@@ -16,16 +16,14 @@ import org.nd4j.linalg.factory.Nd4j;
  */
 public class TestBenchMark_2 {
     public static void main(String[] args) {
-        int n = 5000;
+        int n = 10000;
+        //warming jvm
         CMatrix.getInstance().randn(n, n).mul(100).round();
         CMatrix.getInstance().randn(n, n).mul(100).round();
         long t = FactoryUtils.tic();
-        int m=100;
+        int m=10;
         for (int i = 0; i < m; i++) {
-//            float[][] d1=new float[m][m];
-//            float[][] d2=new float[m][m];
-            CMatrix cm1=CMatrix.getInstance().ones(n, n).mul(1.3f);
-            CMatrix cm2=CMatrix.getInstance().ones(n, n).mul(3.4f);;
+            CMatrix cm1=CMatrix.getInstance().tic().ones(n, n).mul(1.3f).round().pow(2).toc();
             System.gc();
         }
         t=FactoryUtils.toc(t);
