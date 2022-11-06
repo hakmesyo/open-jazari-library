@@ -21,7 +21,7 @@ Example 3: A program that generates a 2D vector/range from 0 to 10 with step=2 n
 ![image](https://user-images.githubusercontent.com/3868513/199981169-280fa331-b07e-42d2-a774-69caab0ed03b.png)
 
 # OJL vs Python Performance Benchmark
-Example 1: A program that generates 10_000 x 10_000 2D float array having values one and then multiply each element with scalar 3.14f and then round up and then takes power of 2
+Example 1: A program that generates 10_000 x 10_000 2D float array having values one and then multiply each element with scalar 1.3f and then round up and then takes power of 2
 
 OJL Performance
 ![image](https://user-images.githubusercontent.com/3868513/200168975-ae1c29aa-c483-4878-b6d4-948e0c31de36.png)
