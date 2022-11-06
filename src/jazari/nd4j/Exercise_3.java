@@ -14,7 +14,7 @@ import org.nd4j.linalg.factory.Nd4j;
  *
  * @author DELL LAB
  */
-public class TestBenchMark_2 {
+public class Exercise_3 {
     public static void main(String[] args) {
         int n = 10000;
         //warming jvm
