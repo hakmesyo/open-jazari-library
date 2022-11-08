@@ -37,6 +37,7 @@ public class MyDialog extends JDialog implements ActionListener {
 
     public MyDialog(Frame parent) {
         super(parent, "Enter class label", true);
+        setTitle("press 's' to save");
         Point loc = parent.getLocation();
         setLocation(loc.x + 80, loc.y + 80);
         data = ""; // set to amount of data items
