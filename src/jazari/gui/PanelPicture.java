@@ -106,6 +106,7 @@ public class PanelPicture extends JPanel implements KeyListener {
     private int imageIndex = 0;
     private JFrame frame;
     private String caption;
+    private String lastSelectedClass;
 
     public PanelPicture(JFrame frame) {
         this.frame = frame;
@@ -479,17 +480,18 @@ public class PanelPicture extends JPanel implements KeyListener {
         this.updateUI();
 
         addMouseListener(new java.awt.event.MouseAdapter() {
+            
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
                     if (activateBoundingBox) {
-                        String classLabel = inputMessage();
-                        System.out.println("updated classLabel = " + classLabel);
-                        if (classLabel != null) {
+                        lastSelectedClass = inputMessage();
+                        //System.out.println("updated classLabel = " + selectedClass);
+                        if (lastSelectedClass != null) {
                             isBBoxCancelled = false;
-                            selectedBBox.name = classLabel;
+                            selectedBBox.name = lastSelectedClass;
                             repaint();
                             return;
                         }
@@ -597,9 +599,12 @@ public class PanelPicture extends JPanel implements KeyListener {
                         if (w < 5 || h < 5) {
                             return;
                         }
-                        String classLabel = inputMessage();
-                        System.out.println("classLabel = " + classLabel);
-                        if (classLabel == null) {
+                        if (lastSelectedClass==null || lastSelectedClass.isEmpty()) {
+                            lastSelectedClass = inputMessage();
+                        }
+                        
+                        //System.out.println("classLabel = " + selectedClass);
+                        if (lastSelectedClass == null) {
                             isBBoxCancelled = true;
                             selectedBBox = null;
                             repaint();
@@ -608,10 +613,11 @@ public class PanelPicture extends JPanel implements KeyListener {
                             isBBoxCancelled = false;
                         }
                         Rectangle r = new Rectangle(mousePosTopLeft.x - fromLeft, mousePosTopLeft.y - fromTop, w, h);
-                        BoundingBox bbox = new BoundingBox(classLabel, r, 0, 0);
+                        BoundingBox bbox = new BoundingBox(lastSelectedClass, r, 0, 0);
                         selectedBBox = bbox;
                         listBBoxRect.add(bbox);
                         repaint();
+                        selectedBBox=null;
                         return;
                     }
                     repaint();
