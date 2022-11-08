@@ -126,6 +126,7 @@ public class PanelPicture extends JPanel implements KeyListener {
         for (int i = 0; i < imageFiles.length; i++) {
             if (imageFiles[i].getName().equals(fileName)) {
                 imageIndex = i;
+                break;
             }
         }
     }
@@ -946,7 +947,14 @@ public class PanelPicture extends JPanel implements KeyListener {
         for (BoundingBox bbox : listBBoxRect) {
             lstObject.add(new PascalVocObject(bbox));
         }
-        String xml = FactoryUtils.serializePascalVocXML(imageFolder, fileName, imagePath, lstObject);
+        if (lstObject.size()>0) {
+            String xml = FactoryUtils.serializePascalVocXML(imageFolder, fileName, imagePath, lstObject);
+        }else{
+            File file=new File(imagePath);
+            if (FactoryUtils.isFileExist(imageFolder+"/"+FactoryUtils.getFileName(file.getName()) + ".xml")){
+                FactoryUtils.deleteFile(imageFolder+"/"+FactoryUtils.getFileName(file.getName()) + ".xml");
+            }
+        }        
         loadNextImage();
         activateBoundingBox = true;
     }

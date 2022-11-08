@@ -22,7 +22,7 @@ public class Exercise_1 {
         long t = FactoryUtils.tic();
         int m=10;
         for (int i = 0; i < m; i++) {
-            CMatrix cm1=CMatrix.getInstance().tic().ones(n, n).mul(1.3f).toc();
+            CMatrix cm1=CMatrix.getInstance().tic().ones(n, n).mul(1.3f).pow(2).toc();
             System.gc();
         }
         t=FactoryUtils.toc(t);

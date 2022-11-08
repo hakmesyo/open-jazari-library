@@ -68,7 +68,12 @@ public class FrameImage extends javax.swing.JFrame {
         getPicturePanel().setFrame(this);
         this.setSize(img.getWidth()+300, img.getHeight() + 183);
         String[] s=FactoryUtils.splitPath(imagePath);
-        this.setTitle(s[s.length-1]);
+        //this.setTitle(s[s.length-1]);
+        this.setTitle(imagePath+"/"+caption);
+    }
+
+    public void setImage(BufferedImage img) {
+        setImage(img, "", "");
     }
 
     /**

@@ -8538,4 +8538,36 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix tileImage(int nr, int nc, String destinationFolder, String fileNameTemplate, String fileExtension) {
+        CMatrix cm=this.clone();
+        int w=cm.getColumnNumber()/nc;
+        int h=cm.getRowNumber()/nr;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                cm.cmd(i+":"+(i*h), j+":"+(j*h)).saveImage(destinationFolder+"/"+fileNameTemplate+"_"+i+"_"+j+"."+fileExtension);
+            }
+        }
+        
+        return this;
+    }
+
+    public CMatrix cropImages(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
+        BufferedImage img=this.getImage();
+        int w=img.getWidth()/nc;
+        int h=img.getHeight()/nr;
+        FactoryUtils.makeDirectory(destinationFolder);
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                BufferedImage temp=ImageProcess.cropImage(img, new CRectangle(i*h, j*w, w, h));
+                ImageProcess.saveImage(temp, destinationFolder+"/"+fileCaption+"_"+i+"_"+j+"."+imageExtension);
+                if (isShow){
+                    FrameImage frm=new FrameImage();
+                    frm.setImage(temp, destinationFolder, fileCaption+"_"+i+"_"+j+"."+imageExtension);
+                    frm.setVisible(isShow);
+                }
+            }
+        }
+        return this;
+    }
+
 }

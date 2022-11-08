@@ -1897,6 +1897,9 @@ public final class FactoryUtils {
         if (extension.equals(fileName)) {
             return fileName;
         } else {
+            if (fileName.lastIndexOf(extension)==-1) {
+                return null;
+            }
             String ret = fileName.substring(0, fileName.lastIndexOf(extension) - 1);
             return ret;
         }
