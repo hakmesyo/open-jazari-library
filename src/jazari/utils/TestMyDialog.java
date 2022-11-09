@@ -31,7 +31,7 @@ public class TestMyDialog extends JFrame implements ActionListener {
          System.exit(0);
       }
       else if (choice.equals("Enter data")) {
-         MyDialog dlg = new MyDialog(this);
+         MyDialog dlg = new MyDialog(this,".","");
          String results = dlg.run();
          
       }
@@ -39,7 +39,7 @@ public class TestMyDialog extends JFrame implements ActionListener {
    public static void main(String[] args) {
 //      TestMyDialog myApp = new TestMyDialog("Test Dialog");
 //      myApp.setVisible(true);
-         MyDialog dlg = new MyDialog(null);
+         MyDialog dlg = new MyDialog(null,".","");
          String results = dlg.run();
          System.out.println("results = " + results);
 

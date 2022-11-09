@@ -393,7 +393,7 @@ public final class FactoryUtils {
                         new FileOutputStream(path), "UTF-8"));
                 try {
                     try {
-                        out.write(row);
+                        if (!(row==null || row.equals(""))) out.write(row);
                         Thread.sleep(5);
                         out.close();
                     } catch (IOException ex) {
@@ -1897,7 +1897,7 @@ public final class FactoryUtils {
         if (extension.equals(fileName)) {
             return fileName;
         } else {
-            if (fileName.lastIndexOf(extension)==-1) {
+            if (fileName.lastIndexOf(extension) == -1) {
                 return null;
             }
             String ret = fileName.substring(0, fileName.lastIndexOf(extension) - 1);
@@ -5907,16 +5907,16 @@ public final class FactoryUtils {
             return d;
         } else if (nr == 1) {
             for (int i = 1; i < nc; i++) {
-                ret[0][i]=ret[0][i-1]+d[0][i];
+                ret[0][i] = ret[0][i - 1] + d[0][i];
             }
         } else if (nc == 1) {
             for (int i = 1; i < nr; i++) {
-                ret[i][0]=ret[i-1][0]+d[i][0];
+                ret[i][0] = ret[i - 1][0] + d[i][0];
             }
-        } else {            
+        } else {
             for (int i = 0; i < nr; i++) {
                 for (int j = 1; j < nc; j++) {
-                    ret[i][j]=ret[i][j-1]+d[i][j];
+                    ret[i][j] = ret[i][j - 1] + d[i][j];
                 }
             }
         }
@@ -5930,20 +5930,20 @@ public final class FactoryUtils {
         if (nr == 1 && nc == 1) {
             return d;
         } else if (nr == 1) {
-            ret[0][0]=d[0][0];
+            ret[0][0] = d[0][0];
             for (int i = 1; i < nc; i++) {
-                ret[0][i]=ret[0][i-1]*d[0][i];
+                ret[0][i] = ret[0][i - 1] * d[0][i];
             }
         } else if (nc == 1) {
-            ret[0][0]=d[0][0];
+            ret[0][0] = d[0][0];
             for (int i = 1; i < nr; i++) {
-                ret[i][0]=ret[i-1][0]*d[i][0];
+                ret[i][0] = ret[i - 1][0] * d[i][0];
             }
-        } else {            
+        } else {
             for (int i = 0; i < nr; i++) {
-                ret[i][0]=d[i][0];
+                ret[i][0] = d[i][0];
                 for (int j = 1; j < nc; j++) {
-                    ret[i][j]=ret[i][j-1]*d[i][j];
+                    ret[i][j] = ret[i][j - 1] * d[i][j];
                 }
             }
         }
@@ -6583,7 +6583,7 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static String convertPascalVoc2CsvFormat(String srcDirectory,String csvFilePath) {
+    public static String convertPascalVoc2CsvFormat(String srcDirectory, String csvFilePath) {
         String ret = convertPascalVoc2CsvFormat(srcDirectory);
         writeToFile(csvFilePath, ret);
         return ret;
@@ -6600,6 +6600,7 @@ public final class FactoryUtils {
             int i = Integer.parseInt(str.split(" ")[0]);
             map.put(s, i);
         }
+        String globalRet = "";
         for (File f : files) {
             if (f.isFile() && FactoryUtils.getFileExtension(f).equals("xml")) {
                 BoundingBoxPascalVOC bbp = deserializePascalVocXML(f.getAbsolutePath());
@@ -6619,15 +6620,18 @@ public final class FactoryUtils {
                     class_index = map.get(pv.bndbox.name);
                     ret += class_index + " " + px1 + " " + py1 + " " + px2 + " " + py2 + "\n";
                 }
+                globalRet += ret;
                 FactoryUtils.writeToFile(mainFolderPath + "/" + FactoryUtils.getFileName(bbp.fileName) + ".txt", ret);
             }
         }
+        FactoryUtils.writeToFile(mainFolderPath + "/" + "yolov7.txt", globalRet);
+
     }
-    
-    public static String formatFloatDot2Comma(float p){
-        String s=""+p;
-        if (s.indexOf(".")!=-1) {
-            s=s.replace(".", ",");
+
+    public static String formatFloatDot2Comma(float p) {
+        String s = "" + p;
+        if (s.indexOf(".") != -1) {
+            s = s.replace(".", ",");
         }
         return s;
     }

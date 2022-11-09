@@ -2,3 +2,5 @@ ev
 zeytin
 toprak
 uzum
+uzumbag
+zeytinbag

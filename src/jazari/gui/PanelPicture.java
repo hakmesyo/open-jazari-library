@@ -413,8 +413,8 @@ public class PanelPicture extends JPanel implements KeyListener {
 
     }
 
-    private String inputMessage() {
-        MyDialog dlg = new MyDialog(frame);
+    private String inputMessage(String className) {
+        MyDialog dlg = new MyDialog(frame,imageFolder,className);
         String results = dlg.run();
         System.out.println("results = " + results);
         return results;
@@ -487,9 +487,9 @@ public class PanelPicture extends JPanel implements KeyListener {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
                     if (activateBoundingBox) {
-                        lastSelectedClass = inputMessage();
+                        lastSelectedClass = inputMessage(selectedBBox.name);
                         //System.out.println("updated classLabel = " + selectedClass);
-                        if (lastSelectedClass != null) {
+                        if (!(lastSelectedClass == null || lastSelectedClass.isEmpty())) {
                             isBBoxCancelled = false;
                             selectedBBox.name = lastSelectedClass;
                             repaint();
@@ -600,11 +600,11 @@ public class PanelPicture extends JPanel implements KeyListener {
                             return;
                         }
                         if (lastSelectedClass==null || lastSelectedClass.isEmpty()) {
-                            lastSelectedClass = inputMessage();
+                            lastSelectedClass = inputMessage("");
                         }
                         
                         //System.out.println("classLabel = " + selectedClass);
-                        if (lastSelectedClass == null) {
+                        if (lastSelectedClass == null || lastSelectedClass.isEmpty()) {
                             isBBoxCancelled = true;
                             selectedBBox = null;
                             repaint();

@@ -34,9 +34,13 @@ public class MyDialog extends JDialog implements ActionListener {
     private JButton btnOk;
     private JButton btnCancel;
     private String[] cs;
+    private String imageFolder;
+    private String className;
 
-    public MyDialog(Frame parent) {
+    public MyDialog(Frame parent,String imageFolder,String className) {
         super(parent, "Enter class label", true);
+        this.imageFolder=imageFolder;
+        this.className=className;
         setTitle("press 's' to save");
         Point loc = parent.getLocation();
         setLocation(loc.x + 80, loc.y + 80);
@@ -52,6 +56,7 @@ public class MyDialog extends JDialog implements ActionListener {
         gbc.gridy = 0;
         panel.add(descLabel, gbc);
         descBox = new JTextField(30);
+        descBox.setText(this.className);
         gbc.gridwidth = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -73,7 +78,10 @@ public class MyDialog extends JDialog implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(classLabel, gbc);
-        cs = FactoryUtils.readFile("class_labels.txt").split("\n");
+        if (!FactoryUtils.isFileExist(imageFolder+"/class_labels.txt")) {
+            FactoryUtils.writeToFile(imageFolder+"/class_labels.txt", "");
+        }
+        cs = FactoryUtils.readFile(imageFolder+"/class_labels.txt").split("\n");
         labelList = new JList<String>(cs);
         gbc.gridwidth = 2;
         gbc.gridx = 1;
@@ -136,12 +144,17 @@ public class MyDialog extends JDialog implements ActionListener {
         if (source == btnOk) {
             data = descBox.getText();
             for (String c : cs) {
+                if (cs.equals("") || data.equals("")) {
+                    continue;
+                }
                 if ((data).equals(c)) {
                     dispose();
                     isFound=true;
                 }
             }
-            if (!isFound) FactoryUtils.writeOnFile("class_labels.txt", data+"\n");
+            if (!isFound && !data.isEmpty()){
+                FactoryUtils.writeOnFile(imageFolder+"/class_labels.txt", data+"\n");
+            }
             
         } else {
             data = null;
