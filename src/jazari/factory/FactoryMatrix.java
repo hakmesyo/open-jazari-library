@@ -3023,6 +3023,14 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
+    public static List<Integer> randList(int n, int scale, Random rnd) {
+        List<Integer> ret= new ArrayList();
+        for (int i = 0; i < n; i++) {
+            ret.add(rnd.nextInt(scale));
+        }
+        return ret;
+    }
+
     public static int[] rand(int n, int scale) {
         SecureRandom r = new SecureRandom();
         int[] ret = new int[n];

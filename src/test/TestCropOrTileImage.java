@@ -24,14 +24,14 @@ public class TestCropOrTileImage {
 //                ;
 
         //To Annotate the images
-        CMatrix cm = CMatrix.getInstance()
-                .imread("D:\\zeytin_remote_sensing\\tif\\cropped_images\\temp_0_0.png")
-                .imshow()
+//        CMatrix cm = CMatrix.getInstance()
+//                .imread("D:\\zeytin_remote_sensing\\tif\\cropped_images\\temp_0_0.png")
+//                .imshow()
                 ;
         
         //to convert pascal voc format to yolo format
         
-//        FactoryUtils.convertPascalVoc2YoloFormat("D:\\zeytin_remote_sensing\\tif\\cropped_images", "class_labels.txt");
+        FactoryUtils.convertPascalVoc2YoloFormat("D:\\zeytin_remote_sensing\\tif\\cropped_images", "class.txt");
         
     }
 }
