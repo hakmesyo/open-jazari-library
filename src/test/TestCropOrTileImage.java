@@ -16,17 +16,16 @@ public class TestCropOrTileImage {
     public static void main(String[] args) {
         String path="D:\\zeytin_remote_sensing\\tif\\TM39_6125_4134.tif";
         //To Crop or Tile
-//        CMatrix cm = CMatrix.getInstance()
-//                //.imread("images/peppers.png")
-//                .imread(path)
-//                .imshow("peppers")
-//                .cropImages(20,15,"D:\\zeytin_gis\\cropped_images","temp","png",false);
-//                ;
+        CMatrix cm = CMatrix.getInstance()
+                .imread(path)
+                .imshow("original tif image")
+                .cropImages(20,15,"D:\\zeytin_gis\\cropped_images","temp","png",false);
+                ;
 
         //To Annotate the images
-//        CMatrix cm = CMatrix.getInstance()
-//                .imread("D:\\zeytin_remote_sensing\\tif\\cropped_images\\temp_0_0.png")
-//                .imshow()
+        CMatrix cm1 = CMatrix.getInstance()
+                .imread("D:\\zeytin_remote_sensing\\tif\\cropped_images\\temp_0_0.png")
+                .imshow()
                 ;
         
         //to convert pascal voc format to yolo format

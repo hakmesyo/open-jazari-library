@@ -18,7 +18,7 @@ import jazari.factory.FactoryUtils;
 public class MassiveArrayStreamVsForLoop {
 
     static int max = 10_000_000;
-    static int m = 50;
+    static int m = 500;
     static Random rnd = new Random(21);
     static int[] d1 = FactoryMatrix.rand(max, 100, rnd);
     static List<Integer> lst = FactoryMatrix.randList(max, 100, rnd);

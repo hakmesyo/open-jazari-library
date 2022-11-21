@@ -2070,7 +2070,7 @@ public final class CMatrix implements Serializable {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, this.imagePath,"none");
+        FrameImage frm = new FrameImage(this, this.imagePath,this.imagePath);
         frm.setVisible(true);
         return this;
     }

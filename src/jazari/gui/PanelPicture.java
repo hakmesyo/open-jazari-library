@@ -12,11 +12,13 @@ import jazari.matrix.CRectangle;
 import jazari.factory.FactoryUtils;
 import jazari.utils.TimeWatch;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -54,7 +56,7 @@ public class PanelPicture extends JPanel implements KeyListener {
     private Point mousePosBottomLeft = new Point(0, 0);
     private Point mousePosBottomRight = new Point(0, 0);
     private JLabel lbl = null;
-    private boolean lblShow = false;
+    private boolean lblShow = true;
     private boolean showRegion = false;
     private boolean showDrawableRegion = false;
     private BufferedImage currBufferedImage;
@@ -72,7 +74,7 @@ public class PanelPicture extends JPanel implements KeyListener {
     private boolean activateRedChannel = false;
     private boolean activateRevert = false;
     private boolean activateROI = false;
-    private boolean activateBoundingBox = false;
+    public boolean activateBoundingBox = false;
     private boolean activateDrawableROI = false;
     private boolean activateCloneROI = false;
     private boolean activateGreenChannel = false;
@@ -107,6 +109,8 @@ public class PanelPicture extends JPanel implements KeyListener {
     private JFrame frame;
     private String caption;
     private String lastSelectedClass;
+    private boolean isMouseDragged = false;
+    public boolean isSeqenceVideoFrame;
 
     public PanelPicture(JFrame frame) {
         this.frame = frame;
@@ -122,7 +126,7 @@ public class PanelPicture extends JPanel implements KeyListener {
         File f = new File(imagePath);
         imageFolder = f.getParent();
         imageFiles = FactoryUtils.getFileListInFolderForImages(imageFolder);
-        imageFiles = sortFileListByNumber(imageFiles);
+        //imageFiles = sortFileListByNumber(imageFiles);
         fileName = f.getName();
         for (int i = 0; i < imageFiles.length; i++) {
             if (imageFiles[i].getName().equals(fileName)) {
@@ -157,9 +161,9 @@ public class PanelPicture extends JPanel implements KeyListener {
 
     }
 
-    public void setImage(BufferedImage image, String imagePath,String caption) {
-        this.caption=caption;
-        if (imagePath != null && !imagePath.isEmpty()) {
+    public void setImage(BufferedImage image, String imagePath, String caption) {
+        this.caption = caption;
+        if (activateBoundingBox && imagePath != null && !imagePath.isEmpty()) {
             String fileName = FactoryUtils.getFileName(imagePath) + ".xml";
             String folderName = FactoryUtils.getFolderPath(imagePath);
             boolean checkXML = new File(folderName, fileName).exists();
@@ -199,9 +203,9 @@ public class PanelPicture extends JPanel implements KeyListener {
         return stat;
     }
 
-    JFrame frm = null;
+    FrameImage frm = null;
 
-    public void setFrame(JFrame frm) {
+    public void setFrame(FrameImage frm) {
         this.frm = frm;
     }
 
@@ -227,7 +231,9 @@ public class PanelPicture extends JPanel implements KeyListener {
         gr.fillRect(0, 0, getWidth(), getHeight());
         gr.setColor(Color.GREEN);
         int wPanel = this.getWidth();
+        //System.out.print("wPanel = " + wPanel);
         int hPanel = this.getHeight();
+        //System.out.println(" hPanel = " + hPanel);
         if (currBufferedImage != null) {
             if (activateAutoSize) {
                 currBufferedImage = ImageProcess.resize(originalBufferedImage, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
@@ -266,7 +272,9 @@ public class PanelPicture extends JPanel implements KeyListener {
             int wImg = currBufferedImage.getWidth();
             int hImg = currBufferedImage.getHeight();
             fromLeft = (wPanel - wImg) / 2;
+            //System.out.println("fromLeft = " + fromLeft);
             fromTop = (hPanel - hImg) / 2;
+            //System.out.println("fromTop = " + fromTop);
             gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
 
             gr.setColor(Color.blue);
@@ -319,12 +327,6 @@ public class PanelPicture extends JPanel implements KeyListener {
                         s = s.replace("java.awt.Color", "");
                         lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + " Img Type=" + currBufferedImage.getType());// + " RGB=" + "(" + r + "," + g + "," + b + ")");
                     }
-                    gr.setColor(Color.blue);
-                    gr.drawLine(0, mousePos.y, wPanel - 1, mousePos.y);
-                    gr.drawLine(mousePos.x, 0, mousePos.x, hPanel - 1);
-                    gr.setColor(Color.red);
-                    gr.drawRect(mousePos.x - 1, mousePos.y - 1, 2, 2);
-                    gr.drawRect(mousePos.x - 10, mousePos.y - 10, 20, 20);
                 }
                 if (drawableRoiList.size() > 0) {
                     CPoint prev = drawableRoiList.get(0);
@@ -354,41 +356,63 @@ public class PanelPicture extends JPanel implements KeyListener {
                 } else if (showRegion && activateBoundingBox) {
                     int sw = 2;//stroke width
                     if (isBBoxResizeTopLeft) {
+                        this.setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
                         Point p = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + fromTop);
                         drawBoundingBox(gr, selectedBBox, sw, mousePos, p, Color.green, true);
                     } else if (isBBoxResizeTopRight) {
-                        int dy1=mousePos.y-(selectedBBox.ymin + fromTop);
-                        int dx2=mousePos.x-(selectedBBox.xmax + fromLeft);
-                        Point p1 = new Point(selectedBBox.xmax+fromLeft + dx2, selectedBBox.ymax + fromTop);
-                        Point p2 = new Point(selectedBBox.xmin+fromLeft,selectedBBox.ymin+fromTop+dy1);
+                        this.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
+                        int dy1 = mousePos.y - (selectedBBox.ymin + fromTop);
+                        int dx2 = mousePos.x - (selectedBBox.xmax + fromLeft);
+                        Point p1 = new Point(selectedBBox.xmax + fromLeft + dx2, selectedBBox.ymax + fromTop);
+                        Point p2 = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop + dy1);
                         drawBoundingBox(gr, selectedBBox, sw, p2, p1, Color.green, true);
                     } else if (isBBoxResizeBottomLeft) {
-                        int dy1=mousePos.y-(selectedBBox.ymax + fromTop);
-                        int dx2=mousePos.x-(selectedBBox.xmin + fromLeft);
-                        Point p1 = new Point(selectedBBox.xmax+fromLeft, selectedBBox.ymax+dy1 + fromTop);
-                        Point p2 = new Point(selectedBBox.xmin+fromLeft+dx2,selectedBBox.ymin+fromTop);
+                        this.setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
+                        int dy1 = mousePos.y - (selectedBBox.ymax + fromTop);
+                        int dx2 = mousePos.x - (selectedBBox.xmin + fromLeft);
+                        Point p1 = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + dy1 + fromTop);
+                        Point p2 = new Point(selectedBBox.xmin + fromLeft + dx2, selectedBBox.ymin + fromTop);
                         drawBoundingBox(gr, selectedBBox, sw, p2, p1, Color.green, true);
                     } else if (isBBoxResizeBottomRight) {
+                        this.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
                         Point p = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop);
                         drawBoundingBox(gr, selectedBBox, sw, p, mousePos, Color.green, true);
-                    } else if (selectedBBox != null && isBBoxDragged) {
-                        Point p1 = new Point(selectedBBox.xmin + fromLeft + (mousePos.x - referenceDragPos.x),
-                                selectedBBox.ymin + fromTop + (mousePos.y - referenceDragPos.y));
-                        Point p2 = new Point(p1.x + (selectedBBox.xmax - selectedBBox.xmin), p1.y + (selectedBBox.ymax - selectedBBox.ymin));
+                    } else if (selectedBBox != null && isBBoxDragged && isMouseDragged) {
+                        this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                        int p1x = selectedBBox.xmin + fromLeft + (mousePos.x - referenceDragPos.x);
+                        p1x = (p1x > fromLeft) ? p1x : fromLeft;
+                        int p1y = selectedBBox.ymin + fromTop + (mousePos.y - referenceDragPos.y);
+                        p1y = (p1y > fromTop) ? p1y : fromTop;
+                        int p2x = p1x + (selectedBBox.xmax - selectedBBox.xmin);
+                        if (p2x > fromLeft + currBufferedImage.getWidth()) {
+                            p2x = fromLeft + currBufferedImage.getWidth() - 1;
+                            p1x = p2x - selectedBBox.getWidth();
+                        }
+                        int p2y = p1y + (selectedBBox.ymax - selectedBBox.ymin);
+                        if (p2y > fromTop + currBufferedImage.getHeight()) {
+                            p2y = fromTop + currBufferedImage.getHeight() - 1;
+                            p1y = p2y - selectedBBox.getHeight();
+                        }
+                        Point p1 = new Point(p1x, p1y);
+                        Point p2 = new Point(p2x, p2y);
                         drawBoundingBox(gr, selectedBBox, sw, p1, p2, Color.orange, true);
-                    } else if (selectedBBox == null && !isBBoxCancelled) {
+                    } else if (selectedBBox == null && !isBBoxCancelled && isMouseDragged) {
                         drawBoundingBox(gr, selectedBBox, sw, mousePosTopLeft, mousePos, Color.green, true);
                     }
 
                     for (BoundingBox bbox : listBBoxRect) {
+                        if (bbox.equals(selectedBBox)) {
+                            continue;
+                        }
                         Point p1 = new Point(bbox.xmin + fromLeft, bbox.ymin + fromTop);
                         Point p2 = new Point(bbox.xmax + fromLeft, bbox.ymax + fromTop);
                         drawBoundingBox(gr, bbox, sw, p1, p2, Color.green, false);
                     }
-                    if (selectedBBox != null) {
+                    if (selectedBBox != null && !isMouseDragged) {
                         Point p1 = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop);
                         Point p2 = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + fromTop);
                         drawBoundingBox(gr, selectedBBox, sw, p1, p2, Color.green, true);
+                        //System.out.println("selectedBBox = " + selectedBBox);
                     } else {
                     }
                 } else if (showDrawableRegion && drawableRoiList.size() > 0) {
@@ -405,8 +429,21 @@ public class PanelPicture extends JPanel implements KeyListener {
                     gr.drawLine(prev.column + fromLeft, prev.row + fromTop, p.column + fromLeft, p.row + fromTop);
                 }
             }
+            if (isMouseInCanvas()) {
+                Stroke dashed = new BasicStroke(3,
+                        BasicStroke.CAP_BUTT,
+                        BasicStroke.JOIN_BEVEL,
+                        0,
+                        new float[]{9},
+                        0);
+                gr.setStroke(dashed);
+                gr.setColor(Color.lightGray);
+                gr.drawLine(0, mousePos.y, wPanel - 1, mousePos.y);
+                gr.drawLine(mousePos.x, 0, mousePos.x, hPanel - 1);
+            }
             this.paintComponents(gr);
         }
+        gr.setStroke(new BasicStroke(1));
         gr.setColor(Color.red);
         gr.drawRect(0, 0, wPanel - 1, hPanel - 1);
         gr.drawRect(1, 1, wPanel - 3, hPanel - 3);
@@ -414,7 +451,7 @@ public class PanelPicture extends JPanel implements KeyListener {
     }
 
     private String inputMessage(String className) {
-        MyDialog dlg = new MyDialog(frame,imageFolder,className);
+        MyDialog dlg = new MyDialog(frame, imageFolder, className);
         String results = dlg.run();
         System.out.println("results = " + results);
         return results;
@@ -480,7 +517,6 @@ public class PanelPicture extends JPanel implements KeyListener {
         this.updateUI();
 
         addMouseListener(new java.awt.event.MouseAdapter() {
-            
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -511,14 +547,29 @@ public class PanelPicture extends JPanel implements KeyListener {
 
                 if ((activateROI || activateBoundingBox) && e.getButton() == MouseEvent.BUTTON1) {
                     showRegion = true;
-                    mousePosTopLeft = e.getPoint();
+                    mousePosTopLeft = constraintMousePosition(e);
+                    if (mousePosTopLeft.x < fromLeft) {
+                        mousePosTopLeft.x = fromLeft;
+                    }
+                    if (mousePosTopLeft.x > fromLeft + currBufferedImage.getWidth()) {
+                        mousePosTopLeft.x = fromLeft + currBufferedImage.getWidth();
+                    }
+                    if (mousePosTopLeft.y < fromTop) {
+                        mousePosTopLeft.y = fromTop;
+                    }
+                    if (mousePosTopLeft.y > fromTop + currBufferedImage.getHeight()) {
+                        mousePosTopLeft.y = fromTop + currBufferedImage.getHeight();
+                    }
+                    if (!isBBoxDragged) {
+                        //selectedBBox = isMouseClickedOnBoundingBox();
+                    }
                     if (selectedBBox != null) {
                         Point p = e.getPoint();
                         isBBoxResizeTopLeft = false;
                         isBBoxResizeTopRight = false;
                         isBBoxResizeBottomLeft = false;
                         isBBoxResizeBottomRight = false;
-                        int t = 5;
+                        int t = 10;
                         if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
                             isBBoxResizeTopLeft = true;
                         } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
@@ -527,8 +578,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                             isBBoxResizeBottomRight = true;
                         } else if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
                             isBBoxResizeBottomLeft = true;
-                        } else if (p.x > selectedBBox.xmin + fromLeft && p.x < selectedBBox.xmax + fromLeft
-                                && p.y > selectedBBox.ymin + fromTop && p.y < selectedBBox.ymax + fromTop) {
+                        } else if (p.x > selectedBBox.xmin + fromLeft && p.x < selectedBBox.xmax + fromLeft && p.y > selectedBBox.ymin + fromTop && p.y < selectedBBox.ymax + fromTop) {
                             isBBoxDragged = true;
                             referenceDragPos = e.getPoint();
                         } else {
@@ -541,55 +591,77 @@ public class PanelPicture extends JPanel implements KeyListener {
                 } else if (activateDrawableROI && e.getButton() == MouseEvent.BUTTON1) {
                     showDrawableRegion = true;
                 } else {
-                    lblShow = true;
+                    //lblShow = true;
                 }
 //                checkForTriggerEvent(e);
+                repaint();
             }
 
             public void mouseReleased(java.awt.event.MouseEvent e) {
                 if ((activateROI || activateBoundingBox) && e.getButton() == MouseEvent.BUTTON1) {
-                    mousePos = e.getPoint();
-                    mousePosBottomRight = e.getPoint();
+                    setDefaultCursor();
+                    mousePos = constraintMousePosition(e);
+                    mousePosBottomRight = constraintMousePosition(e);
 
                     if (activateBoundingBox) {
+                        isMouseDragged = false;
                         if (isBBoxResizeTopLeft && selectedBBox != null) {
-                            mousePosTopLeft = e.getPoint();
+                            mousePosTopLeft = constraintMousePosition(e);
                             selectedBBox.xmin = mousePosTopLeft.x - fromLeft;
                             selectedBBox.ymin = mousePosTopLeft.y - fromTop;
+                            isBBoxResizeTopLeft = false;
                             repaint();
                             return;
                         } else if (isBBoxResizeTopRight && selectedBBox != null) {
-                            mousePosTopRight = e.getPoint();
+                            mousePosTopRight = constraintMousePosition(e);
                             selectedBBox.xmax = mousePosTopRight.x - fromLeft;
                             selectedBBox.ymin = mousePosTopRight.y - fromTop;
+                            isBBoxResizeTopRight = false;
                             repaint();
                             return;
                         } else if (isBBoxResizeBottomLeft && selectedBBox != null) {
-                            mousePosBottomLeft = e.getPoint();
+                            mousePosBottomLeft = constraintMousePosition(e);
                             selectedBBox.xmin = mousePosBottomLeft.x - fromLeft;
                             selectedBBox.ymax = mousePosBottomLeft.y - fromTop;
+                            isBBoxResizeBottomLeft = false;
                             repaint();
                             return;
                         } else if (isBBoxResizeBottomRight && selectedBBox != null) {
-                            mousePosBottomRight = e.getPoint();
+                            mousePosBottomRight = constraintMousePosition(e);
                             selectedBBox.xmax = mousePosBottomRight.x - fromLeft;
                             selectedBBox.ymax = mousePosBottomRight.y - fromTop;
+                            isBBoxResizeBottomRight = false;
                             repaint();
                             return;
-                        } 
+                        }
                         if (!isBBoxDragged) {
                             selectedBBox = isMouseClickedOnBoundingBox();
                         }
                     }
                     if (activateBoundingBox && !FactoryUtils.isMousePosEqual(mousePosTopLeft, mousePosBottomRight)) {
                         if (isBBoxDragged) {
-                            Point p1 = new Point(selectedBBox.xmin + (mousePos.x - referenceDragPos.x),
-                                    selectedBBox.ymin + (mousePos.y - referenceDragPos.y));
-                            Point p2 = new Point(p1.x + (selectedBBox.xmax - selectedBBox.xmin), p1.y + (selectedBBox.ymax - selectedBBox.ymin));
-                            selectedBBox.xmin = p1.x;
-                            selectedBBox.ymin = p1.y;
-                            selectedBBox.xmax = p2.x;
-                            selectedBBox.ymax = p2.y;
+                            int p1x = selectedBBox.xmin + fromLeft + (mousePos.x - referenceDragPos.x);
+                            p1x = (p1x > fromLeft) ? p1x : fromLeft;
+                            int p1y = selectedBBox.ymin + fromTop + (mousePos.y - referenceDragPos.y);
+                            p1y = (p1y > fromTop) ? p1y : fromTop;
+                            int p2x = p1x + (selectedBBox.xmax - selectedBBox.xmin);
+                            if (p2x > fromLeft + currBufferedImage.getWidth()) {
+                                p2x = fromLeft + currBufferedImage.getWidth() - 1;
+                                p1x = p2x - selectedBBox.getWidth();
+                            }
+                            int p2y = p1y + (selectedBBox.ymax - selectedBBox.ymin);
+                            if (p2y > fromTop + currBufferedImage.getHeight()) {
+                                p2y = fromTop + currBufferedImage.getHeight() - 1;
+                                p1y = p2y - selectedBBox.getHeight();
+                            }
+
+//                            Point p1 = new Point(selectedBBox.xmin + (mousePos.x - referenceDragPos.x),
+//                                    selectedBBox.ymin + (mousePos.y - referenceDragPos.y));
+//                            Point p2 = new Point(p1.x + (selectedBBox.xmax - selectedBBox.xmin), p1.y + (selectedBBox.ymax - selectedBBox.ymin));
+                            selectedBBox.xmin = p1x - fromLeft;
+                            selectedBBox.ymin = p1y - fromTop;
+                            selectedBBox.xmax = p2x - fromLeft;
+                            selectedBBox.ymax = p2y - fromTop;
                             isBBoxDragged = false;
                             repaint();
                             return;
@@ -599,10 +671,10 @@ public class PanelPicture extends JPanel implements KeyListener {
                         if (w < 5 || h < 5) {
                             return;
                         }
-                        if (lastSelectedClass==null || lastSelectedClass.isEmpty()) {
+                        if (lastSelectedClass == null || lastSelectedClass.isEmpty()) {
                             lastSelectedClass = inputMessage("");
                         }
-                        
+
                         //System.out.println("classLabel = " + selectedClass);
                         if (lastSelectedClass == null || lastSelectedClass.isEmpty()) {
                             isBBoxCancelled = true;
@@ -617,7 +689,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                         selectedBBox = bbox;
                         listBBoxRect.add(bbox);
                         repaint();
-                        selectedBBox=null;
+                        selectedBBox = null;
                         return;
                     }
                     repaint();
@@ -632,7 +704,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                     }
 
                 } else {
-                    lblShow = false;
+                    //lblShow = false;
                 }
                 checkForTriggerEvent(e);
             }
@@ -649,7 +721,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                     return null;
                 } else {
                     for (BoundingBox bbox : listBBoxRect) {
-                        if (FactoryUtils.isPointInROI(mousePos, bbox.getRectangle(fromLeft, fromTop))) {
+                        if (FactoryUtils.isPointInROI(mousePos, bbox.getRectangle(fromLeft, fromTop, 5))) {
                             ret = bbox;
                             return ret;
                         }
@@ -663,14 +735,35 @@ public class PanelPicture extends JPanel implements KeyListener {
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
 
             public void mouseMoved(java.awt.event.MouseEvent e) {
-                drawableMousePos = new CPoint(e.getPoint().y - fromTop, e.getPoint().x - fromLeft);
-//                repaint();
+                //drawableMousePos = new CPoint(e.getPoint().y - fromTop, e.getPoint().x - fromLeft);
+                isMouseDragged = false;
+                mousePos = e.getPoint();
+                if (activateBoundingBox && selectedBBox != null) {
+                    Point p = e.getPoint();
+                    int t = 10;
+                    if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                        setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
+                    } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                        setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
+                    } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                        setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+                    } else if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                        setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
+                    } else if (p.x > selectedBBox.xmin + fromLeft && p.x < selectedBBox.xmax + fromLeft && p.y > selectedBBox.ymin + fromTop && p.y < selectedBBox.ymax + fromTop) {
+                        setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+                repaint();
             }
 
             public void mouseDragged(java.awt.event.MouseEvent e) {
-                mousePos = e.getPoint();
+                isMouseDragged = true;
+                mousePos = constraintMousePosition(e);
                 repaint();
             }
+
         }
         );
 
@@ -681,6 +774,31 @@ public class PanelPicture extends JPanel implements KeyListener {
 //                repaint();
 //            }
 //        });
+    }
+
+    private void setCursorWith(Cursor cursor) {
+        this.setCursor(cursor);
+    }
+
+    private void setDefaultCursor() {
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    private Point constraintMousePosition(MouseEvent e) {
+        Point pp = e.getPoint();
+        if (pp.x < fromLeft) {
+            pp.x = fromLeft;
+        }
+        if (pp.x > fromLeft + currBufferedImage.getWidth()) {
+            pp.x = fromLeft + currBufferedImage.getWidth() - 1;
+        }
+        if (pp.y < fromTop) {
+            pp.y = fromTop;
+        }
+        if (pp.y > fromTop + currBufferedImage.getHeight()) {
+            pp.y = fromTop + currBufferedImage.getHeight() - 1;
+        }
+        return pp;
     }
 
     private String getImageSize() {
@@ -719,15 +837,24 @@ public class PanelPicture extends JPanel implements KeyListener {
         gr.setColor(col);
         gr.drawRect(p1.x, p1.y, w, h);
         if (isCornerVisible) {
-            gr.setColor(Color.red);
-            int wx = 8;
-            int ww = 4;
+            int wx = 12;
+            int ww = 6;
+            gr.setColor(Color.white);
             gr.fillRect(p1.x - ww, p1.y - ww, wx, wx);
             gr.fillRect(p1.x - ww + w, p1.y - ww, wx, wx);
             gr.fillRect(p1.x - ww + w, p1.y - ww + h, wx, wx);
             gr.fillRect(p1.x - ww, p1.y - ww + h, wx, wx);
             gr.setStroke(new BasicStroke(1));
+            gr.setColor(Color.black);
+            gr.drawRect(p1.x - ww, p1.y - ww, wx, wx);
+            gr.drawRect(p1.x - ww + w, p1.y - ww, wx, wx);
+            gr.drawRect(p1.x - ww + w, p1.y - ww + h, wx, wx);
+            gr.drawRect(p1.x - ww, p1.y - ww + h, wx, wx);
         }
+    }
+
+    private boolean isMouseInCanvas() {
+        return (mousePos.x > fromLeft && mousePos.x < fromLeft + currBufferedImage.getWidth() && mousePos.y > fromTop && mousePos.y < fromTop + currBufferedImage.getHeight());
     }
 
     private class ItemHandler implements ActionListener {
@@ -923,27 +1050,43 @@ public class PanelPicture extends JPanel implements KeyListener {
     }
 
     private void loadNextImage() {
-        imageIndex++;
-        if (imageIndex > imageFiles.length - 1) {
-            imageIndex--;
-            return;
+//        imageIndex++;
+//        if (imageIndex > imageFiles.length - 1) {
+//            imageIndex--;
+//            return;
+//        }
+        if (imageIndex < imageFiles.length - 1) {
+            imageIndex++;
+        }
+        if (!isSeqenceVideoFrame) {
+            listBBoxRect.clear();
+            selectedBBox = null;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-        setImage(bf, imagePath,caption);
+        setImage(bf, imagePath, caption);
         frm.setTitle(imageFiles[imageIndex].getPath());
+        frm.setFrameSize(bf);
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
     }
 
     private void loadPrevImage() {
-        imageIndex--;
-        if (imageIndex < 0) {
-            imageIndex++;
-            return;
+//        imageIndex--;
+//        if (imageIndex < 0) {
+//            imageIndex++;
+//            return;
+//        }
+        if (imageIndex > 0) {
+            imageIndex--;
+        }
+        if (!isSeqenceVideoFrame) {
+            listBBoxRect.clear();
+            selectedBBox = null;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-        setImage(bf, imagePath,caption);
+        setImage(bf, imagePath, caption);
         frm.setTitle(imageFiles[imageIndex].getPath());
+        frm.setFrameSize(bf);
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
     }
@@ -953,14 +1096,14 @@ public class PanelPicture extends JPanel implements KeyListener {
         for (BoundingBox bbox : listBBoxRect) {
             lstObject.add(new PascalVocObject(bbox));
         }
-        if (lstObject.size()>0) {
+        if (lstObject.size() > 0) {
             String xml = FactoryUtils.serializePascalVocXML(imageFolder, fileName, imagePath, lstObject);
-        }else{
-            File file=new File(imagePath);
-            if (FactoryUtils.isFileExist(imageFolder+"/"+FactoryUtils.getFileName(file.getName()) + ".xml")){
-                FactoryUtils.deleteFile(imageFolder+"/"+FactoryUtils.getFileName(file.getName()) + ".xml");
+        } else {
+            File file = new File(imagePath);
+            if (FactoryUtils.isFileExist(imageFolder + "/" + FactoryUtils.getFileName(file.getName()) + ".xml")) {
+                FactoryUtils.deleteFile(imageFolder + "/" + FactoryUtils.getFileName(file.getName()) + ".xml");
             }
-        }        
+        }
         loadNextImage();
         activateBoundingBox = true;
     }
@@ -1003,20 +1146,26 @@ public class PanelPicture extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_UP) {
+//            loadNextImage();
             if (imageIndex < imageFiles.length - 1) {
                 imageIndex++;
             }
         } else if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_DOWN) {
+//            loadPrevImage();
             if (imageIndex > 0) {
                 imageIndex--;
             }
         } else if (key == KeyEvent.VK_S) {
             savePascalVocXML();
             BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-            setImage(bf, imagePath,caption);
+            setImage(bf, imagePath, caption);
             frm.setTitle(imageFiles[imageIndex].getPath());
             fileName = imageFiles[imageIndex].getName();
             imagePath = imageFiles[imageIndex].getAbsolutePath();
+            if (!isSeqenceVideoFrame) {
+                listBBoxRect.clear();
+                selectedBBox = null;
+            }
             repaint();
             return;
         } else if (key == KeyEvent.VK_DELETE) {
@@ -1031,8 +1180,9 @@ public class PanelPicture extends JPanel implements KeyListener {
         imagePath = imageFiles[imageIndex].getAbsolutePath();
         listBBoxRect.clear();
         selectedBBox = null;
-        setDefaultValues();
-        setImage(bf, imagePath,caption);
+        //setDefaultValues();
+        setImage(bf, imagePath, caption);
+        frm.setFrameSize(bf);
     }
 
     @Override

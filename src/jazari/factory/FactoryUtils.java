@@ -2331,15 +2331,7 @@ public final class FactoryUtils {
     }
 
     public static String getFolderPath(String path) {
-        String[] s = path.split("\\\\");
-        String ret = "";
-        if (s.length == 1) {
-            return s[0];
-        }
-        for (int i = 0; i < s.length - 1; i++) {
-            ret += s[i] + "\\";
-        }
-        return ret;
+        return new File(path).getParent();
     }
 
     public static int[] sortArray(int[] a) {
@@ -3542,7 +3534,8 @@ public final class FactoryUtils {
             }
         };
         File[] list = dir.listFiles(IMAGE_FILTER);
-        Arrays.sort(list, Comparator.comparingLong(File::lastModified));
+        //Arrays.sort(list, Comparator.comparingLong(File::lastModified));
+        Arrays.sort(list, Comparator.comparing(File::getName));
         return list;
     }
 

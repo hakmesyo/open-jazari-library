@@ -1,11 +1,18 @@
 package jazari.app;
 
 
-import java.awt.image.BufferedImage;
+import java.awt.Component;
+import javax.swing.TransferHandler;
 import jazari.factory.FactoryUtils;
-import jazari.gui.FrameImage;
-import jazari.image_processing.ImageProcess;
 import jazari.matrix.CMatrix;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import javax.swing.JButton;
+import java.awt.Image;
+import java.io.File;
+import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,13 +24,14 @@ import jazari.matrix.CMatrix;
  *
  * @author cezerilab
  */
-public class JAnnotate extends javax.swing.JFrame {
+public class Jazo extends javax.swing.JFrame {
 
     /**
      * Creates new form JAnnotate
      */
-    public JAnnotate() {
+    public Jazo() {
         initComponents();
+        btn_open.setTransferHandler(new ImageTransferHandler());
     }
 
     /**
@@ -70,10 +78,13 @@ public class JAnnotate extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_openActionPerformed
-        CMatrix cm = CMatrix.getInstance()
-                .imread(FactoryUtils.browseFile().getAbsolutePath())
+        File pathFile=FactoryUtils.browseFile();
+        if (pathFile!=null) {
+            CMatrix cm = CMatrix.getInstance()
+                .imread(pathFile)
                 .imshow()
                 ;
+        }
     }//GEN-LAST:event_btn_openActionPerformed
 
     /**
@@ -93,20 +104,21 @@ public class JAnnotate extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JAnnotate.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jazo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JAnnotate.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jazo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JAnnotate.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jazo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JAnnotate.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jazo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JAnnotate().setVisible(true);
+                new Jazo().setVisible(true);
             }
         });
     }
@@ -114,4 +126,55 @@ public class JAnnotate extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_open;
     // End of variables declaration//GEN-END:variables
+
+    public static class ImageTransferHandler extends TransferHandler {
+        public static final DataFlavor[] SUPPORTED_DATA_FLAVORS = new DataFlavor[]{
+            DataFlavor.javaFileListFlavor,
+            DataFlavor.imageFlavor
+        };
+
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport support) {
+            boolean canImport = false;
+            for (DataFlavor flavor : SUPPORTED_DATA_FLAVORS) {
+                if (support.isDataFlavorSupported(flavor)) {
+                    canImport = true;
+                    break;
+                }
+            }
+            return canImport;
+        }
+
+        @Override
+        public boolean importData(TransferHandler.TransferSupport support) {
+            boolean accept = false;
+            if (canImport(support)) {
+                try {
+                    Transferable t = support.getTransferable();
+                    Component component = support.getComponent();
+                    if (component instanceof JButton) {
+                        Image image = null;
+                        if (support.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                            image = (Image) t.getTransferData(DataFlavor.imageFlavor);
+                        } else if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                            List files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+                            if (files.size() > 0) {
+                                //image = ImageIO.read((File) files.get(0));
+                                CMatrix cm = CMatrix.getInstance().imread((File) files.get(0)).imshow();
+                            }
+                        }
+//                        ImageIcon icon = null;
+//                        if (image != null) {
+//                            icon = new ImageIcon(image);
+//                        }
+//                        ((JButton) component).setIcon(icon);
+                        accept = true;
+                    }
+                } catch (Exception exp) {
+                    exp.printStackTrace();
+                }
+            }
+            return accept;
+        }
+    }
 }

@@ -5,14 +5,27 @@
  */
 package jazari.gui;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatPropertiesLaf;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import jazari.image_processing.ImageProcess;
 import jazari.matrix.CMatrix;
 import jazari.factory.FactoryUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -20,11 +33,20 @@ import javax.swing.JFrame;
  */
 public class FrameImage extends javax.swing.JFrame {
 
+    static {
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(FlatLaf.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private BufferedImage img;
     int pw = 100;
     int ph = 150;
-    int panWidth=40;
-    BufferedImage currBufferedImage = null;
+    int panWidth = 40;
+    //BufferedImage currBufferedImage = null;
+    String imagePath;
     private Vector<String> listImageFile = new Vector<String>();
     int listIndex = 0;
     CMatrix cm = null;
@@ -34,6 +56,8 @@ public class FrameImage extends javax.swing.JFrame {
      */
     public FrameImage() {
         initComponents();
+        isSequence.setVisible(false);
+
 //        getPicturePanel().setFrame(this);
     }
 
@@ -48,32 +72,31 @@ public class FrameImage extends javax.swing.JFrame {
         this.setTitle(caption);
         this.cm = cm;
         this.img = cm.getImage();
-        getPicturePanel().setImage(img,imagePath,caption);
-        //getPicturePanel().setImagePath(imagePath);
-//        if (img.getWidth()<150) {
-//            pw=50;
-//        }else{
-//            pw=70;
-//        }
-        pw=70;
+        this.imagePath = imagePath;
+        getPicturePanel().activateBoundingBox = isBBox.isSelected();
+        getPicturePanel().setImage(img, imagePath, caption); 
         getPicturePanel().setFrame(this);
-        this.setSize(img.getWidth()+2*pw, img.getHeight() + 190);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setFrameSize(img);
         getPicturePanel().setFocusable(true);
         getPicturePanel().requestFocus();
+        isSequence.setVisible(false);
+        
     }
 
-    public void setImage(BufferedImage img, String imagePath,String caption) {
-        getPicturePanel().setImage(img, imagePath,caption);
+    public void setImage(BufferedImage img, String imagePath, String caption) {
+        this.img = img;
+        this.imagePath = imagePath;
+        getPicturePanel().setImage(this.img, imagePath, caption);
         getPicturePanel().setFrame(this);
-        this.setSize(img.getWidth()+300, img.getHeight() + 183);
-        String[] s=FactoryUtils.splitPath(imagePath);
+        this.setSize(img.getWidth() + 300, img.getHeight() + 183);
+        String[] s = FactoryUtils.splitPath(imagePath);
         //this.setTitle(s[s.length-1]);
-        this.setTitle(imagePath+"/"+caption);
+        this.setTitle(imagePath + "/" + caption);
     }
 
     public void setImage(BufferedImage img) {
-        setImage(img, "", "");
+        this.img = img;
+        setImage(this.img, "", "");
     }
 
     /**
@@ -90,6 +113,8 @@ public class FrameImage extends javax.swing.JFrame {
         btn_save = new javax.swing.JButton();
         txt_dpi = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+        isBBox = new javax.swing.JCheckBox();
+        isSequence = new javax.swing.JCheckBox();
         scroll_pane = new javax.swing.JScrollPane();
         panelPicture = new jazari.gui.PanelPicture(this);
 
@@ -120,6 +145,40 @@ public class FrameImage extends javax.swing.JFrame {
 
         jLabel2.setText("dpi");
 
+        isBBox.setText("bbox");
+        isBBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                isBBoxItemStateChanged(evt);
+            }
+        });
+        isBBox.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                isBBoxMouseMoved(evt);
+            }
+        });
+        isBBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isBBoxActionPerformed(evt);
+            }
+        });
+
+        isSequence.setText("sequence");
+        isSequence.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                isSequenceItemStateChanged(evt);
+            }
+        });
+        isSequence.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                isSequenceMouseMoved(evt);
+            }
+        });
+        isSequence.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isSequenceActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -127,11 +186,15 @@ public class FrameImage extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(btn_dataGrid)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(isBBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(isSequence)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -140,7 +203,9 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(btn_dataGrid)
                 .addComponent(btn_save)
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel2))
+                .addComponent(jLabel2)
+                .addComponent(isBBox)
+                .addComponent(isSequence))
         );
 
         panelPicture.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -199,13 +264,41 @@ public class FrameImage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_panelPictureKeyPressed
 
+    private void isBBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isBBoxItemStateChanged
+        getPicturePanel().activateBoundingBox = isBBox.isSelected();
+        getPicturePanel().setImage(this.img, imagePath, this.getTitle());
+        isSequence.setVisible(isBBox.isSelected());
+        getPicturePanel().requestFocus();
+    }//GEN-LAST:event_isBBoxItemStateChanged
+
+    private void isBBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isBBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_isBBoxActionPerformed
+
+    private void isSequenceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isSequenceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_isSequenceActionPerformed
+
+    private void isSequenceItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isSequenceItemStateChanged
+        getPicturePanel().isSeqenceVideoFrame = isSequence.isSelected();
+        getPicturePanel().requestFocus();
+    }//GEN-LAST:event_isSequenceItemStateChanged
+
+    private void isBBoxMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_isBBoxMouseMoved
+        isBBox.setToolTipText("Activate BoundingBox annotation for object detection");
+    }//GEN-LAST:event_isBBoxMouseMoved
+
+    private void isSequenceMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_isSequenceMouseMoved
+        isSequence.setToolTipText("Check if your images are similar to the video sequences/frames.\nPreserves bboxs from previous image");
+    }//GEN-LAST:event_isSequenceMouseMoved
+
     public PanelPicture getPicturePanel() {
         return ((PanelPicture) panelPicture);
     }
 
     public void savePanel() {
         PanelPicture cp = ((PanelPicture) panelPicture);
-        FactoryUtils.savePanel(cp,txt_dpi.getText());
+        FactoryUtils.savePanel(cp, txt_dpi.getText());
     }
 
     /**
@@ -246,10 +339,35 @@ public class FrameImage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_dataGrid;
     private javax.swing.JButton btn_save;
+    private javax.swing.JCheckBox isBBox;
+    private javax.swing.JCheckBox isSequence;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel panelPicture;
     private javax.swing.JScrollPane scroll_pane;
     private javax.swing.JTextField txt_dpi;
     // End of variables declaration//GEN-END:variables
+
+    public void setFrameSize(BufferedImage img) {
+        pw = 70;
+        int w=img.getWidth() + 2 * pw;
+        //System.out.println("w = " + w);
+        int h=img.getHeight() + 190;
+        //System.out.println("h = " + h);
+        this.setSize(w, h);
+        //this.setPreferredSize(new Dimension(w, h));
+        this.pack();
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        double width = screenSize.getWidth();
+//        double height = screenSize.getHeight();
+//
+////        //on a multimonitor
+////        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+////        int width = gd.getDisplayMode().getWidth();
+////        int height = gd.getDisplayMode().getHeight();
+//        
+//        this.setLocation((int)(width-w)/2, (int)(height-h)/2);
+        
+    }
 }

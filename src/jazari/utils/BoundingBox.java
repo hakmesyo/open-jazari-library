@@ -6,6 +6,7 @@
 package jazari.utils;
 
 import java.awt.Rectangle;
+import java.util.Objects;
 
 /**
  *
@@ -32,13 +33,64 @@ public class BoundingBox {
         this.fromTop=fromTop;
     }
     
-    public Rectangle getRectangle(int fromLeft,int fromTop){
-        rect.x=xmin+fromLeft;
-        rect.y=ymin+fromTop;
-        rect.width=xmax-xmin;
-        rect.height=ymax-ymin;
+    public Rectangle getRectangle(int fromLeft,int fromTop,int padding){
+        rect.x=xmin+fromLeft-padding;
+        rect.y=ymin+fromTop-padding;
+        rect.width=xmax-xmin+2*padding;
+        rect.height=ymax-ymin+2*padding;
         return rect;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + this.xmin;
+        hash = 31 * hash + this.ymin;
+        hash = 31 * hash + this.xmax;
+        hash = 31 * hash + this.ymax;
+        hash = 31 * hash + Objects.hashCode(this.name);
+        hash = 31 * hash + this.fromLeft;
+        hash = 31 * hash + this.fromTop;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BoundingBox other = (BoundingBox) obj;
+        if (this.xmin != other.xmin) {
+            return false;
+        }
+        if (this.ymin != other.ymin) {
+            return false;
+        }
+        if (this.xmax != other.xmax) {
+            return false;
+        }
+        if (this.ymax != other.ymax) {
+            return false;
+        }
+        if (this.fromLeft != other.fromLeft) {
+            return false;
+        }
+        if (this.fromTop != other.fromTop) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 
     @Override
     public String toString() {
@@ -48,6 +100,14 @@ public class BoundingBox {
                 + "\t\t\t<xmax>" + (xmax-fromLeft) + "</xmax>\n"
                 + "\t\t\t<ymax>" + (ymax-fromTop) + "</ymax>\n"
                 + "\t\t</bndbox>\n";
+    }
+
+    public int getWidth() {
+        return Math.abs(xmax-xmin);
+    }
+    
+    public int getHeight() {
+        return Math.abs(ymax-ymin);
     }
     
 }
