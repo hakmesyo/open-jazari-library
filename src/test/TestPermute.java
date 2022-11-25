@@ -30,9 +30,13 @@ public class TestPermute {
 //on batch images
         String folderPath="D:\\zeytin_remote_sensing\\tif\\deneme";
         CMatrix cm = CMatrix.getInstance()
+                .range(0, 1200)
+                .shape()
                 .imageDataGenerator(folderPath,100,50)  //NCWH
                 .shape()
                 .slice(":",":-1")
+                .shape()
+                .flatten()
                 .shape()
                 .println()
 //                .reshape(50,100)
