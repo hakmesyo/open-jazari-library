@@ -25,6 +25,7 @@ import jwave.transforms.wavelets.daubechies.Daubechies4;
 import jwave.transforms.wavelets.daubechies.Daubechies5;
 import jwave.transforms.wavelets.daubechies.Daubechies6;
 import jwave.transforms.wavelets.daubechies.Daubechies7;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 
 /**
  * @author Dr. Musa ATAŞ It is developed for performance issues for

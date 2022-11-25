@@ -93,7 +93,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -138,13 +137,11 @@ import java.sql.SQLException;
 import java.util.stream.IntStream;
 import javax.swing.JPanel;
 import jazari.utils.DataAugmentationOpt;
-import org.nd4j.linalg.api.buffer.DataBuffer;
-import static org.nd4j.linalg.ops.transforms.Transforms.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.api.ops.impl.transforms.Histogram;
-import org.nd4j.linalg.dimensionalityreduction.PCA;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.indexing.conditions.Condition;
+import org.nd4j.linalg.indexing.INDArrayIndex;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.inverse.InvertMatrix;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
@@ -164,7 +161,7 @@ public final class CMatrix implements Serializable {
     private static long currentTime = System.nanoTime();
     private boolean hold_on = false;
     private Instances wekaInstance = null;
-    public  FrameImage frameImage = null;
+    public FrameImage frameImage = null;
     private FramePlot framePlot = null;
     private FramePloty framePloty = null;
     private FrameHeatMap frameHeatMap = null;
@@ -535,6 +532,16 @@ public final class CMatrix implements Serializable {
      *
      * @return 1x1 CMatrix instance
      */
+    public static CMatrix getInstance(NDArray d) {
+        CMatrix cm = new CMatrix(d);
+        return cm;
+    }
+
+    /**
+     * calling conventions of static factory method pattern
+     *
+     * @return 1x1 CMatrix instance
+     */
     public static CMatrix getInstance(ArrayList lst) {
         CMatrix cm = new CMatrix();
         cm = cm.fromArrayList(lst);
@@ -694,7 +701,7 @@ public final class CMatrix implements Serializable {
      * @param d: array of int
      * @return CMatrix float type
      */
-    public static CMatrix getInstance(int ... d) {
+    public static CMatrix getInstance(int... d) {
         return new CMatrix(d);
     }
 
@@ -727,7 +734,7 @@ public final class CMatrix implements Serializable {
      * @param d: array of int
      * @return CMatrix float type
      */
-    public static CMatrix getInstance(float ... d) {
+    public static CMatrix getInstance(float... d) {
         return new CMatrix(d);
     }
 
@@ -1049,6 +1056,11 @@ public final class CMatrix implements Serializable {
         this.returnedValue = new CReturn();
     }
 
+    private CMatrix(NDArray d) {
+        this.array = d;
+        this.returnedValue = new CReturn();
+    }
+
     private CMatrix(double[][] d) {
         this.array = Nd4j.create(d);
         this.returnedValue = new CReturn();
@@ -1115,12 +1127,12 @@ public final class CMatrix implements Serializable {
     public float[] toFloatArray1D() {
         return array.ravel().toFloatVector();
     }
-    
+
     public float[] flattenArray() {
         return array.ravel().toFloatVector();
     }
 
-    public CMatrix flatten() {        
+    public CMatrix flatten() {
         return new CMatrix(array.ravel().toFloatVector());
     }
 
@@ -1206,7 +1218,7 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix setArray(List<Float> lst) {
-        double[] d = lst.stream().mapToDouble(i->i).toArray();
+        double[] d = lst.stream().mapToDouble(i -> i).toArray();
         this.array = Nd4j.create(d, new int[]{d.length, 1});
         return this;
     }
@@ -1243,7 +1255,7 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix setArray(int[] dd) {
-        float[] d=FactoryUtils.toFloatArray1D(dd);
+        float[] d = FactoryUtils.toFloatArray1D(dd);
         this.array = Nd4j.create(d, new int[]{d.length, 1});
 //        int[] sh = {(int) array.length(), 1};
 //        array = array.reshape(sh);
@@ -1431,6 +1443,11 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix reshape(int... shape) {
+        array = array.reshape(shape);
+        return this;
+    }
+
     public CPoint getRowColumn(int index) {
         CPoint p = new CPoint(0, 0);
         if (index < 0 || index > this.getRowNumber() * this.getColumnNumber()) {
@@ -1480,18 +1497,17 @@ public final class CMatrix implements Serializable {
             return this;
         }
         String[] p = cmd.split(":");
-        if(p.length==1){
+        if (p.length == 1) {
             array = Nd4j.arange(Float.parseFloat(p[0]));
-        }
-        else if (p.length == 2) {
+        } else if (p.length == 2) {
             float from_inclusive = Float.parseFloat(p[0]);
             float to_exclusive = Float.parseFloat(p[1]);
             array = Nd4j.arange(from_inclusive, to_exclusive);
-        }else if(p.length==3){
+        } else if (p.length == 3) {
             float from_inclusive = Float.parseFloat(p[0]);
             float to_exclusive = Float.parseFloat(p[1]);
             float step = Float.parseFloat(p[2]);
-            array = Nd4j.arange(from_inclusive, to_exclusive,step);
+            array = Nd4j.arange(from_inclusive, to_exclusive, step);
         }
         int[] sh = {(int) array.length(), 1};
         array = array.reshape(sh);
@@ -1612,6 +1628,7 @@ public final class CMatrix implements Serializable {
         array = Nd4j.ones(nr, nc).muli(val);
         return this;
     }
+
     /**
      * generate a nr x nc-size matrix with a fixed value of val
      *
@@ -2070,7 +2087,7 @@ public final class CMatrix implements Serializable {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, this.imagePath,this.imagePath);
+        FrameImage frm = new FrameImage(this, this.imagePath, this.imagePath);
         frm.setVisible(true);
         return this;
     }
@@ -2090,7 +2107,7 @@ public final class CMatrix implements Serializable {
         if (image == null || isUpdate) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this, this.imagePath,"none");
+        FrameImage frm = new FrameImage(this, this.imagePath, "none");
         frm.setVisible(true);
         return this;
     }
@@ -2134,7 +2151,7 @@ public final class CMatrix implements Serializable {
             frameImage = new FrameImage();
             frameImage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         }
-        frameImage.setImage(image,this.imagePath,title);
+        frameImage.setImage(image, this.imagePath, title);
         frameImage.setTitle(title);
         frameImage.setVisible(true);
         return this;
@@ -2173,7 +2190,7 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imshow(FrameImage frm) {
 //        image = ImageProcess.pixelsToBufferedImageGray(array);
-        frm.setImage(image,imagePath,"none");
+        frm.setImage(image, imagePath, "none");
         frm.setVisible(true);
         return this;
     }
@@ -2207,7 +2224,7 @@ public final class CMatrix implements Serializable {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        frm.setImage(image,imagePath,title);
+        frm.setImage(image, imagePath, title);
         frm.setVisible(true);
         return this;
     }
@@ -2235,7 +2252,7 @@ public final class CMatrix implements Serializable {
         if (image == null) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        FrameImage frm = new FrameImage(this,imagePath, title);
+        FrameImage frm = new FrameImage(this, imagePath, title);
         frm.setVisible(true);
         return this;
     }
@@ -2457,7 +2474,7 @@ public final class CMatrix implements Serializable {
 //        FrameImageHistogram frm = new FrameImageHistogram(this);
 //        frm.setTitle("");
 //        frm.setVisible(true);
-       return this;
+        return this;
     }
 
     /**
@@ -2494,7 +2511,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix getHistogramData() {
         float[] d = FactoryMatrix.getHistogram(array.toFloatMatrix(), 256);
-        array = Nd4j.create(d,new int[]{d.length, 1});
+        array = Nd4j.create(d, new int[]{d.length, 1});
         return this;
     }
 
@@ -2903,7 +2920,8 @@ public final class CMatrix implements Serializable {
             v.remove(a);
         }
         CMatrix ret = new CMatrix(m);
-        return ret.clone(this);
+        //return ret.clone(this);
+        return ret;
     }
 
     /**
@@ -2925,7 +2943,8 @@ public final class CMatrix implements Serializable {
             v.remove(a);
         }
         CMatrix ret = new CMatrix(m);
-        return ret.clone(this);
+        //return ret.clone(this);
+        return ret;
     }
 
     public int[] randPermInt(int n) {
@@ -2942,11 +2961,52 @@ public final class CMatrix implements Serializable {
         return m;
     }
 
-    public CMatrix permute(int n) {
+    /**
+     * similar to the numpy permute command change the tensors of the multiple
+     * dimensional array note that for two dims permute will produce as
+     * transpose MxN -> NxM
+     *
+     * @param d
+     * @return
+     */
+    public CMatrix permute(float[][] d) {
+        CMatrix cm = CMatrix.getInstance(d).transpose();
+        return cm;
+    }
+
+    /**
+     * similar to the numpy permute command for three dimensional array change
+     * the tensors of the multiple dimensional array
+     *
+     * @return
+     */
+    public CMatrix permute(NDArray d, int... shape) {
+        d = (NDArray) d.permute(shape);
+        return new CMatrix(d);
+    }
+
+    /**
+     * similar to the numpy permute command for three dimensional array change
+     * the tensors of the multiple dimensional array
+     *
+     * @return
+     */
+    public CMatrix permute(int... shape) {
+        NDArray d = (NDArray) this.array;
+        return permute(d, shape);
+    }
+
+    /**
+     * calculate the randomly selected permutations of n elements
+     *
+     * @param n
+     * @return
+     */
+    public CMatrix randPermute(int n) {
         return randPerm(n);
     }
 
-    public CMatrix permute(int from, int to) {
+    public CMatrix randPermute(int from, int to) {
         return randPerm(from, to);
     }
 
@@ -3217,15 +3277,16 @@ public final class CMatrix implements Serializable {
         array = array.reshape(new int[]{1, (int) size});
         return this;
     }
-    
+
     /**
-     * Sutun bazlı işlem yapar sum fonksiyonundan farklı olarak sonuç matrisin shape'i 
-     * orjinal matris ile aynıdır. Cumulative distribution gibi davranır.
+     * Sutun bazlı işlem yapar sum fonksiyonundan farklı olarak sonuç matrisin
+     * shape'i orjinal matris ile aynıdır. Cumulative distribution gibi
+     * davranır.
      *
      * @return CMatrix
      */
     public CMatrix sumConsecutive() {
-        float[][] d=FactoryUtils.sumConsecutive(getArray2Dfloat());
+        float[][] d = FactoryUtils.sumConsecutive(getArray2Dfloat());
         setArray(d);
         return this;
     }
@@ -3242,13 +3303,14 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * Sutun bazlı işlem yapar prod fonksiyonundan farklı olarak sonuç matrisin shape'i 
-     * orjinal matris ile aynıdır. factorial gibi davranır (her bir eleman için).
+     * Sutun bazlı işlem yapar prod fonksiyonundan farklı olarak sonuç matrisin
+     * shape'i orjinal matris ile aynıdır. factorial gibi davranır (her bir
+     * eleman için).
      *
      * @return CMatrix
      */
     public CMatrix prodConsecutive() {
-        float[][] d=FactoryUtils.prodConsecutive(getArray2Dfloat());
+        float[][] d = FactoryUtils.prodConsecutive(getArray2Dfloat());
         setArray(d);
         return this;
     }
@@ -3475,8 +3537,16 @@ public final class CMatrix implements Serializable {
         return s;
     }
 
+    public String toStringFull() {
+        String ret = "Matrix of " + this.array.shapeInfoToString() + "\n" + this.array.toStringFull();
+        return ret;
+    }
+
     @Override
     public String toString() {
+        String ret = "Matrix of " + this.array.shapeInfoToString() + "\n" + this.array.toString();
+        return ret;
+        /*
         if (this.array.isScalar()) {
             String s = "Matrix of [1x1" + "]=\n";
             s += this.array;
@@ -3493,6 +3563,7 @@ public final class CMatrix implements Serializable {
             }
             return s;
         }
+         */
     }
 
     public String toCommaString() {
@@ -3556,6 +3627,16 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix println() {
         System.out.println(this.toString());
+        return this;
+    }
+
+    /**
+     * print each element of CMatrix whole
+     *
+     * @return CMatrix
+     */
+    public CMatrix printlnFull() {
+        System.out.println(this.toStringFull());
         return this;
     }
 
@@ -3801,7 +3882,7 @@ public final class CMatrix implements Serializable {
      * @param x :Target value or matching constant number
      * @return
      */
-    public CMatrix findItemsByIndex(int ... p) {
+    public CMatrix findItemsByIndex(int... p) {
         return getMatrixValueByIndex(p);
     }
 
@@ -4429,15 +4510,16 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param width
      * @param height
      *
      * @return CMatrix
      */
-    public CMatrix imcrop(int px,int py,int width,int height) {
-        return cmd(py+":"+(py+height),px+":"+(px+width));
+    public CMatrix imcrop(int px, int py, int width, int height) {
+        return cmd(py + ":" + (py + height), px + ":" + (px + width));
     }
+
     /**
      * Matlab compatible command:read image file from the provided path
      *
@@ -4898,12 +4980,12 @@ public final class CMatrix implements Serializable {
         }
         return k;
     }
-    
+
     /**
      * retrieve image histogram in range (0..255) by default
-     * @return 
+     *
+     * @return
      */
-    
     public CMatrix getHistogram() {
         float[] d = FactoryMatrix.getHistogram(array.toFloatMatrix(), 256);
         setArray(d);
@@ -4912,8 +4994,9 @@ public final class CMatrix implements Serializable {
 
     /**
      * retrieve image histogram for nBins
+     *
      * @param nBins
-     * @return 
+     * @return
      */
     public CMatrix getHistogram(int nBins) {
         return hist(nBins);
@@ -5517,7 +5600,7 @@ public final class CMatrix implements Serializable {
         if (image == null) {
             image = ImageProcess.pixelsToImageGray(array.toFloatMatrix());
         }
-        image = ImageProcess.resize(image, w, h,rh);
+        image = ImageProcess.resize(image, w, h, rh);
         setArray(ImageProcess.imageToPixelsFloat(image));
         return this;
     }
@@ -6805,8 +6888,8 @@ public final class CMatrix implements Serializable {
         ret.setImage(ImageProcess.pixelsToImageGray(data));
         return ret;
     }
-    
-    public CMatrix histCumulative(){
+
+    public CMatrix histCumulative() {
         return getCDFData();
     }
 
@@ -7922,7 +8005,7 @@ public final class CMatrix implements Serializable {
         setArray(FactoryMatrix.convolve(array.toFloatMatrix(), kernel.array.toFloatMatrix()));
         return this;
     }
-    
+
     /**
      * Convolution operation with LBP
      *
@@ -8079,7 +8162,7 @@ public final class CMatrix implements Serializable {
             return this;
         }
         float[] p = cm.getArray1Dfloat();
-        CMatrix ret = range(p).replicateColumn(p.length-1).multiplyElement(CMatrix.getInstance().eye(p.length));
+        CMatrix ret = range(p).replicateColumn(p.length - 1).multiplyElement(CMatrix.getInstance().eye(p.length));
         return ret;
     }
 
@@ -8529,44 +8612,158 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix getMatrixValueByIndex(int[] index) {
-        float[] d=new float[index.length];
-        float[] val=getArray1Dfloat();
+        float[] d = new float[index.length];
+        float[] val = getArray1Dfloat();
         for (int i = 0; i < index.length; i++) {
-            d[i]=val[index[i]];
+            d[i] = val[index[i]];
         }
         setArray(d);
         return this;
     }
 
     public CMatrix tileImage(int nr, int nc, String destinationFolder, String fileNameTemplate, String fileExtension) {
-        CMatrix cm=this.clone();
-        int w=cm.getColumnNumber()/nc;
-        int h=cm.getRowNumber()/nr;
+        CMatrix cm = this.clone();
+        int w = cm.getColumnNumber() / nc;
+        int h = cm.getRowNumber() / nr;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                cm.cmd(i+":"+(i*h), j+":"+(j*h)).saveImage(destinationFolder+"/"+fileNameTemplate+"_"+i+"_"+j+"."+fileExtension);
+                cm.cmd(i + ":" + (i * h), j + ":" + (j * h)).saveImage(destinationFolder + "/" + fileNameTemplate + "_" + i + "_" + j + "." + fileExtension);
             }
         }
-        
+
         return this;
     }
 
     public CMatrix cropImages(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
-        BufferedImage img=this.getImage();
-        int w=img.getWidth()/nc;
-        int h=img.getHeight()/nr;
+        BufferedImage img = this.getImage();
+        int w = img.getWidth() / nc;
+        int h = img.getHeight() / nr;
         FactoryUtils.makeDirectory(destinationFolder);
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                BufferedImage temp=ImageProcess.cropImage(img, new CRectangle(i*h, j*w, w, h));
-                ImageProcess.saveImage(temp, destinationFolder+"/"+fileCaption+"_"+i+"_"+j+"."+imageExtension);
-                if (isShow){
-                    FrameImage frm=new FrameImage();
-                    frm.setImage(temp, destinationFolder, fileCaption+"_"+i+"_"+j+"."+imageExtension);
+                BufferedImage temp = ImageProcess.cropImage(img, new CRectangle(i * h, j * w, w, h));
+                ImageProcess.saveImage(temp, destinationFolder + "/" + fileCaption + "_" + i + "_" + j + "." + imageExtension);
+                if (isShow) {
+                    FrameImage frm = new FrameImage();
+                    frm.setImage(temp, destinationFolder, fileCaption + "_" + i + "_" + j + "." + imageExtension);
                     frm.setVisible(isShow);
                 }
             }
         }
+        return this;
+    }
+
+    public CMatrix imageDataGenerator(String folderPath, int imageWidth, int imageHeight) {
+        File[] files = FactoryUtils.getFileListInFolderForImages(folderPath);
+        float[][][][] data = new float[files.length][3][imageWidth][imageWidth];
+        int n = 0;
+        for (File file : files) {
+            //CMatrix.getInstance().imread(file).imshow();
+            int k = 0;
+            BufferedImage img = ImageProcess.imread(file.getAbsolutePath());
+            img = ImageProcess.resize(img, imageWidth, imageHeight);
+
+            BufferedImage img_red = ImageProcess.getRedChannelGray(img);
+            float[][] imgData_red = ImageProcess.bufferedImageToArray2D(img_red);
+            data[n][k++] = imgData_red;
+
+            BufferedImage img_green = ImageProcess.getGreenChannelGray(img);
+            float[][] imgData_green = ImageProcess.bufferedImageToArray2D(img_green);
+            data[n][k++] = imgData_green;
+
+            BufferedImage img_blue = ImageProcess.getBlueChannelGray(img);
+            float[][] imgData_blue = ImageProcess.bufferedImageToArray2D(img_blue);
+            data[n][k++] = imgData_blue;
+
+            n++;
+        }
+        float[] d = FactoryUtils.flatten(data);
+        CMatrix ret = new CMatrix(d);
+        ret = ret.reshape(files.length, 3, imageWidth, imageHeight);
+        return ret;
+    }
+
+    public CMatrix slice(int n) {
+        this.array = this.array.slice(n);
+        return this;
+    }
+
+    /**
+     * slice n-dim array from n1 to n2
+     *
+     * @param n1 from
+     * @param n2 to
+     * @return
+     */
+    public CMatrix slice(int n1, int n2) {
+        this.array = this.array.get(NDArrayIndex.interval(n1, n2));
+        return this;
+    }
+
+    /**
+     * slice n-dim array from n1 to n2 and take n3'th slice meaning reduce the
+     * dimension
+     *
+     * @param n1 from
+     * @param n2 to
+     * @param n3 take this
+     * @return
+     */
+    public CMatrix slice(int n1, int n2, int n3) {
+        this.array = this.array.get(NDArrayIndex.interval(n1, n2));
+        this.array = this.array.slice(n3);
+        return this;
+    }
+
+    public CMatrix slice(String... code) {
+        INDArrayIndex[] indexes = new INDArrayIndex[code.length];
+        long[] sh = this.array.shape();
+        for (int i = 0; i < code.length; i++) {
+            if (code[i].contains(":")) {
+                String[] s = code[i].split(":");
+                if (s.length == 0) {
+                    indexes[i] = NDArrayIndex.interval(0, sh[i]);
+                } else if (s[0].isEmpty()) {
+                    int a = Integer.parseInt(s[1]);
+                    if (a >= 0) {
+                        indexes[i] = NDArrayIndex.interval(0, a);
+                    } else {
+                        indexes[i] = NDArrayIndex.interval(0, sh[i] - Math.abs(a));
+                    }
+
+                } else if (s.length==1) {
+                    int a = Integer.parseInt(s[0]);
+                    if (a >= 0) {
+                        indexes[i] = NDArrayIndex.interval(Integer.parseInt(s[0]), sh[i]);
+                    } else {
+                        indexes[i] = NDArrayIndex.interval(sh[i] - Math.abs(a), sh[i]);
+                    }
+                } else {
+                    int a = Integer.parseInt(s[0]);
+                    int b = Integer.parseInt(s[1]);
+                    if (a >= 0 && b >= 0) {
+                        indexes[i] = NDArrayIndex.interval(a, b);
+                    } else if (a >= 0 && b < 0) {
+                        indexes[i] = NDArrayIndex.interval(a, sh[i] - Math.abs(b));
+                    } else if (a < 0 && b >= 0) {
+                        indexes[i] = NDArrayIndex.interval(sh[i] - Math.abs(a), b);
+                    } else {
+                        indexes[i] = NDArrayIndex.interval(sh[i] - Math.abs(a), sh[i] - Math.abs(b));
+                    }
+
+                }
+            } else if (code[i].length() >= 1) {
+                if (Integer.parseInt(code[i]) >= 0) {
+                    indexes[i] = NDArrayIndex.interval(Integer.parseInt(code[i]), Integer.parseInt(code[i]) + 1);
+                } else {
+                    int a = Math.abs(Integer.parseInt(code[i]));
+                    indexes[i] = NDArrayIndex.interval(sh[i] - a, sh[i] - a+1);
+                }
+
+            }
+        }
+        
+        this.array = this.array.get(indexes);
         return this;
     }
 

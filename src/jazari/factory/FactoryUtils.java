@@ -2568,6 +2568,56 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static float[] flatten(float[][] d) {
+        int n1=d.length;
+        int n2=d[0].length;
+        int n=n1*n2;
+        float[] ret=new float[n];
+        for (int i = 0; i < n1; i++) {
+            for (int j = 0; j < n2; j++) {
+                ret[i*n2+j]=d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static float[] flatten(float[][][] d) {
+        int n1=d.length;
+        int n2=d[0].length;
+        int n3=d[0][0].length;
+        int n=n1*n2*n3;
+        float[] ret=new float[n];
+        for (int i = 0; i < n1; i++) {
+            for (int j = 0; j < n2; j++) {
+                for (int k = 0; k < n3; k++) {
+                    ret[i*n2*n3+j*n3+k]=d[i][j][k];
+                }
+                
+            }
+        }
+        return ret;
+    }
+
+    public static float[] flatten(float[][][][] d) {
+        int n1=d.length;
+        int n2=d[0].length;
+        int n3=d[0][0].length;
+        int n4=d[0][0][0].length;
+        int n=n1*n2*n3*n4;
+        float[] ret=new float[n];
+        for (int i = 0; i < n1; i++) {
+            for (int j = 0; j < n2; j++) {
+                for (int k = 0; k < n3; k++) {
+                    for (int l = 0; l < n4; l++) {
+                        ret[i*n2*n3*n4+j*n3*n4+k*n4+l]=d[i][j][k][l];
+                    }
+                }
+                
+            }
+        }
+        return ret;
+    }
+
     /**
      * if we want to convert 1D column vector index to 2D coordinates i.e after
      * applying find command we get 1D column vector in which we want to find
