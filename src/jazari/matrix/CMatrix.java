@@ -8767,4 +8767,21 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix reduce() {
+        long[] sh = this.array.shape();
+        List<Long> lst=new ArrayList();
+        for (int i = 0; i < sh.length; i++) {
+            if (sh[i]>1) {
+                lst.add(sh[i]);
+            }
+        }
+        long[] n=new long[lst.size()];
+        int k=0;
+        for (Long d : lst) {
+            n[k++]=d;
+        }
+        this.array=this.array.reshape(n);
+        return this;
+    }
+
 }

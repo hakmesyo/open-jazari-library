@@ -6492,8 +6492,8 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static String serializePascalVocXML(String folder, String fileName, String fullPath, List<PascalVocObject> lstObjects) {
-        BufferedImage image = ImageProcess.imread(fullPath);
+    public static String serializePascalVocXML(String folder, String fileName, String imagePath, List<PascalVocObject> lstObjects) {
+        BufferedImage image = ImageProcess.imread(imagePath);
         int type = image.getType();
         int depth = 3;
         if (type == TYPE_INT_BGR) {
@@ -6508,7 +6508,7 @@ public final class FactoryUtils {
         String ret = "<annotation>\n"
                 + "\t<folder>" + folder + "</folder>\n"
                 + "\t<filename>" + fileName + "</filename>\n"
-                + "\t<path>" + fullPath + "</path>\n"
+                + "\t<path>" + imagePath + "</path>\n"
                 + "\t<source>\n"
                 + "\t\t<database>Unknown</database>\n"
                 + "\t</source>\n"
@@ -6516,7 +6516,7 @@ public final class FactoryUtils {
                 + "\t<segmented>0</segmented>\n"
                 + lst
                 + "</annotation>\n";
-        File file = new File(fullPath);
+        File file = new File(imagePath);
         FactoryUtils.writeToFile(file.getParent() + "\\" + FactoryUtils.getFileName(file.getName()) + ".xml", ret);
         return ret;
 

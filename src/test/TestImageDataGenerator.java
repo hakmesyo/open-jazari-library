@@ -18,15 +18,22 @@ public class TestImageDataGenerator {
         CMatrix cm = CMatrix.getInstance()
                 .range(0, 1200)
                 .shape()
-                .imageDataGenerator(folderPath,100,50)  //NCWH
+                .imageDataGenerator(folderPath,1000,500)  //NCWH
                 .shape()
-                .slice(":",":-1")
+                .slice(0)
+                .slice(1)
                 .shape()
-                .flatten()
+                .reduce()
+                .reshape(500,1000)
                 .shape()
-                .println()
-//                .reshape(50,100)
-//                .imshow()
+//                .slice(0)
+//                .slice(0)
+//                .flatten()
+//                .shape()
+//                .println()
+                //.permute(1,0)
+                //.reshape(500,1000)
+                .imshow()
                 ;
         
     }    

@@ -26,6 +26,8 @@ public class TestIris {
         model.addLayer(new Layer(3));
         model.addLayer(new Layer(13));
         model.addLayer(new Layer(OUTPUT_NODES));
+        model.summary();
+        
         model.fit(input, output, LEARNING_RATE, EPOCHS);
         for(int i=0; i<input.length; i++){
             model.predict(input[i], output[i], i+1);

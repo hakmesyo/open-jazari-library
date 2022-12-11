@@ -2,3 +2,8 @@ pepper
 alyuvar
 para
 sarmisak
+red_pul
+yellow_pul
+blue_pul
+green_pul
+orange_pul
