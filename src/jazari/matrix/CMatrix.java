@@ -4458,7 +4458,8 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix imread(File file) {
-        return readImage(file.getAbsolutePath());
+        this.readImage(file.getAbsolutePath());
+        return this;
     }
 
     public CMatrix imsave() {
@@ -4528,6 +4529,14 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix imread(String path) {
+        File file=new File(path);
+        String ek;
+        if (file.getName().indexOf(".")==-1) {
+            File[] files=FactoryUtils.getFileListInFolderForImages(path);
+            if (files.length>=0) {
+                path+="\\"+files[0].getName();
+            }
+        }
         this.imagePath = path;
         return readImage(path);
     }
@@ -8539,6 +8548,16 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size) {
+        FactoryWebCam.openWebCam(cameraIndex,size).startWebCAM();
+        return this;
+    }
+    
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize) {
+        FactoryWebCam.openWebCam(cameraIndex,size).startWebCAM(resize);
+        return this;
+    }
+
     public float[][] getArray2Dfloat() {
         return array.toFloatMatrix();
     }
@@ -8783,5 +8802,37 @@ public final class CMatrix implements Serializable {
         this.array=this.array.reshape(n);
         return this;
     }
+
+    /**
+     *
+     * @param imgPath : Fullpath of the image
+     * @return
+     */
+    public CMatrix annotateImage(String imgPath) {
+        this.imread(imgPath).imshow();
+        return this;
+    }
+    
+    /**
+     *
+     * @param folderPath : path of the image folder
+     * @return
+     */
+    public CMatrix annotateImages(String folderPath) {
+        File[] files=FactoryUtils.getFileListInFolderForImages(folderPath);
+        this.imread(files[0]).imshow();
+        return this;
+    }
+
+    public CMatrix reduceImageSize(String folderPath, int maxWidth, int maxHeight) {
+        FactoryUtils.reduceImageSize(folderPath,maxWidth,maxHeight);
+        return this;
+    }
+
+    public CMatrix convertPascalVoc2Yolo(String pathFolder, String[] labels) {
+        FactoryUtils.convertPascalVoc2YoloFormat(pathFolder, labels);
+        return this;
+    }
+
 
 }

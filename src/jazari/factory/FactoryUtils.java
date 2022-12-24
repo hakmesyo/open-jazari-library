@@ -393,7 +393,9 @@ public final class FactoryUtils {
                         new FileOutputStream(path), "UTF-8"));
                 try {
                     try {
-                        if (!(row==null || row.equals(""))) out.write(row);
+                        if (!(row == null || row.equals(""))) {
+                            out.write(row);
+                        }
                         Thread.sleep(5);
                         out.close();
                     } catch (IOException ex) {
@@ -2569,50 +2571,50 @@ public final class FactoryUtils {
     }
 
     public static float[] flatten(float[][] d) {
-        int n1=d.length;
-        int n2=d[0].length;
-        int n=n1*n2;
-        float[] ret=new float[n];
+        int n1 = d.length;
+        int n2 = d[0].length;
+        int n = n1 * n2;
+        float[] ret = new float[n];
         for (int i = 0; i < n1; i++) {
             for (int j = 0; j < n2; j++) {
-                ret[i*n2+j]=d[i][j];
+                ret[i * n2 + j] = d[i][j];
             }
         }
         return ret;
     }
 
     public static float[] flatten(float[][][] d) {
-        int n1=d.length;
-        int n2=d[0].length;
-        int n3=d[0][0].length;
-        int n=n1*n2*n3;
-        float[] ret=new float[n];
+        int n1 = d.length;
+        int n2 = d[0].length;
+        int n3 = d[0][0].length;
+        int n = n1 * n2 * n3;
+        float[] ret = new float[n];
         for (int i = 0; i < n1; i++) {
             for (int j = 0; j < n2; j++) {
                 for (int k = 0; k < n3; k++) {
-                    ret[i*n2*n3+j*n3+k]=d[i][j][k];
+                    ret[i * n2 * n3 + j * n3 + k] = d[i][j][k];
                 }
-                
+
             }
         }
         return ret;
     }
 
     public static float[] flatten(float[][][][] d) {
-        int n1=d.length;
-        int n2=d[0].length;
-        int n3=d[0][0].length;
-        int n4=d[0][0][0].length;
-        int n=n1*n2*n3*n4;
-        float[] ret=new float[n];
+        int n1 = d.length;
+        int n2 = d[0].length;
+        int n3 = d[0][0].length;
+        int n4 = d[0][0][0].length;
+        int n = n1 * n2 * n3 * n4;
+        float[] ret = new float[n];
         for (int i = 0; i < n1; i++) {
             for (int j = 0; j < n2; j++) {
                 for (int k = 0; k < n3; k++) {
                     for (int l = 0; l < n4; l++) {
-                        ret[i*n2*n3*n4+j*n3*n4+k*n4+l]=d[i][j][k][l];
+                        ret[i * n2 * n3 * n4 + j * n3 * n4 + k * n4 + l] = d[i][j][k][l];
                     }
                 }
-                
+
             }
         }
         return ret;
@@ -5993,6 +5995,42 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static void renameFilesAsNanoTime(String pathFolder) {
+        File[] files = FactoryUtils.getFileListInFolderForImages(pathFolder);
+        for (File file : files) {
+            FactoryUtils.renameFile(file, new File(pathFolder + "\\" + System.nanoTime() + "." + FactoryUtils.getFileExtension(file)));
+        }
+    }
+
+    public static void reduceImageSize(String folderPath, int maxWidth, int maxHeight) {
+        File[] files = FactoryUtils.getFileListInFolderForImages(folderPath);
+        int k=-1;
+        for (File file : files) {
+            k++;
+            System.out.println(k+"."+file.getAbsolutePath());
+            BufferedImage img = ImageProcess.imread(file.getAbsolutePath());
+            if (img.getWidth() > maxWidth || img.getHeight() > maxHeight) {
+                if (img.getHeight()>maxHeight) {
+                    System.out.println(k+".image height çok büyük :"+img.getWidth()+":"+img.getHeight());
+                    //height is more important than width
+                    double r=1.0*maxHeight/img.getHeight();
+                    int desiredWidth=(int)(r*img.getWidth());
+                    int desiredHeight=maxHeight;
+                    img=ImageProcess.resize(img, desiredWidth, desiredHeight);
+                    ImageProcess.saveImage(img, file.getAbsolutePath());
+                }else if(img.getWidth()>maxWidth){
+                    System.out.println(k+".image width çok büyük :"+img.getWidth()+":"+img.getHeight());
+                    double r=1.0*maxWidth/img.getWidth();
+                    int desiredHeight=(int)(r*img.getHeight());
+                    int desiredWidth=maxWidth;
+                    img=ImageProcess.resize(img, desiredWidth, desiredHeight);
+                    ImageProcess.saveImage(img, file.getAbsolutePath());
+                    
+                }
+            }
+        }
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -6626,21 +6664,72 @@ public final class FactoryUtils {
         return ret;
     }
 
+    /**
+     *
+     * @param xmlDirectory : note that sum of two ratios should be 1
+     * @param trainSetRatio : should be less and equal to 1
+     * @param testSetRatio : should be less and equal to 1
+     * @return
+     */
+    public static String[] convertPascalVoc2CsvFormat(String xmlDirectory, float trainSetRatio, float testSetRatio) {
+        String header = "filename,width,height,class,xmin,ymin,xmax,ymax";
+        File[] xmls = FactoryUtils.getFileListInFolderByExtension(xmlDirectory, "xml");
+        String[] ret = new String[2];
+        List<String> lines = new ArrayList();
+        for (File xml : xmls) {
+            BoundingBoxPascalVOC voc = deserializePascalVocXML(xml.getAbsolutePath());
+            int n = voc.lstObjects.size();
+            int w = voc.size.width;
+            int h = voc.size.height;
+            String s = "";
+            for (int i = 0; i < n; i++) {
+                BoundingBox bbox = voc.lstObjects.get(i).bndbox;
+                lines.add(voc.fileName + "," + w + "," + h + "," + bbox.name + "," + bbox.xmin + "," + bbox.ymin + "," + bbox.xmax + "," + bbox.ymax);
+            }
+        }
+        long seed = System.nanoTime();
+        Collections.shuffle(lines, new Random(seed));
+        if (trainSetRatio + testSetRatio != 1) {
+            try {
+                throw new Exception("summation of train and test set ratios must be 1");
+            } catch (Exception ex) {
+                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        int size = lines.size();
+        int nTrain = (int) (size * trainSetRatio);
+        String sTrain = header + "\n";
+        String sTest = header + "\n";
+        int k = 0;
+        for (String line : lines) {
+            if (k < nTrain) {
+                sTrain += line + "\n";
+            } else {
+                sTest += line + "\n";
+            }
+            k++;
+
+        }
+        ret[0] = sTrain;
+        ret[1] = sTest;
+        return ret;
+    }
+
     public static String convertPascalVoc2CsvFormat(String srcDirectory, String csvFilePath) {
         String ret = convertPascalVoc2CsvFormat(srcDirectory);
         writeToFile(csvFilePath, ret);
         return ret;
     }
 
-    public static void convertPascalVoc2YoloFormat(String mainFolderPath, String labels_map_file) {
+    public static void convertPascalVoc2YoloFormat(String mainFolderPath, String[] refList) {
         File[] files = FactoryUtils.getFileListInFolder(mainFolderPath);
         int x1, x2, y1, y2, w, h, n, class_index;
         float px1, px2, py1, py2;
-        String[] refList = FactoryUtils.readFile(mainFolderPath + "/" + labels_map_file).split("\n");
+        //String[] refList = FactoryUtils.readFile(mainFolderPath + "/" + labels_map_file).split("\n");
         Map<String, Integer> map = new HashMap();
         for (String str : refList) {
-            String s = str.split(" ")[1];
-            int i = Integer.parseInt(str.split(" ")[0]);
+            String s = str.split(":")[1];
+            int i = Integer.parseInt(str.split(":")[0]);
             map.put(s, i);
         }
         String globalRet = "";

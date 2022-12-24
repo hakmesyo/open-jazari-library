@@ -65,7 +65,8 @@ public class FactoryWebCam {
 
     public static FactoryWebCam openWebCam(Dimension size) {
         webCam = Webcam.getDefault();
-        size = WebcamResolution.VGA.getSize();
+        webCam.setCustomViewSizes(size); // register custom resolutions
+        //size = WebcamResolution.VGA.getSize();
         webCam.setViewSize(size);
         webCam.open(true);
         return factWebCam;
@@ -73,8 +74,9 @@ public class FactoryWebCam {
 
     public static FactoryWebCam openWebCam(int cameraIndex, Dimension size) {
         webCam = Webcam.getWebcams().get(cameraIndex);
-        size = WebcamResolution.VGA.getSize();
+        webCam.setCustomViewSizes(size); // register custom resolutions
         webCam.setViewSize(size);
+        //size = WebcamResolution.VGA.getSize();
         webCam.open(true);
         return factWebCam;
     }
@@ -83,10 +85,35 @@ public class FactoryWebCam {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                long t1=FactoryUtils.tic();
                 while (true) {
                     try {
                         currentImage = webCam.getImage();
                         frm.setImage(currentImage,"","");
+                        t1=FactoryUtils.toc(t1);
+                        Thread.sleep(5);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+        }).start();
+        return factWebCam;
+    }
+
+    public FactoryWebCam startWebCAM(Dimension resize) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long t1=FactoryUtils.tic();
+                while (true) {
+                    try {
+                        currentImage = webCam.getImage();
+                        currentImage = ImageProcess.toBufferedImage(currentImage, 5);
+                        currentImage = ImageProcess.resize(currentImage, resize.width, resize.height);
+                        frm.setImage(currentImage,"","");
+                        t1=FactoryUtils.toc(t1);
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);

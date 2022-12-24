@@ -177,6 +177,8 @@ public class PanelPicture extends JPanel implements KeyListener {
                 }
             }
         }
+//        originalBufferedImageTemp=originalBufferedImage=currBufferedImage=image;
+        
         currBufferedImage = ImageProcess.clone(image);
         originalBufferedImage = ImageProcess.clone(image);
         originalBufferedImageTemp = ImageProcess.clone(image);
@@ -1104,7 +1106,7 @@ public class PanelPicture extends JPanel implements KeyListener {
                 FactoryUtils.deleteFile(imageFolder + "/" + FactoryUtils.getFileName(file.getName()) + ".xml");
             }
         }
-        loadNextImage();
+        //loadNextImage();
         activateBoundingBox = true;
     }
 
@@ -1157,20 +1159,25 @@ public class PanelPicture extends JPanel implements KeyListener {
             }
         } else if (key == KeyEvent.VK_S) {
             savePascalVocXML();
-            BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-            setImage(bf, imagePath, caption);
-            frm.setTitle(imageFiles[imageIndex].getPath());
-            fileName = imageFiles[imageIndex].getName();
-            imagePath = imageFiles[imageIndex].getAbsolutePath();
+            imageIndex++;
             if (!isSeqenceVideoFrame) {
                 listBBoxRect.clear();
                 selectedBBox = null;
             }
-            repaint();
+            BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
+            frm.setTitle(imageFiles[imageIndex].getPath());
+            fileName = imageFiles[imageIndex].getName();
+            imagePath = imageFiles[imageIndex].getAbsolutePath();
+            setImage(bf, imagePath, caption);
+            //repaint();
             return;
         } else if (key == KeyEvent.VK_DELETE) {
-            listBBoxRect.remove(selectedBBox);
-            selectedBBox = null;
+            if (selectedBBox != null) {
+                listBBoxRect.remove(selectedBBox);
+                selectedBBox = null;
+            }else{
+                listBBoxRect.clear();
+            }
             repaint();
             return;
         }

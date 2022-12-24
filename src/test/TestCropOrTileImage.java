@@ -30,7 +30,7 @@ public class TestCropOrTileImage {
         
         //to convert pascal voc format to yolo format
         
-        FactoryUtils.convertPascalVoc2YoloFormat("D:\\zeytin_remote_sensing\\tif\\cropped_images", "class.txt");
+        FactoryUtils.convertPascalVoc2YoloFormat("D:\\zeytin_remote_sensing\\tif\\cropped_images", new String[]{"0:zeytin","1:ev"});
         
     }
 }

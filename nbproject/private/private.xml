@@ -4,13 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/factory/FactoryUtils.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/video_processing/javafx/MediaBar.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestCropOrTileImage.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/gui/FrameImage.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/deep_learning/ai/djl/examples/training/TestTrafikLevha.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestAnnotations.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/deep_learning/tensorflow_js/test/yolov5/PascalVoc2Yolo.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestVisDroneAnnotationsToPascalVoc.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/deep_learning/tensorflow_js/test/ssd_object_detection/TFRecordCSV.java</file>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/matrix/CMatrix.java</file>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/gui/PanelPicture.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/Deneme_3.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestCamera.java</file>
         </group>
     </open-files>
 </project-private>

@@ -5,9 +5,8 @@
  */
 package test;
 
+import java.awt.Dimension;
 import jazari.matrix.CMatrix;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -17,14 +16,14 @@ public class TestCamera {
     public static void main(String[] args) {
        
         CMatrix cm = CMatrix.getInstance()
+//                .startCamera(0, new Dimension(1280, 720),new Dimension(640,360))               
+//                .startCamera(0, new Dimension(1280, 720))               
+//                .startCamera(0, new Dimension(1920, 1080), new Dimension(640,360))               
+//                .startCamera(0, new Dimension(1920, 1080))               
                 .startCamera(0)               
                 ;
-        System.out.println("merhaba");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        }).start();
+//        while(true){
+//            System.out.println("merhaba");
+//        }
     }
 }
