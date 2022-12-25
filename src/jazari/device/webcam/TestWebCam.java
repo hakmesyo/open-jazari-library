@@ -50,26 +50,6 @@ public class TestWebCam {
                 });
             }
         });
-
-//        FactoryWebCam ref=new FactoryWebCam().openWebCam(0).startWebCAM(); 
-//        ref.webCam.addWebcamListener(new WebcamListener() {
-//            @Override
-//            public void webcamOpen(WebcamEvent we) {
-//            }
-//
-//            @Override
-//            public void webcamClosed(WebcamEvent we) {
-//            }
-//
-//            @Override
-//            public void webcamDisposed(WebcamEvent we) {
-//            }
-//
-//            @Override
-//            public void webcamImageObtained(WebcamEvent we) {
-//                System.out.println("fps:"+ref.webCam.getFPS()+" image width:"+ref.webCam.getViewSize());
-//            }
-//        });
     }
 
 }
