@@ -22,6 +22,8 @@ import jazari.matrix.CMatrix;
 public class TestWebCam {
 
     public static void main(String[] args) {
+        
+        //değişti
         CMatrix cm = CMatrix.getInstance().startCamera(new Dimension(1280, 720));
 //        CMatrix cm = CMatrix.getInstance().startCamera();
         
