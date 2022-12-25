@@ -8,9 +8,8 @@
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/deep_learning/tensorflow_js/test/yolov5/PascalVoc2Yolo.java</file>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestVisDroneAnnotationsToPascalVoc.java</file>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/deep_learning/tensorflow_js/test/ssd_object_detection/TFRecordCSV.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/matrix/CMatrix.java</file>
-            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/jazari/gui/PanelPicture.java</file>
             <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestCamera.java</file>
+            <file>file:/D:/Dropbox/NetbeansProjects/open-jazari-library/src/test/TestWebCam.java</file>
         </group>
     </open-files>
 </project-private>

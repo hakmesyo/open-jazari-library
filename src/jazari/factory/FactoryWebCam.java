@@ -9,6 +9,10 @@ import jazari.gui.FrameImage;
 import jazari.image_processing.ImageProcess;
 import jazari.matrix.CMatrix;
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamEvent;
+import com.github.sarxos.webcam.WebcamImageTransformer;
+import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -17,6 +21,7 @@ import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,10 +33,11 @@ import javax.swing.JFrame;
  *
  * @author cezerilab
  */
-public class FactoryWebCam {
+public class FactoryWebCam{
 
-    private static FactoryWebCam factWebCam = new FactoryWebCam();
-    public static Webcam webCam;
+    //private FactoryWebCam factWebCam = new FactoryWebCam();
+    public Webcam webCam;
+    public WebcamPanel panel;
     private FrameImage frm = new FrameImage();
     private boolean isMotionDetectionImage = false;
     private boolean isMotionDetectionVideo = false;
@@ -42,46 +48,61 @@ public class FactoryWebCam {
     private static boolean isFlipped = false;
     public static BufferedImage currentImage;
 
-    private FactoryWebCam() {
-        frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frm.setVisible(true);
+    public FactoryWebCam() {
+//        frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frm.setVisible(true);
+
     }
 
-    public static FactoryWebCam openWebCam() {
+    public FactoryWebCam openWebCam() {
         webCam = Webcam.getDefault();
         size = WebcamResolution.VGA.getSize();
         webCam.setViewSize(size);
         webCam.open(true);
-        return factWebCam;
+        return this;
     }
 
-    public static FactoryWebCam openWebCam(int cameraIndex) {
+    public FactoryWebCam openWebCam(int cameraIndex) {
         webCam = Webcam.getWebcams().get(cameraIndex);
         size = WebcamResolution.VGA.getSize();
         webCam.setViewSize(size);
         webCam.open(true);
-        return factWebCam;
+        return this;
     }
 
-    public static FactoryWebCam openWebCam(Dimension size) {
+    public FactoryWebCam openWebCam(Dimension size) {
         webCam = Webcam.getDefault();
         webCam.setCustomViewSizes(size); // register custom resolutions
         //size = WebcamResolution.VGA.getSize();
         webCam.setViewSize(size);
         webCam.open(true);
-        return factWebCam;
+        return this;
     }
 
-    public static FactoryWebCam openWebCam(int cameraIndex, Dimension size) {
+    public FactoryWebCam openWebCam(int cameraIndex, Dimension size) {
         webCam = Webcam.getWebcams().get(cameraIndex);
         webCam.setCustomViewSizes(size); // register custom resolutions
         webCam.setViewSize(size);
         //size = WebcamResolution.VGA.getSize();
         webCam.open(true);
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam startWebCAM() {
+        panel = new WebcamPanel(webCam);
+        panel.setImageSizeDisplayed(true);
+        panel.setFPSDisplayed(true);
+        panel.setFPSLimit(30);
+
+        JFrame window = new JFrame("Webcam");
+        window.add(panel);
+        window.setResizable(true);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setPreferredSize(new Dimension(640, 480));
+        window.pack();
+        window.setVisible(true);
+
+        /*
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -99,21 +120,36 @@ public class FactoryWebCam {
             }
 
         }).start();
-        return factWebCam;
+         */
+        return this;
     }
 
     public FactoryWebCam startWebCAM(Dimension resize) {
+        panel = new WebcamPanel(webCam);
+        panel.setImageSizeDisplayed(true);
+        panel.setFPSDisplayed(true);
+        panel.setFPSLimit(30);
+
+        JFrame window = new JFrame("Webcam");
+        window.add(panel);
+        window.setResizable(true);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setPreferredSize(resize);
+        window.pack();
+        window.setVisible(true);
+
+        /*
         new Thread(new Runnable() {
             @Override
             public void run() {
-                long t1=FactoryUtils.tic();
+                long t1 = FactoryUtils.tic();
                 while (true) {
                     try {
                         currentImage = webCam.getImage();
                         currentImage = ImageProcess.toBufferedImage(currentImage, 5);
                         currentImage = ImageProcess.resize(currentImage, resize.width, resize.height);
-                        frm.setImage(currentImage,"","");
-                        t1=FactoryUtils.toc(t1);
+                        frm.setImage(currentImage, "", "");
+                        t1 = FactoryUtils.toc(t1);
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,7 +158,8 @@ public class FactoryWebCam {
             }
 
         }).start();
-        return factWebCam;
+         */
+        return this;
     }
 
     public FactoryWebCam startWithGUI() {
@@ -133,7 +170,7 @@ public class FactoryWebCam {
             }
 
         }).start();
-        return factWebCam;
+        return this;
     }
 
     private void operates() {
@@ -158,7 +195,7 @@ public class FactoryWebCam {
         //warming up
         for (int i = 0; i < 1; i++) {
             bf = webCam.getImage();
-            frm.setImage(bf,"","");
+            frm.setImage(bf, "", "");
             bf = ImageProcess.filterGaussian(bf, 5);
             bf = ImageProcess.toGrayLevel(bf);
 
@@ -172,7 +209,7 @@ public class FactoryWebCam {
             if (isFlipped) {
                 bf = ImageProcess.flipVertical(bf);
             }
-            frm.setImage(bf,"","");
+            frm.setImage(bf, "", "");
             bf_rgb = ImageProcess.clone(bf);
             bf = ImageProcess.filterGaussian(bf, 5);
             bf = ImageProcess.toGrayLevel(bf);
@@ -262,36 +299,37 @@ public class FactoryWebCam {
 
     public FactoryWebCam flipImageAlongVerticalAxis() {
         isFlipped = !isFlipped;
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam startMotionDetectionImage() {
         isMotionDetectionImage = true;
         isMotionDetectionVideo = false;
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam startMotionDetectionImage(String folderPath) {
         FactoryWebCam.folderPath = folderPath;
         isMotionDetectionImage = true;
         isMotionDetectionVideo = false;
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam stopMotionDetectionImage() {
         isMotionDetectionImage = false;
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam startMotionDetectionVideo(String folderPath) {
         FactoryWebCam.folderPath = folderPath;
         isMotionDetectionVideo = true;
         isMotionDetectionImage = false;
-        return factWebCam;
+        return this;
     }
 
     public FactoryWebCam stopMotionDetectionVideo() {
         isMotionDetectionVideo = false;
-        return factWebCam;
+        return this;
     }
+
 }

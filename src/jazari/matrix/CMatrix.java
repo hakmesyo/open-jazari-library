@@ -63,6 +63,8 @@ import ai.djl.training.dataset.RandomAccessDataset;
 import ai.djl.training.loss.Loss;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamListener;
 import jazari.interfaces.call_back_interface.CallBackDataBase;
 import jazari.factory.FactoryCombination;
 import jazari.factory.FactoryMatrix;
@@ -191,6 +193,8 @@ public final class CMatrix implements Serializable {
     public InterfaceCallBack icbf;
     public JPanel plotPanel;
     public INDArray array;
+    public FactoryWebCam factoryWebCam;
+    public Webcam webCam;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -8532,7 +8536,8 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix startCamera() {
-        FactoryWebCam.openWebCam(0).startWebCAM();
+        factoryWebCam=new FactoryWebCam().openWebCam(0).startWebCAM();
+        webCam=factoryWebCam.webCam;
         return this;
     }
 
@@ -8544,17 +8549,26 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix startCamera(int cameraIndex) {
-        FactoryWebCam.openWebCam(cameraIndex).startWebCAM();
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex).startWebCAM();
+        webCam=factoryWebCam.webCam;
         return this;
     }
 
     public CMatrix startCamera(int cameraIndex, java.awt.Dimension size) {
-        FactoryWebCam.openWebCam(cameraIndex,size).startWebCAM();
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM();
+        webCam=factoryWebCam.webCam;
+        return this;
+    }
+    
+    public CMatrix startCamera(java.awt.Dimension size) {
+        factoryWebCam=new FactoryWebCam().openWebCam(0,size).startWebCAM();
+        webCam=factoryWebCam.webCam;
         return this;
     }
     
     public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize) {
-        FactoryWebCam.openWebCam(cameraIndex,size).startWebCAM(resize);
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resize);
+        webCam=factoryWebCam.webCam;
         return this;
     }
 
@@ -8831,6 +8845,11 @@ public final class CMatrix implements Serializable {
 
     public CMatrix convertPascalVoc2Yolo(String pathFolder, String[] labels) {
         FactoryUtils.convertPascalVoc2YoloFormat(pathFolder, labels);
+        return this;
+    }
+
+    public CMatrix addWebCamListener(WebcamListener wcl) {
+        this.webCam.addWebcamListener(wcl);
         return this;
     }
 

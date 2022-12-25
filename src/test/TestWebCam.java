@@ -20,12 +20,15 @@ import javax.swing.JFrame;
 public class TestWebCam {
 
     public static void main(String[] args) {
+        Webcam webcam = Webcam.getDefault();
         Dimension dim=new Dimension(1920,1080);
 //        Dimension dim=new Dimension(1280,720);
+//        Dimension dim=new Dimension(800,600);
 //        Dimension dim=new Dimension(640,480);
-        Webcam webcam = Webcam.getDefault();
+        
         webcam.setCustomViewSizes(dim);
         webcam.setViewSize(dim);
+
 //        webcam.setViewSize(WebcamResolution.VGA.getSize());
         webcam.addWebcamListener(new WebcamListener() {
             @Override
@@ -49,6 +52,8 @@ public class TestWebCam {
 
         WebcamPanel panel = new WebcamPanel(webcam);
         panel.setImageSizeDisplayed(true);
+        panel.setFPSDisplayed(true);
+        panel.setFPSLimit(30);
 
         JFrame window = new JFrame("Webcam");
         window.add(panel);
