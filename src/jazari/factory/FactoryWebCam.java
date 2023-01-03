@@ -88,11 +88,12 @@ public class FactoryWebCam{
         return this;
     }
 
-    public FactoryWebCam startWebCAM() {
+    public FactoryWebCam startWebCAM(int fps) {
         panel = new WebcamPanel(webCam);
         panel.setImageSizeDisplayed(true);
-        panel.setFPSDisplayed(true);
-        panel.setFPSLimit(30);
+        panel.setFPSLimited(true);
+        panel.setFPSLimit(fps);
+        //panel.setFPSDisplayed(true);
 
         JFrame window = new JFrame("Webcam");
         window.add(panel);
@@ -124,11 +125,12 @@ public class FactoryWebCam{
         return this;
     }
 
-    public FactoryWebCam startWebCAM(Dimension resize) {
+    public FactoryWebCam startWebCAM(Dimension resize, int fps) {
         panel = new WebcamPanel(webCam);
         panel.setImageSizeDisplayed(true);
-        panel.setFPSDisplayed(true);
-        panel.setFPSLimit(30);
+        //panel.setFPSDisplayed(true);
+        panel.setFPSLimited(true);
+        panel.setFPSLimit(fps);
 
         JFrame window = new JFrame("Webcam");
         window.add(panel);

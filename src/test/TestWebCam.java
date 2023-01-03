@@ -21,8 +21,8 @@ public class TestWebCam {
 
     public static void main(String[] args) {
         Webcam webcam = Webcam.getDefault();
-        Dimension dim=new Dimension(1920,1080);
-//        Dimension dim=new Dimension(1280,720);
+//        Dimension dim=new Dimension(1920,1080);
+        Dimension dim=new Dimension(1280,720);
 //        Dimension dim=new Dimension(800,600);
 //        Dimension dim=new Dimension(640,480);
         

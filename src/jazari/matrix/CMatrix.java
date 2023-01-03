@@ -8535,8 +8535,8 @@ public final class CMatrix implements Serializable {
      *
      * @return
      */
-    public CMatrix startCamera() {
-        factoryWebCam=new FactoryWebCam().openWebCam(0).startWebCAM();
+    public CMatrix startCamera(int fps) {
+        factoryWebCam=new FactoryWebCam().openWebCam(0).startWebCAM(fps);
         webCam=factoryWebCam.webCam;
         return this;
     }
@@ -8548,26 +8548,26 @@ public final class CMatrix implements Serializable {
      * desired camera index
      * @return
      */
-    public CMatrix startCamera(int cameraIndex) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex).startWebCAM();
+    public CMatrix startCamera(int cameraIndex,int fps) {
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex).startWebCAM(fps);
         webCam=factoryWebCam.webCam;
         return this;
     }
 
-    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM();
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size,int fps) {
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(fps);
         webCam=factoryWebCam.webCam;
         return this;
     }
     
-    public CMatrix startCamera(java.awt.Dimension size) {
-        factoryWebCam=new FactoryWebCam().openWebCam(0,size).startWebCAM();
+    public CMatrix startCamera(java.awt.Dimension size,int fps) {
+        factoryWebCam=new FactoryWebCam().openWebCam(0,size).startWebCAM(fps);
         webCam=factoryWebCam.webCam;
         return this;
     }
     
-    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resize);
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize,int fps) {
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resize,fps);
         webCam=factoryWebCam.webCam;
         return this;
     }

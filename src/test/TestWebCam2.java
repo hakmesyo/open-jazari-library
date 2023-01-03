@@ -21,7 +21,7 @@ import jazari.matrix.CMatrix;
 public class TestWebCam2 {
     public static void main(String[] args) {
         //değişti
-        CMatrix cm = CMatrix.getInstance().startCamera(new Dimension(1280, 720));
+        CMatrix cm = CMatrix.getInstance().startCamera(new Dimension(1280, 720),5);
 //        CMatrix cm = CMatrix.getInstance().startCamera();
         
         //if you want to make image process on the image taken and then show on the current frame
