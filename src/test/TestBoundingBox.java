@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
-import jazari.utils.BoundingBox;
-import jazari.utils.BoundingBoxPascalVOC;
-import jazari.utils.PascalVocObject;
+import jazari.utils.pascalvoc.PascalVocBoundingBox;
+import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
+import jazari.utils.pascalvoc.PascalVocObject;
 
 /**
  *
@@ -29,7 +29,7 @@ public class TestBoundingBox {
 //        System.out.println("xml = " + xml);
 //        
 //        //okumak için
-        BoundingBoxPascalVOC bb=FactoryUtils.deserializePascalVocXML(pathXML+"\\43.xml");
+        AnnotationPascalVOCFormat bb=FactoryUtils.deserializePascalVocXML(pathXML+"\\43.xml");
         System.out.println(bb.lstObjects.get(0).bndbox);
         
         //pascal voc formatından csv formatına almak için

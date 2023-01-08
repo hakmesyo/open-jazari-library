@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
-import jazari.utils.BoundingBox;
-import jazari.utils.PascalVocObject;
+import jazari.utils.pascalvoc.PascalVocBoundingBox;
+import jazari.utils.pascalvoc.PascalVocObject;
+import jazari.utils.pascalvoc.PascalVocSource;
 
 /**
  *
@@ -101,17 +102,17 @@ public class TestVisDroneAnnotationsToPascalVoc {
                     default:
                         throw new AssertionError();
                 }
-                PascalVocObject voc = new PascalVocObject(
-                        new BoundingBox(object_name,
+                PascalVocObject voc = new PascalVocObject(object_name,"",0,0,0,
+                        new PascalVocBoundingBox(object_name,
                                 new Rectangle(px, py, w, h),
                                 0,
-                                0));
+                                0,null),null);
                 lstObjects.add(voc);
             }
             String folderName = "images";
             String imageFileName = file.getName();
             String fullPath = "C:\\Users\\cezerilab\\Desktop\\visdrone_selected_train\\images\\" + FactoryUtils.getFileName(file.getName()) + ".jpg";
-            FactoryUtils.serializePascalVocXML(folderName, imageFileName, fullPath, lstObjects);
+            FactoryUtils.serializePascalVocXML(folderName, imageFileName, fullPath, new PascalVocSource(), lstObjects);
         }
 
     }

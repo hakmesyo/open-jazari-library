@@ -5,25 +5,16 @@
  */
 package jazari.gui;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatPropertiesLaf;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
-import jazari.image_processing.ImageProcess;
 import jazari.matrix.CMatrix;
 import jazari.factory.FactoryUtils;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -41,12 +32,12 @@ public class FrameImage extends javax.swing.JFrame {
         }
     }
 
-    private BufferedImage img;
+    public BufferedImage img;
     int pw = 100;
     int ph = 150;
     int panWidth = 40;
     //BufferedImage currBufferedImage = null;
-    String imagePath;
+    public String imagePath;
     private Vector<String> listImageFile = new Vector<String>();
     int listIndex = 0;
     CMatrix cm = null;
@@ -74,13 +65,14 @@ public class FrameImage extends javax.swing.JFrame {
         this.img = cm.getImage();
         this.imagePath = imagePath;
         getPicturePanel().activateBoundingBox = isBBox.isSelected();
-        getPicturePanel().setImage(img, imagePath, caption); 
+        getPicturePanel().setImage(img, imagePath, caption);
         getPicturePanel().setFrame(this);
         setFrameSize(img);
         getPicturePanel().setFocusable(true);
-        getPicturePanel().requestFocus();
+//        getPicturePanel().requestFocus();
+        getPicturePanel().requestFocusInWindow();
         isSequence.setVisible(false);
-        
+        //scroll_pane.setWheelScrollingEnabled(false);
     }
 
     public void setImage(BufferedImage img, String imagePath, String caption) {
@@ -208,6 +200,12 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(isSequence))
         );
 
+        scroll_pane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                scroll_paneFocusGained(evt);
+            }
+        });
+
         panelPicture.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         panelPicture.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -272,7 +270,10 @@ public class FrameImage extends javax.swing.JFrame {
     }//GEN-LAST:event_isBBoxItemStateChanged
 
     private void isBBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isBBoxActionPerformed
-        // TODO add your handling code here:
+        if (isBBox.isSelected()) {
+            FactoryUtils.showMessage("Use Arrow Keys to locate prev and next images.\nPress S to save bboxes and go to next image.\nDouble click on bbox to change attributes");
+            //isBBox.setSelected(true);
+        }
     }//GEN-LAST:event_isBBoxActionPerformed
 
     private void isSequenceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isSequenceActionPerformed
@@ -291,6 +292,9 @@ public class FrameImage extends javax.swing.JFrame {
     private void isSequenceMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_isSequenceMouseMoved
         isSequence.setToolTipText("Check if your images are similar to the video sequences/frames.\nPreserves bboxs from previous image");
     }//GEN-LAST:event_isSequenceMouseMoved
+
+    private void scroll_paneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_scroll_paneFocusGained
+    }//GEN-LAST:event_scroll_paneFocusGained
 
     public PanelPicture getPicturePanel() {
         return ((PanelPicture) panelPicture);
@@ -349,25 +353,17 @@ public class FrameImage extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public void setFrameSize(BufferedImage img) {
-        pw = 70;
-        int w=img.getWidth() + 2 * pw;
-        //System.out.println("w = " + w);
-        int h=img.getHeight() + 190;
-        //System.out.println("h = " + h);
-        this.setSize(w, h);
-        //this.setPreferredSize(new Dimension(w, h));
-        this.pack();
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        double width = screenSize.getWidth();
-//        double height = screenSize.getHeight();
-//
-////        //on a multimonitor
-////        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-////        int width = gd.getDisplayMode().getWidth();
-////        int height = gd.getDisplayMode().getHeight();
-//        
-//        this.setLocation((int)(width-w)/2, (int)(height-h)/2);
-        
+        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        pw = 30;
+        //pw = 70;
+        int w = img.getWidth() + 2 * pw + 90;
+        int h = img.getHeight() + 190;
+        if (w < size.width && h < size.height) {
+            this.setSize(w, h);
+        } else {
+            setMaximumSize(size);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+        //this.pack();
     }
 }

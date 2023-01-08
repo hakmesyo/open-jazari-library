@@ -70,10 +70,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jazari.image_processing.ImageProcess;
-import jazari.utils.BoundingBox;
-import jazari.utils.BoundingBoxPascalVOC;
-import jazari.utils.PascalVocObject;
-import jazari.utils.PascalVocSize;
+import jazari.utils.pascalvoc.PascalVocBoundingBox;
+import jazari.utils.pascalvoc.PascalVocAttribute;
+import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
+import jazari.utils.pascalvoc.PascalVocObject;
+import jazari.utils.pascalvoc.PascalVocSize;
+import jazari.utils.pascalvoc.PascalVocSource;
 import org.apache.commons.io.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
@@ -1027,8 +1029,8 @@ public final class FactoryUtils {
     }
 
     public static void showMessage(String str) {
-//        JOptionPane.showMessageDialog(null, str);
-        System.out.println(str);
+        JOptionPane.showMessageDialog(null, str);
+//        System.out.println(str);
     }
 
     public static String inputMessage(String message, String initialSelectionValue) {
@@ -2664,17 +2666,6 @@ public final class FactoryUtils {
     public static int[] toIntArray1D(float[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
-                ret[k++] = (int) d[i][j];
-            }
-        }
-        return ret;
-    }
-
-    public static int[] toIntArray1DBasedOnRows(float[][] d) {
-        int[] ret = new int[d.length * d[0].length];
-        int k = 0;
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
                 ret[k++] = (int) d[i][j];
@@ -2683,26 +2674,6 @@ public final class FactoryUtils {
         return ret;
     }
 
-//    public static int[] toIntArray1DBasedOnRows(float[][] d) {
-//        int[] ret = new int[d.length * d[0].length];
-//        int k = 0;
-//        for (int i = 0; i < d.length; i++) {
-//            for (int j = 0; j < d[0].length; j++) {
-//                ret[k++] = (int) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
-//    public static int[] toIntArray1D(float[][] d) {
-//        int[] ret = new int[d.length * d[0].length];
-//        int k = 0;
-//        for (int j = 0; j < d[0].length; j++) {
-//            for (int i = 0; i < d.length; i++) {
-//                ret[k++] = (int) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
     public static short[] toShortArray1DBasedOnRows(float[][] d) {
         short[] ret = new short[d.length * d[0].length];
         int k = 0;
@@ -2744,16 +2715,6 @@ public final class FactoryUtils {
         return ret;
     }
 
-//    public static float[] toFloatArray1D(float[][] d) {
-//        float[] ret = new float[d.length * d[0].length];
-//        int k = 0;
-//        for (int j = 0; j < d[0].length; j++) {
-//            for (int i = 0; i < d.length; i++) {
-//                ret[k++] = (float) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
     public static long[] toLongArray1DBasedOnRows(float[][] d) {
         long[] ret = new long[d.length * d[0].length];
         int k = 0;
@@ -2814,26 +2775,6 @@ public final class FactoryUtils {
         return ret;
     }
 
-//    public static short[] toShortArray1DBasedOnRows(float[][] d) {
-//        short[] ret = new short[d.length * d[0].length];
-//        int k = 0;
-//        for (int i = 0; i < d.length; i++) {
-//            for (int j = 0; j < d[0].length; j++) {
-//                ret[k++] = (short) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
-//    public static short[] toShortArray1D(float[][] d) {
-//        short[] ret = new short[d.length * d[0].length];
-//        int k = 0;
-//        for (int j = 0; j < d[0].length; j++) {
-//            for (int i = 0; i < d.length; i++) {
-//                ret[k++] = (short) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
     public static byte[] toByteArray1DBasedOnRows(float[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
@@ -2845,45 +2786,6 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static byte[] toByteArray1D(float[][] d) {
-        byte[] ret = new byte[d.length * d[0].length];
-        int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
-                ret[k++] = (byte) d[i][j];
-            }
-        }
-        return ret;
-    }
-
-    public static byte[] toByteArray1D(float[] d) {
-        byte[] ret = new byte[d.length];
-        for (int j = 0; j < d.length; j++) {
-            ret[j] = (byte) d[j];
-        }
-        return ret;
-    }
-
-//    public static byte[] toByteArray1DBasedOnRows(float[][] d) {
-//        byte[] ret = new byte[d.length * d[0].length];
-//        int k = 0;
-//        for (int i = 0; i < d.length; i++) {
-//            for (int j = 0; j < d[0].length; j++) {
-//                ret[k++] = (byte) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
-//    public static byte[] toByteArray1D(float[][] d) {
-//        byte[] ret = new byte[d.length * d[0].length];
-//        int k = 0;
-//        for (int j = 0; j < d[0].length; j++) {
-//            for (int i = 0; i < d.length; i++) {
-//                ret[k++] = (byte) d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
     public static byte[] toByteArray1DBasedOnRows(int[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
@@ -2895,38 +2797,7 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static byte[] toByteArray1D(int[][] d) {
-        byte[] ret = new byte[d.length * d[0].length];
-        int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
-                ret[k++] = (byte) d[i][j];
-            }
-        }
-        return ret;
-    }
-
-//    public static float[] toFloatArray1DBasedOnRows(float[][] d) {
-//        float[] ret = new float[d.length * d[0].length];
-//        int k = 0;
-//        for (int i = 0; i < d.length; i++) {
-//            for (int j = 0; j < d[0].length; j++) {
-//                ret[k++] = d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
-//    public static float[] toFloatArray1D(float[][] d) {
-//        float[] ret = new float[d.length * d[0].length];
-//        int k = 0;
-//        for (int j = 0; j < d[0].length; j++) {
-//            for (int i = 0; i < d.length; i++) {
-//                ret[k++] = d[i][j];
-//            }
-//        }
-//        return ret;
-//    }
-    public static int[] toIntArray1DBasedOnRows(int[][] d) {
+    public static int[] toIntArray1D(int[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
         for (int i = 0; i < d.length; i++) {
@@ -2937,12 +2808,12 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static int[] toIntArray1D(int[][] d) {
-        int[] ret = new int[d.length * d[0].length];
+    public static byte[] toByteArray1D(float[][] d) {
+        byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
-                ret[k++] = d[i][j];
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (byte) d[i][j];
             }
         }
         return ret;
@@ -2959,33 +2830,11 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static byte[] toByteArray1D(byte[][] d) {
-        byte[] ret = new byte[d.length * d[0].length];
-        int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
-                ret[k++] = d[i][j];
-            }
-        }
-        return ret;
-    }
-
     public static short[] toShortArray1DBasedOnRows(short[][] d) {
         short[] ret = new short[d.length * d[0].length];
         int k = 0;
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
-                ret[k++] = d[i][j];
-            }
-        }
-        return ret;
-    }
-
-    public static short[] toShortArray1D(short[][] d) {
-        short[] ret = new short[d.length * d[0].length];
-        int k = 0;
-        for (int j = 0; j < d[0].length; j++) {
-            for (int i = 0; i < d.length; i++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -6004,28 +5853,28 @@ public final class FactoryUtils {
 
     public static void reduceImageSize(String folderPath, int maxWidth, int maxHeight) {
         File[] files = FactoryUtils.getFileListInFolderForImages(folderPath);
-        int k=-1;
+        int k = -1;
         for (File file : files) {
             k++;
-            System.out.println(k+"."+file.getAbsolutePath());
+            System.out.println(k + "." + file.getAbsolutePath());
             BufferedImage img = ImageProcess.imread(file.getAbsolutePath());
             if (img.getWidth() > maxWidth || img.getHeight() > maxHeight) {
-                if (img.getHeight()>maxHeight) {
-                    System.out.println(k+".image height çok büyük :"+img.getWidth()+":"+img.getHeight());
+                if (img.getHeight() > maxHeight) {
+                    System.out.println(k + ".image height çok büyük :" + img.getWidth() + ":" + img.getHeight());
                     //height is more important than width
-                    double r=1.0*maxHeight/img.getHeight();
-                    int desiredWidth=(int)(r*img.getWidth());
-                    int desiredHeight=maxHeight;
-                    img=ImageProcess.resize(img, desiredWidth, desiredHeight);
+                    double r = 1.0 * maxHeight / img.getHeight();
+                    int desiredWidth = (int) (r * img.getWidth());
+                    int desiredHeight = maxHeight;
+                    img = ImageProcess.resize(img, desiredWidth, desiredHeight);
                     ImageProcess.saveImage(img, file.getAbsolutePath());
-                }else if(img.getWidth()>maxWidth){
-                    System.out.println(k+".image width çok büyük :"+img.getWidth()+":"+img.getHeight());
-                    double r=1.0*maxWidth/img.getWidth();
-                    int desiredHeight=(int)(r*img.getHeight());
-                    int desiredWidth=maxWidth;
-                    img=ImageProcess.resize(img, desiredWidth, desiredHeight);
+                } else if (img.getWidth() > maxWidth) {
+                    System.out.println(k + ".image width çok büyük :" + img.getWidth() + ":" + img.getHeight());
+                    double r = 1.0 * maxWidth / img.getWidth();
+                    int desiredHeight = (int) (r * img.getHeight());
+                    int desiredWidth = maxWidth;
+                    img = ImageProcess.resize(img, desiredWidth, desiredHeight);
                     ImageProcess.saveImage(img, file.getAbsolutePath());
-                    
+
                 }
             }
         }
@@ -6530,7 +6379,7 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static String serializePascalVocXML(String folder, String fileName, String imagePath, List<PascalVocObject> lstObjects) {
+    public static String serializePascalVocXML(String folder, String fileName, String imagePath, PascalVocSource source, List<PascalVocObject> lstObjects) {
         BufferedImage image = ImageProcess.imread(imagePath);
         int type = image.getType();
         int depth = 3;
@@ -6547,9 +6396,7 @@ public final class FactoryUtils {
                 + "\t<folder>" + folder + "</folder>\n"
                 + "\t<filename>" + fileName + "</filename>\n"
                 + "\t<path>" + imagePath + "</path>\n"
-                + "\t<source>\n"
-                + "\t\t<database>Unknown</database>\n"
-                + "\t</source>\n"
+                + source.toString()
                 + size.toString()
                 + "\t<segmented>0</segmented>\n"
                 + lst
@@ -6560,18 +6407,42 @@ public final class FactoryUtils {
 
     }
 
-    public static BoundingBoxPascalVOC deserializePascalVocXML(String filepath) {
+    public static AnnotationPascalVOCFormat deserializePascalVocXML(String filepath) {
         String s = FactoryUtils.readFile(filepath);
         String folder = s.substring(s.indexOf("<folder>") + 8, s.indexOf("</folder>"));
-        BoundingBoxPascalVOC ret = new BoundingBoxPascalVOC();
+        AnnotationPascalVOCFormat ret = new AnnotationPascalVOCFormat();
         ret.folder = folder;
         String fileName = s.substring(s.indexOf("<filename>") + 10, s.indexOf("</filename>"));
         ret.fileName = fileName;
-        String path = s.substring(s.indexOf("<path>") + 6, s.indexOf("</path>"));
-        ret.path = path;
+        if (s.indexOf("<path>") != -1) {
+            String path = s.substring(s.indexOf("<path>") + 6, s.indexOf("</path>"));
+            ret.path = path;
+        }
+        
+        PascalVocSource source=new PascalVocSource();
+        if (s.indexOf("<source>") !=-1) {
+            String database="Unknown";
+            if (s.indexOf("<database>")!=-1) {
+                database=s.substring(s.indexOf("<database>")+10,s.indexOf("</database>"));
+            }
+            String annotation="Unknown";
+            if (s.indexOf("<annotation>",s.indexOf("<source>"))!=-1) {
+                annotation=s.substring(s.indexOf("<annotation>",s.indexOf("<source>"))+12,s.indexOf("</annotation>",s.indexOf("<source>")));
+            }
+            String image="Unknown";
+            if (s.indexOf("<image>")!=-1) {
+                image=s.substring(s.indexOf("<image>")+7,s.indexOf("</image>"));
+            }
+            source=new PascalVocSource(database, annotation, image);
+        }
+        ret.source=source;
+        
         int width = Integer.parseInt(s.substring(s.indexOf("<width>") + 7, s.indexOf("</width>")));
         int height = Integer.parseInt(s.substring(s.indexOf("<height>") + 8, s.indexOf("</height>")));
-        int depth = Integer.parseInt(s.substring(s.indexOf("<depth>") + 7, s.indexOf("</depth>")));
+        int depth = 0;
+        if (s.indexOf("<depth>") != -1 && s.substring(s.indexOf("<depth>") + 7, s.indexOf("</depth>")).length() > 0) {
+            depth = Integer.parseInt(s.substring(s.indexOf("<depth>") + 7, s.indexOf("</depth>")));
+        }
         PascalVocSize size = new PascalVocSize(width, height, depth);
         ret.size = size;
         List<PascalVocObject> lstObjects = new ArrayList();
@@ -6588,29 +6459,57 @@ public final class FactoryUtils {
         int xmaxIndex2 = 0;
         int ymaxIndex2 = 0;
         char[] ch = s.toCharArray();
+        int indexAttributes=0;
+        int indexAttributesEnd=0;
+        int indexObjectEnd=0;
         for (int i = 0; i < count; i++) {
+            indexAttributes=s.indexOf("<attributes>",indexAttributes+1);
+            indexObjectEnd=s.indexOf("</object>",indexObjectEnd+1);
             String name = s.substring(s.indexOf("<name>", nameIndex1 + 1) + 6, s.indexOf("</name>", nameIndex2 + 1));
-            nameIndex1 = s.indexOf("<name>", nameIndex1 + 1);
-            nameIndex2 = s.indexOf("</name>", nameIndex2 + 1);
+            nameIndex1 = s.indexOf("<name>", indexObjectEnd)-25;
+            nameIndex2 = s.indexOf("</name>", indexObjectEnd)-25;
 
-            int xmin = Integer.parseInt(s.substring(s.indexOf("<xmin>", xminIndex1 + 1) + 6, s.indexOf("</xmin>", xminIndex2 + 1)));
+            int xmin = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<xmin>", xminIndex1 + 1) + 6, s.indexOf("</xmin>", xminIndex2 + 1))));
             xminIndex1 = s.indexOf("<xmin>", xminIndex1 + 1);
             xminIndex2 = s.indexOf("</xmin>", xminIndex2 + 1);
 
-            int ymin = Integer.parseInt(s.substring(s.indexOf("<ymin>", yminIndex1 + 1) + 6, s.indexOf("</ymin>", yminIndex2 + 1)));
+            int ymin = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<ymin>", yminIndex1 + 1) + 6, s.indexOf("</ymin>", yminIndex2 + 1))));
             yminIndex1 = s.indexOf("<ymin>", yminIndex1 + 1);
             yminIndex2 = s.indexOf("</ymin>", yminIndex2 + 1);
 
-            int xmax = Integer.parseInt(s.substring(s.indexOf("<xmax>", xmaxIndex1 + 1) + 6, s.indexOf("</xmax>", xmaxIndex2 + 1)));
+            int xmax = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<xmax>", xmaxIndex1 + 1) + 6, s.indexOf("</xmax>", xmaxIndex2 + 1))));
             xmaxIndex1 = s.indexOf("<xmax>", xmaxIndex1 + 1);
             xmaxIndex2 = s.indexOf("</xmax>", xmaxIndex2 + 1);
 
-            int ymax = Integer.parseInt(s.substring(s.indexOf("<ymax>", ymaxIndex1 + 1) + 6, s.indexOf("</ymax>", ymaxIndex2 + 1)));
+            int ymax = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<ymax>", ymaxIndex1 + 1) + 6, s.indexOf("</ymax>", ymaxIndex2 + 1))));
             ymaxIndex1 = s.indexOf("<ymax>", ymaxIndex1 + 1);
             ymaxIndex2 = s.indexOf("</ymax>", ymaxIndex2 + 1);
 
-            BoundingBox bbox = new BoundingBox(name, new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin), 0, 0);
-            PascalVocObject obj = new PascalVocObject(bbox);
+            PascalVocBoundingBox bbox = new PascalVocBoundingBox(name,new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin), 0, 0,null);
+            List<PascalVocAttribute> attributeList = null;
+            String strAttributes="";
+            if (indexAttributes!=-1) {
+                attributeList=new ArrayList();
+                strAttributes=s.substring(indexAttributes,s.indexOf("</attributes>",indexAttributes));
+                int cntAttribute=strAttributes.split("</attribute>").length - 1;
+                int indexAttrBegin=0;
+                int indexAttrEnd=0;
+                for (int j = 0; j < cntAttribute; j++) {
+                    indexAttrBegin=strAttributes.indexOf("<attribute>",indexAttrBegin+1);
+                    indexAttrEnd=strAttributes.indexOf("</attribute>",indexAttrEnd+1);
+                    String sMid=strAttributes.substring(indexAttrBegin,indexAttrEnd);
+                    int indexNameBegin=sMid.indexOf("<name>")+6;
+                    int indexNameEnd=sMid.indexOf("</name>");
+                    String attrName=sMid.substring(indexNameBegin, indexNameEnd);
+                    int indexValueBegin=sMid.indexOf("<value>")+7;
+                    int indexValueEnd=sMid.indexOf("</value>");
+                    String attrValue=sMid.substring(indexValueBegin, indexValueEnd);
+                    PascalVocAttribute bbA=new PascalVocAttribute(attrName, attrValue);
+                    attributeList.add(bbA);
+                }
+            }
+            
+            PascalVocObject obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, attributeList);
             lstObjects.add(obj);
         }
         ret.lstObjects = lstObjects;
@@ -6626,14 +6525,14 @@ public final class FactoryUtils {
         String ret = "{";
         File[] xmls = FactoryUtils.getFileListInFolderByExtension(srcDirectory, "xml");
         for (File xml : xmls) {
-            BoundingBoxPascalVOC voc = deserializePascalVocXML(xml.getAbsolutePath());
+            AnnotationPascalVOCFormat voc = deserializePascalVocXML(xml.getAbsolutePath());
             int n = voc.lstObjects.size();
             String s = "\"" + FactoryUtils.getFileName(xml.getName()) + ".jpg" + "\"" + ":[";
             float w = voc.size.width;
             float h = voc.size.height;
             for (int i = 0; i < n; i++) {
-                BoundingBox bbox = voc.lstObjects.get(i).bndbox;
-                float lbl = labels.get(bbox.name);
+                PascalVocBoundingBox bbox = voc.lstObjects.get(i).bndbox;
+                float lbl = labels.get(voc.lstObjects.get(i).name);
                 //s=s+" [4.0, 5.0, 512.0, 512.0, "+lbl+", "+bbox.xmin/w+", "+bbox.ymin/h+", "+bbox.xmax/w+", "+bbox.ymax/h+" ],";
                 s = s + "[4.0, 5.0, 512.0, 512.0, " + lbl + ", " + bbox.xmin / w + ", " + bbox.ymin / h + ", " + bbox.xmax / w + ", " + bbox.ymax / h + "], ";
             }
@@ -6650,14 +6549,14 @@ public final class FactoryUtils {
         String ret = "filename,width,height,class,xmin,ymin,xmax,ymax\n";
         File[] xmls = FactoryUtils.getFileListInFolderByExtension(srcDirectory, "xml");
         for (File xml : xmls) {
-            BoundingBoxPascalVOC voc = deserializePascalVocXML(xml.getAbsolutePath());
+            AnnotationPascalVOCFormat voc = deserializePascalVocXML(xml.getAbsolutePath());
             int n = voc.lstObjects.size();
             int w = voc.size.width;
             int h = voc.size.height;
             String s = "";
             for (int i = 0; i < n; i++) {
-                BoundingBox bbox = voc.lstObjects.get(i).bndbox;
-                s += voc.fileName + "," + w + "," + h + "," + bbox.name + "," + bbox.xmin + "," + bbox.ymin + "," + bbox.xmax + "," + bbox.ymax + "\n";
+                PascalVocBoundingBox bbox = voc.lstObjects.get(i).bndbox;
+                s += voc.fileName + "," + w + "," + h + "," + voc.lstObjects.get(i).name + "," + bbox.xmin + "," + bbox.ymin + "," + bbox.xmax + "," + bbox.ymax + "\n";
             }
             ret += s;
         }
@@ -6677,14 +6576,14 @@ public final class FactoryUtils {
         String[] ret = new String[2];
         List<String> lines = new ArrayList();
         for (File xml : xmls) {
-            BoundingBoxPascalVOC voc = deserializePascalVocXML(xml.getAbsolutePath());
+            AnnotationPascalVOCFormat voc = deserializePascalVocXML(xml.getAbsolutePath());
             int n = voc.lstObjects.size();
             int w = voc.size.width;
             int h = voc.size.height;
             String s = "";
             for (int i = 0; i < n; i++) {
-                BoundingBox bbox = voc.lstObjects.get(i).bndbox;
-                lines.add(voc.fileName + "," + w + "," + h + "," + bbox.name + "," + bbox.xmin + "," + bbox.ymin + "," + bbox.xmax + "," + bbox.ymax);
+                PascalVocBoundingBox bbox = voc.lstObjects.get(i).bndbox;
+                lines.add(voc.fileName + "," + w + "," + h + "," + voc.lstObjects.get(i).name + "," + bbox.xmin + "," + bbox.ymin + "," + bbox.xmax + "," + bbox.ymax);
             }
         }
         long seed = System.nanoTime();
@@ -6735,7 +6634,7 @@ public final class FactoryUtils {
         String globalRet = "";
         for (File f : files) {
             if (f.isFile() && FactoryUtils.getFileExtension(f).equals("xml")) {
-                BoundingBoxPascalVOC bbp = deserializePascalVocXML(f.getAbsolutePath());
+                AnnotationPascalVOCFormat bbp = deserializePascalVocXML(f.getAbsolutePath());
                 w = bbp.size.width;
                 h = bbp.size.height;
                 String ret = "";
@@ -6749,7 +6648,7 @@ public final class FactoryUtils {
                     py1 = (y1 + y2) / 2.0f / h;
                     px2 = (x2 - x1) * 1.0f / w;
                     py2 = (y2 - y1) * 1.0f / h;
-                    class_index = map.get(pv.bndbox.name);
+                    class_index = map.get(pv.name);
                     ret += class_index + " " + px1 + " " + py1 + " " + px2 + " " + py2 + "\n";
                 }
                 globalRet += ret;

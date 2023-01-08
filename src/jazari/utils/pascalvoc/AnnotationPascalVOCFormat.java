@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jazari.utils;
+package jazari.utils.pascalvoc;
 
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_BGR;
@@ -13,19 +13,21 @@ import java.util.List;
  *
  * @author cezerilab
  */
-public class BoundingBoxPascalVOC {
+public class AnnotationPascalVOCFormat {
 
     public String folder;
     public String fileName;
+    public PascalVocSource source = new PascalVocSource();
     public String path;
     public PascalVocSize size;
     public BufferedImage image;
     public List<PascalVocObject> lstObjects;
 
-    public BoundingBoxPascalVOC(String folder, String fileName, String path, BufferedImage image, List<PascalVocObject> lstObjects) {
+    public AnnotationPascalVOCFormat(String folder, String fileName, PascalVocSource source, String path, BufferedImage image, List<PascalVocObject> lstObjects) {
         this.folder = folder;
         this.fileName = fileName;
         this.path = path;
+        this.source = (source != null) ? source : new PascalVocSource();
         int type = image.getType();
         int depth = 3;
         if (type == TYPE_INT_BGR) {
@@ -35,7 +37,7 @@ public class BoundingBoxPascalVOC {
         this.lstObjects = lstObjects;
     }
 
-    public BoundingBoxPascalVOC() {
+    public AnnotationPascalVOCFormat() {
 
     }
 
@@ -49,9 +51,7 @@ public class BoundingBoxPascalVOC {
                 + "\t<folder>" + folder + "</folder>\n"
                 + "\t<filename>" + fileName + "</filename>\n"
                 + "\t<path>" + path + "</path>\n"
-                + "\t<source>\n"
-                + "\t\t<database>Unknown</database>\n"
-                + "\t</source>\n"
+                + source.toString()
                 + size.toString()
                 + "\t<segmented>0</segmented>\n"
                 + lst
@@ -60,5 +60,3 @@ public class BoundingBoxPascalVOC {
     }
 
 }
-
-

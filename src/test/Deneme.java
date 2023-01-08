@@ -7,19 +7,8 @@ package test;
 
 import java.awt.Color;
 import java.util.Arrays;
+import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
-//import javax.xml.bind.annotation.XmlElement;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
-//
-//@XmlRootElement(name = "book")
-//@XmlType(propOrder = {
-//    "author",
-//    "name",
-//    "publisher",
-//    "isbn"
-//})
-
 /**
  *
  * @author cezerilab
@@ -28,12 +17,15 @@ public class Deneme {
 
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                .range(0, 720)
-                .toRadians()
-                .sin()
-                .println()
-                .plot()
+                .annotateImages("C:\\Users\\cezerilab\\Desktop\\dataset\\ds_ulaşımda yapay zeka\\gecmis_seneler\\images")
                 ;
+//        CMatrix cm = CMatrix.getInstance()
+//                .range(0, 720)
+//                .toRadians()
+//                .sin()
+//                .println()
+//                .plot()
+//                ;
         
         
         

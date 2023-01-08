@@ -5,6 +5,8 @@
  */
 package jazari.utils;
 
+import java.awt.Color;
+import java.awt.Component;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -20,7 +22,10 @@ import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JColorChooser;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import jazari.factory.FactoryUtils;
@@ -29,18 +34,21 @@ public class MyDialog extends JDialog implements ActionListener {
 
     private String data;
     private JTextField descBox;
-    private JComboBox<String> colorList;
-    private JList<String> labelList;
+    private JButton btnColorChooser;
+    private JList<ColorItem> colorList;
+    private JList<String> classNameList;
     private JButton btnOk;
     private JButton btnCancel;
     private String[] cs;
     private String imageFolder;
     private String className;
+    private String selectedClassName;
+    private String selectedColor;
 
-    public MyDialog(Frame parent,String imageFolder,String className) {
+    public MyDialog(Frame parent, String imageFolder, String className) {
         super(parent, "Enter class label", true);
-        this.imageFolder=imageFolder;
-        this.className=className;
+        this.imageFolder = imageFolder;
+        this.className = className;
         setTitle("press 's' to save");
         Point loc = parent.getLocation();
         setLocation(loc.x + 80, loc.y + 80);
@@ -55,6 +63,7 @@ public class MyDialog extends JDialog implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(descLabel, gbc);
+
         descBox = new JTextField(30);
         descBox.setText(this.className);
         gbc.gridwidth = 2;
@@ -62,43 +71,105 @@ public class MyDialog extends JDialog implements ActionListener {
         gbc.gridy = 0;
         panel.add(descBox, gbc);
 
-//      JLabel colorLabel = new JLabel("Choose color:");
-//      gbc.gridwidth = 1;
-//      gbc.gridx = 0;
-//      gbc.gridy = 1;
-//      panel.add(colorLabel,gbc);
-//      String[] colorStrings = {"red","yellow","orange","green","blue"};
-//      colorList = new JComboBox<String>(colorStrings);
-//      gbc.gridwidth = 2;
-//      gbc.gridx = 1;
-//      gbc.gridy = 1;
-//      panel.add(colorList,gbc);
+        btnColorChooser = new JButton("choose color");
+        btnColorChooser.addActionListener(this);
+        gbc.gridwidth = 2;
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        btnColorChooser.setVisible(false);
+        panel.add(btnColorChooser, gbc);
+
         JLabel classLabel = new JLabel("Choose Class Label:");
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(classLabel, gbc);
-        if (!FactoryUtils.isFileExist(imageFolder+"/class_labels.txt")) {
-            FactoryUtils.writeToFile(imageFolder+"/class_labels.txt", "");
+        if (!FactoryUtils.isFileExist(imageFolder + "/class_labels.txt")) {
+            FactoryUtils.writeToFile(imageFolder + "/class_labels.txt", "");
         }
-        cs = FactoryUtils.readFile(imageFolder+"/class_labels.txt").split("\n");
-        labelList = new JList<String>(cs);
-        gbc.gridwidth = 2;
+        cs = FactoryUtils.readFile(imageFolder + "/class_labels.txt").split("\n");
+
+        String[] names = buildClassNameList(cs);
+        classNameList = new JList(names);
+        gbc.gridwidth = 1;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        panel.add(labelList, gbc);
-        labelList.addListSelectionListener(new ListSelectionListener() {
+        panel.add(classNameList, gbc);
+
+        ColorItem[] itemList = buildColorItemList(cs);
+        colorList = new JList(itemList);
+        colorList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
-                descBox.setText(labelList.getSelectedValue());
+            public Component getListCellRendererComponent(JList list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                ColorItem item = (ColorItem) value;
+                setText(" ");
+                setBackground(item.color);
+                if (isSelected) {
+                    setBackground(getBackground().darker());
+                }
+                return c;
             }
+
         });
-        labelList.addMouseListener(new MouseListener() {
+
+        colorList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    descBox.setText(labelList.getSelectedValue());
+                    classNameList.setSelectedIndex(colorList.getSelectedIndex());
+                    Color color = JColorChooser.showDialog(null, "Choose Color for BoundingBox", Color.yellow);
+                    selectedClassName = descBox.getText();
+                    selectedColor = "Color " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
+                    colorList.getSelectedValue().color = color;
+                    revalidate();
+                } else if (e.getClickCount() == 1) {
+                    classNameList.setSelectedIndex(colorList.getSelectedIndex());
+                    selectedClassName = cs[colorList.getSelectedIndex()].split(":")[0];
+                    selectedColor = cs[colorList.getSelectedIndex()].split(":")[1];
+                }
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        gbc.gridwidth = 1;
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        panel.add(colorList, gbc);
+
+        classNameList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                descBox.setText(classNameList.getSelectedValue().toString());
+                //colorList.setSelectedIndex(classNameList.getSelectedIndex());
+            }
+        });
+        classNameList.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    descBox.setText(classNameList.getSelectedValue().toString());
                     btnOk.doClick();
+                } else if (e.getClickCount() == 1) {
+                    colorList.setSelectedIndex(classNameList.getSelectedIndex());
+                    selectedClassName = cs[classNameList.getSelectedIndex()].split(":")[0];
+                    selectedColor = cs[classNameList.getSelectedIndex()].split(":")[1];
                 }
             }
 
@@ -131,7 +202,7 @@ public class MyDialog extends JDialog implements ActionListener {
         panel.add(btnOk, gbc);
         btnCancel = new JButton("Cancel");
         btnCancel.addActionListener(this);
-        gbc.gridx = 1;
+        gbc.gridx = 3;
         gbc.gridy = 3;
         panel.add(btnCancel, gbc);
         getContentPane().add(panel);
@@ -140,23 +211,33 @@ public class MyDialog extends JDialog implements ActionListener {
 
     public void actionPerformed(ActionEvent ae) {
         Object source = ae.getSource();
-        boolean isFound=false;
+        boolean isFound = false;
         if (source == btnOk) {
-            data = descBox.getText();
+            selectedColor = (selectedColor == null) ? "Color 255 255 0" : selectedColor;
+            data = descBox.getText() + ":" + selectedColor;
+            int k=0;
             for (String c : cs) {
                 if (cs.equals("") || data.equals("")) {
                     continue;
                 }
                 if ((data).equals(c)) {
                     dispose();
-                    isFound=true;
+                    isFound = true;
                 }
+                if (data.split(":")[0].equals(c.split(":")[0])) {
+                    cs[k]=data;
+                    FactoryUtils.writeToFile(imageFolder + "/class_labels.txt", cs);
+                    dispose();
+                    isFound = true;
+                    break;
+                }
+                k++;
             }
-            if (!isFound && !data.isEmpty()){
-                FactoryUtils.writeOnFile(imageFolder+"/class_labels.txt", data+"\n");
+            if (!isFound && !data.isEmpty()) {
+                FactoryUtils.writeOnFile(imageFolder + "/class_labels.txt", data + "\n");
             }
-            
-        } else {
+
+        } else if (source == btnCancel) {
             data = null;
         }
         dispose();
@@ -165,5 +246,50 @@ public class MyDialog extends JDialog implements ActionListener {
     public String run() {
         this.setVisible(true);
         return data;
+    }
+
+    private ColorItem[] buildColorItemList(String[] cs) {
+        ColorItem[] ret = new ColorItem[cs.length];
+        if (cs.length==1 && cs[0].isEmpty()) {
+            ret[0]=new ColorItem("", Color.yellow);
+            return ret;
+        }
+        
+        for (int i = 0; i < cs.length; i++) {
+            String[] str = cs[i].split(":");
+            if (str.length > 0) {
+                String className = str[0];
+                String cls[] = str[1].split(" ");
+                int red = Integer.parseInt(cls[1]);
+                int green = Integer.parseInt(cls[2]);
+                int blue = Integer.parseInt(cls[3]);
+                ret[i] = new ColorItem(className, new Color(red, green, blue));
+            }
+        }
+        return ret;
+    }
+
+    private String[] buildClassNameList(String[] cs) {
+        String[] ret = new String[cs.length];
+        for (int i = 0; i < cs.length; i++) {
+            ret[i] = cs[i].split(":")[0];
+        }
+        return ret;
+    }
+
+    public class ColorItem {
+
+        public String className;
+        public Color color;
+
+        public ColorItem(String className, Color color) {
+            this.className = className;
+            this.color = color;
+        }
+
+        @Override
+        public String toString() {
+            return className + ":Color " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
+        }
     }
 }

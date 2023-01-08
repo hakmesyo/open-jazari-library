@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jazari.utils;
+package jazari.utils.pascalvoc;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Objects;
 
@@ -12,32 +13,35 @@ import java.util.Objects;
  *
  * @author cezerilab
  */
-public class BoundingBox {
+public class PascalVocBoundingBox {
+
     public int xmin;
     public int ymin;
     public int xmax;
     public int ymax;
     private Rectangle rect;
+    public int fromLeft = 0;
+    public int fromTop = 0;
     public String name;
-    public int fromLeft=0;
-    public int fromTop=0;
+    public Color color = Color.yellow;
 
-    public BoundingBox(String name, Rectangle rect,int fromLeft,int fromTop) {
-        this.name=name;
-        this.rect=new Rectangle(rect);
+    public PascalVocBoundingBox(String name, Rectangle rect, int fromLeft, int fromTop, Color color) {
+        this.rect = new Rectangle(rect);
         this.xmin = rect.x;
         this.ymin = rect.y;
-        this.xmax = rect.x+rect.width;
-        this.ymax = rect.y+rect.height;
-        this.fromLeft=fromLeft;
-        this.fromTop=fromTop;
+        this.xmax = rect.x + rect.width;
+        this.ymax = rect.y + rect.height;
+        this.fromLeft = fromLeft;
+        this.fromTop = fromTop;
+        this.name = name;
+        this.color = (color != null) ? color : Color.yellow;
     }
-    
-    public Rectangle getRectangle(int fromLeft,int fromTop,int padding){
-        rect.x=xmin+fromLeft-padding;
-        rect.y=ymin+fromTop-padding;
-        rect.width=xmax-xmin+2*padding;
-        rect.height=ymax-ymin+2*padding;
+
+    public Rectangle getRectangle(int fromLeft, int fromTop, int padding) {
+        rect.x = xmin + fromLeft - padding;
+        rect.y = ymin + fromTop - padding;
+        rect.width = xmax - xmin + 2 * padding;
+        rect.height = ymax - ymin + 2 * padding;
         return rect;
     }
 
@@ -48,7 +52,6 @@ public class BoundingBox {
         hash = 31 * hash + this.ymin;
         hash = 31 * hash + this.xmax;
         hash = 31 * hash + this.ymax;
-        hash = 31 * hash + Objects.hashCode(this.name);
         hash = 31 * hash + this.fromLeft;
         hash = 31 * hash + this.fromTop;
         return hash;
@@ -65,7 +68,7 @@ public class BoundingBox {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BoundingBox other = (BoundingBox) obj;
+        final PascalVocBoundingBox other = (PascalVocBoundingBox) obj;
         if (this.xmin != other.xmin) {
             return false;
         }
@@ -84,30 +87,25 @@ public class BoundingBox {
         if (this.fromTop != other.fromTop) {
             return false;
         }
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
         return true;
     }
-    
-    
 
     @Override
     public String toString() {
         return "\t\t<bndbox>\n"
-                + "\t\t\t<xmin>" + (xmin-fromLeft) + "</xmin>\n"
-                + "\t\t\t<ymin>" + (ymin-fromTop) + "</ymin>\n"
-                + "\t\t\t<xmax>" + (xmax-fromLeft) + "</xmax>\n"
-                + "\t\t\t<ymax>" + (ymax-fromTop) + "</ymax>\n"
+                + "\t\t\t<xmin>" + (xmin - fromLeft) + "</xmin>\n"
+                + "\t\t\t<ymin>" + (ymin - fromTop) + "</ymin>\n"
+                + "\t\t\t<xmax>" + (xmax - fromLeft) + "</xmax>\n"
+                + "\t\t\t<ymax>" + (ymax - fromTop) + "</ymax>\n"
                 + "\t\t</bndbox>\n";
     }
 
     public int getWidth() {
-        return Math.abs(xmax-xmin);
+        return Math.abs(xmax - xmin);
     }
-    
+
     public int getHeight() {
-        return Math.abs(ymax-ymin);
+        return Math.abs(ymax - ymin);
     }
-    
+
 }

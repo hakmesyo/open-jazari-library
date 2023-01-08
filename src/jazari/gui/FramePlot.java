@@ -5,6 +5,7 @@
  */
 package jazari.gui;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import jazari.types.TFigureAttribute;
 import jazari.image_processing.ImageProcess;
 import jazari.matrix.CMatrix;
@@ -28,6 +29,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author BAP1
  */
 public class FramePlot extends javax.swing.JFrame {
+    static {
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(FlatLaf.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     private CMatrix cm;
     private TFigureAttribute figureAttribute;

@@ -31,6 +31,8 @@ import com.jhlabs.image.InvertFilter;
 import com.jhlabs.image.MotionBlurFilter;
 import com.jhlabs.image.MotionBlurOp;
 import com.jhlabs.image.PointFilter;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
@@ -1216,7 +1218,7 @@ public final class ImageProcess {
     }
 
     public static BufferedImage pixelsToImageGray(float dizi[][]) {
-        int[] pixels = FactoryUtils.toIntArray1DBasedOnRows(dizi);
+        int[] pixels = FactoryUtils.toIntArray1D(dizi);
         int h = dizi.length;
         int w = dizi[0].length;
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
@@ -2826,7 +2828,11 @@ public final class ImageProcess {
     }
 
     public static BufferedImage filterMedian(BufferedImage imgx) {
-        return filterMedian(imgx, 3);
+        ImagePlus imagePlus=new ImagePlus("", imgx);
+        ImageProcessor ip = imagePlus.getProcessor();
+        ip.medianFilter();
+        return ip.getBufferedImage();
+        //return filterMedian(imgx, 3);
     }
 
     public static BufferedImage filterGaussian(BufferedImage imgx, int size) {
@@ -3137,6 +3143,7 @@ public final class ImageProcess {
      * @return
      */
     public static BufferedImage binarizeColorImage(BufferedImage original) {
+        original=rgb2gray(original);
         int threshold = getOtsuTresholdValue(original);
         return binarizeColorImage(original, threshold);
     }
@@ -3159,7 +3166,7 @@ public final class ImageProcess {
                 }
             }
         }
-        BufferedImage binarized = ImageProcess.pixelsToImageGray(d);
+        BufferedImage binarized = pixelsToImageGray(d);
         return binarized;
     }
 

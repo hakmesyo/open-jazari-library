@@ -33,7 +33,7 @@ import javax.swing.JFrame;
  *
  * @author cezerilab
  */
-public class FactoryWebCam{
+public class FactoryWebCam {
 
     //private FactoryWebCam factWebCam = new FactoryWebCam();
     public Webcam webCam;
@@ -88,12 +88,29 @@ public class FactoryWebCam{
         return this;
     }
 
+    public FactoryWebCam startWebCAM(Dimension dim) {
+        panel = new WebcamPanel(webCam);
+        panel.setImageSizeDisplayed(true);
+//        panel.setFPSLimited(true);
+//        panel.setFPSLimit(fps);
+        panel.setFPSDisplayed(true);
+
+        JFrame window = new JFrame("Webcam");
+        window.add(panel);
+        window.setResizable(true);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setPreferredSize(dim);
+        window.pack();
+        window.setVisible(true);
+        return this;
+    }
+
     public FactoryWebCam startWebCAM(int fps) {
         panel = new WebcamPanel(webCam);
         panel.setImageSizeDisplayed(true);
         panel.setFPSLimited(true);
         panel.setFPSLimit(fps);
-        //panel.setFPSDisplayed(true);
+        panel.setFPSDisplayed(true);
 
         JFrame window = new JFrame("Webcam");
         window.add(panel);

@@ -2298,7 +2298,8 @@ public final class CMatrix implements Serializable {
 //        return this;
 //    }
     public CMatrix toGrayLevel() {
-        CMatrix ret = this.clone();
+        //CMatrix ret = this.clone();
+        CMatrix ret = this;
         if (ret.image != null) {
             ret.image = ImageProcess.toGrayLevel(ret.image);
             ret.array = Nd4j.create(ImageProcess.bufferedImageToArray2D(ret.image));
@@ -5147,6 +5148,16 @@ public final class CMatrix implements Serializable {
 
     public CMatrix absDifference(CMatrix cmx) {
         array = Transforms.abs(array.sub(cmx.array));
+        return this;
+    }
+
+    /**
+     * default 3x3 median filter
+     * @return
+     */
+    public CMatrix filterMedian() {
+        image = ImageProcess.filterMedian(image);
+        setArray(ImageProcess.imageToPixelsFloat(image));
         return this;
     }
 
@@ -8556,6 +8567,12 @@ public final class CMatrix implements Serializable {
 
     public CMatrix startCamera(int cameraIndex, java.awt.Dimension size,int fps) {
         factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(fps);
+        webCam=factoryWebCam.webCam;
+        return this;
+    }
+    
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size,java.awt.Dimension resizeDim) {
+        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resizeDim);
         webCam=factoryWebCam.webCam;
         return this;
     }
