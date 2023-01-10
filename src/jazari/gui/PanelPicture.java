@@ -191,6 +191,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     }
 
     public void setImage(BufferedImage image, String imagePath, String caption) {
+        System.gc();
         this.caption = caption;
         if (activateBoundingBox && imagePath != null && !imagePath.isEmpty()) {
             String fileName = FactoryUtils.getFileName(imagePath) + ".xml";
