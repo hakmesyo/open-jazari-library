@@ -57,7 +57,7 @@ public class Inference {
                 String basePath = "C:\\ai\\djl\\dataset_pdr\\dataset\\";
                 for (int i = 0; i < 10; i++) {
                     String imgPath = basePath + i;
-                    File[] imgFiles = FactoryUtils.getFileListInFolderForImages(imgPath);
+                    File[] imgFiles = FactoryUtils.getFileArrayInFolderForImages(imgPath);
                     for (File imgFile : imgFiles) {
                         totImg++;
                         img = ImageFactory.getInstance().fromFile(Paths.get(imgFile.getAbsolutePath()));

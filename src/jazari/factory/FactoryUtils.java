@@ -38,6 +38,7 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -58,6 +59,7 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageTypeSpecifier;
@@ -3416,7 +3418,12 @@ public final class FactoryUtils {
 
     }
 
-    public static File[] getFileListInFolderForImages(String imageFolder) {
+    public static List<File> getFileListInFolderForImages(String imageFolder) {
+        File[] ret = getFileArrayInFolderForImages(imageFolder);
+        return new ArrayList(Arrays.asList(ret));
+    }
+
+    public static File[] getFileArrayInFolderForImages(String imageFolder) {
         File dir = new File(imageFolder);
         final String[] EXTENSIONS = new String[]{
             "gif", "png", "bmp", "jpg", "PNG", "JPG", "BMP", "GIF", "jpeg", "JPEG", "tif", "TIF" // and other formats you need
@@ -3440,7 +3447,7 @@ public final class FactoryUtils {
         return list;
     }
 
-    public static File[] getFileListInFolderByExtension(String imageFolder, String extension) {
+    public static File[] getFileArrayInFolderByExtension(String imageFolder, String extension) {
         File dir = new File(imageFolder);
         // filter to identify images based on their extensions
         FilenameFilter FILE_FILTER = new FilenameFilter() {
@@ -3454,8 +3461,14 @@ public final class FactoryUtils {
             }
         };
         File[] list = dir.listFiles(FILE_FILTER);
-        Arrays.sort(list, Comparator.comparingLong(File::lastModified));
+        //Arrays.sort(list, Comparator.comparingLong(File::lastModified));
+        Arrays.sort(list, Comparator.comparing(File::getName));
         return list;
+    }
+
+    public static List<File> getFileListInFolderByExtension(String imageFolder, String extension) {
+        File[] list = getFileArrayInFolderByExtension(imageFolder, extension);
+        return new ArrayList(Arrays.asList(list));
     }
 
     public static long fact(int n) {
@@ -4424,6 +4437,12 @@ public final class FactoryUtils {
         ret[0] = new CPoint(minR, minC);
         ret[1] = new CPoint(maxR, maxC);
         return ret;
+    }
+
+    private static boolean isPointInPolygon(Point p, Point[] polygon) {
+        CPoint cp = convertPointToCPoint(p);
+        CPoint[] cps = convertPointsToCPoints(polygon);
+        return isPointInPolygon(cp, cps);
     }
 
     private static boolean isPointInPolygon(CPoint p, CPoint[] polygon) {
@@ -5397,6 +5416,10 @@ public final class FactoryUtils {
         }
     }
 
+    public static void copyFile(String sourceFilePath, String destFilePath) {
+        copyFile(new File(sourceFilePath), new File(destFilePath));
+    }
+
     public static void copyFile(File sourceFile, File destFile) {
         if (!destFile.exists()) {
             try {
@@ -5628,10 +5651,16 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static File[] shuffle(File[] files, Random rnd) {
+    public static File[] shuffle(File[] files, int seed) {
         List<File> lst = Arrays.asList(files);
+        Random rnd = new Random(seed);
         Collections.shuffle(lst, rnd);
         files = lst.toArray(files);
+        return files;
+    }
+
+    public static List<File> shuffle(List<File> files, int seed) {
+        Collections.shuffle(files, new Random(seed));
         return files;
     }
 
@@ -5845,14 +5874,14 @@ public final class FactoryUtils {
     }
 
     public static void renameFilesAsNanoTime(String pathFolder) {
-        File[] files = FactoryUtils.getFileListInFolderForImages(pathFolder);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(pathFolder);
         for (File file : files) {
             FactoryUtils.renameFile(file, new File(pathFolder + "\\" + System.nanoTime() + "." + FactoryUtils.getFileExtension(file)));
         }
     }
 
     public static void reduceImageSize(String folderPath, int maxWidth, int maxHeight) {
-        File[] files = FactoryUtils.getFileListInFolderForImages(folderPath);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
         int k = -1;
         for (File file : files) {
             k++;
@@ -5874,10 +5903,140 @@ public final class FactoryUtils {
                     int desiredWidth = maxWidth;
                     img = ImageProcess.resize(img, desiredWidth, desiredHeight);
                     ImageProcess.saveImage(img, file.getAbsolutePath());
-
                 }
             }
         }
+    }
+
+    public static void generateObjectDetectionDataSetYolo(String pathSource, String pathTarget, float trainRatio, float valRatio, float testRatio, boolean shuffle, int seed, String extension, String[] classLabels) {
+
+        FactoryUtils.convertPascalVoc2YoloFormat(pathSource, classLabels);
+
+        File[] imgFiles = getFileArrayInFolderByExtension(pathSource, extension);
+        File[] xmlFiles = getFileArrayInFolderByExtension(pathSource, "xml");
+        File[] txtFiles = getFileArrayInFolderByExtension(pathSource, "txt");
+
+        List<File> listTxtFiles = new ArrayList(Arrays.asList(txtFiles));
+        listTxtFiles.removeIf(x -> x.getName().contains("class_labels"));
+        txtFiles = new File[listTxtFiles.size()];
+        listTxtFiles.toArray(txtFiles);
+
+        removeDirectoryRecursively(pathTarget);
+        makeDirectory(pathTarget);
+        makeDirectory(pathTarget + "/images");
+        makeDirectory(pathTarget + "/images/train");
+        makeDirectory(pathTarget + "/images/val");
+        makeDirectory(pathTarget + "/images/test");
+        makeDirectory(pathTarget + "/labels");
+        makeDirectory(pathTarget + "/labels/train");
+        makeDirectory(pathTarget + "/labels/val");
+        makeDirectory(pathTarget + "/labels/test");
+
+        if (shuffle) {
+            FactoryUtils.shuffle(imgFiles, seed);
+            FactoryUtils.shuffle(xmlFiles, seed);
+            FactoryUtils.shuffle(txtFiles, seed);
+        }
+        int n = imgFiles.length;
+        for (int i = 0; i < n; i++) {
+            if (i <= (int) (n * trainRatio)) {
+                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/train/" + imgFiles[i].getName()));
+                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/train/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/train/" + txtFiles[i].getName()));
+
+            } else if (i > (int) (n * trainRatio) && i <= (int) (n * (trainRatio + valRatio))) {
+                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/val/" + imgFiles[i].getName()));
+                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/val/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/val/" + txtFiles[i].getName()));
+            } else {
+                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/test/" + imgFiles[i].getName()));
+                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/test/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/test/" + txtFiles[i].getName()));
+            }
+            System.out.println(i + ".items copied from " + n + " of items");
+        }
+        generateCoCoYamlYolo(pathTarget, classLabels);
+
+    }
+
+    public static void removeDirectoryRecursively(String folderPath) {
+        Path path = Paths.get(folderPath);
+        try {
+            Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void generateCoCoYamlYolo(String pathTarget, String[] classLabels) {
+        String content = "# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]\n"
+                + "path:  # dataset root dir (leave empty for HUB)\n"
+                + "train: images/train  # train images (relative to 'path') 8 images\n"
+                + "val: images/val  # val images (relative to 'path') 8 images\n"
+                + "test:  # test images (optional)\n"
+                + "\n"
+                + "# Classes\n"
+                + "names:\n";
+        for (String lbl : classLabels) {
+            String[] s = lbl.split(":");
+            content += "  " + s[0] + ": " + s[1] + "\n";
+        }
+        FactoryUtils.writeToFile(pathTarget + "/coco6.yaml", content);
+        System.out.println("coco6.yaml file is written now");
+    }
+
+    /**
+     *
+     * @param path : Path contains items which would be processed
+     * @param ratio : probability between 0..1 as floating number
+     * @param seed : random seed point
+     * @param extension : file extension in order to filter the contents of the
+     * path
+     */
+    public static void diluteDataSet(String path, float ratio, int seed, String extension) {
+        File[] listFile = FactoryUtils.getFileArrayInFolderByExtension(path, extension);
+        File[] xmlFile = FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
+        FactoryUtils.shuffle(listFile, seed);
+        FactoryUtils.shuffle(xmlFile, seed);
+        FactoryUtils.removeDirectory(path + "/dilute");
+        FactoryUtils.makeDirectory(path + "/dilute");
+        Random rnd = new Random(seed);
+        if (xmlFile.length == listFile.length && xmlFile.length > 0) {
+            for (int i = 0; i < listFile.length; i++) {
+                float v = rnd.nextFloat();
+                if (v <= ratio) {
+                    FactoryUtils.copyFile(listFile[i], new File(path + "/dilute/" + listFile[i].getName()));
+                    FactoryUtils.copyFile(xmlFile[i], new File(path + "/dilute/" + xmlFile[i].getName()));
+                    //FactoryUtils.copyFile(listFile.get(i).getAbsolutePath(),path+"/dilute/"+listFile.get(i).getName());
+                }
+            }
+        }else{
+            for (int i = 0; i < listFile.length; i++) {
+                float v = rnd.nextFloat();
+                if (v <= ratio) {
+                    FactoryUtils.copyFile(listFile[i], new File(path + "/dilute/" + listFile[i].getName()));
+                }
+            }
+        }
+
+    }
+
+    private static CPoint convertPointToCPoint(Point p) {
+        CPoint ret = new CPoint(p.y, p.x);
+        return ret;
+    }
+
+    private static CPoint[] convertPointsToCPoints(Point[] polygon) {
+        CPoint[] ret = new CPoint[polygon.length];
+        int k = 0;
+        for (Point point : polygon) {
+            ret[k++] = new CPoint(point.y, point.x);
+
+        }
+        return ret;
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
@@ -6418,25 +6577,25 @@ public final class FactoryUtils {
             String path = s.substring(s.indexOf("<path>") + 6, s.indexOf("</path>"));
             ret.path = path;
         }
-        
-        PascalVocSource source=new PascalVocSource();
-        if (s.indexOf("<source>") !=-1) {
-            String database="Unknown";
-            if (s.indexOf("<database>")!=-1) {
-                database=s.substring(s.indexOf("<database>")+10,s.indexOf("</database>"));
+
+        PascalVocSource source = new PascalVocSource();
+        if (s.indexOf("<source>") != -1) {
+            String database = "Unknown";
+            if (s.indexOf("<database>") != -1) {
+                database = s.substring(s.indexOf("<database>") + 10, s.indexOf("</database>"));
             }
-            String annotation="Unknown";
-            if (s.indexOf("<annotation>",s.indexOf("<source>"))!=-1) {
-                annotation=s.substring(s.indexOf("<annotation>",s.indexOf("<source>"))+12,s.indexOf("</annotation>",s.indexOf("<source>")));
+            String annotation = "Unknown";
+            if (s.indexOf("<annotation>", s.indexOf("<source>")) != -1) {
+                annotation = s.substring(s.indexOf("<annotation>", s.indexOf("<source>")) + 12, s.indexOf("</annotation>", s.indexOf("<source>")));
             }
-            String image="Unknown";
-            if (s.indexOf("<image>")!=-1) {
-                image=s.substring(s.indexOf("<image>")+7,s.indexOf("</image>"));
+            String image = "Unknown";
+            if (s.indexOf("<image>") != -1) {
+                image = s.substring(s.indexOf("<image>") + 7, s.indexOf("</image>"));
             }
-            source=new PascalVocSource(database, annotation, image);
+            source = new PascalVocSource(database, annotation, image);
         }
-        ret.source=source;
-        
+        ret.source = source;
+
         int width = Integer.parseInt(s.substring(s.indexOf("<width>") + 7, s.indexOf("</width>")));
         int height = Integer.parseInt(s.substring(s.indexOf("<height>") + 8, s.indexOf("</height>")));
         int depth = 0;
@@ -6459,15 +6618,15 @@ public final class FactoryUtils {
         int xmaxIndex2 = 0;
         int ymaxIndex2 = 0;
         char[] ch = s.toCharArray();
-        int indexAttributes=0;
-        int indexAttributesEnd=0;
-        int indexObjectEnd=0;
+        int indexAttributes = 0;
+        int indexAttributesEnd = 0;
+        int indexObjectEnd = 0;
         for (int i = 0; i < count; i++) {
-            indexAttributes=s.indexOf("<attributes>",indexAttributes+1);
-            indexObjectEnd=s.indexOf("</object>",indexObjectEnd+1);
+            indexAttributes = s.indexOf("<attributes>", indexAttributes + 1);
+            indexObjectEnd = s.indexOf("</object>", indexObjectEnd + 1);
             String name = s.substring(s.indexOf("<name>", nameIndex1 + 1) + 6, s.indexOf("</name>", nameIndex2 + 1));
-            nameIndex1 = s.indexOf("<name>", indexObjectEnd)-25;
-            nameIndex2 = s.indexOf("</name>", indexObjectEnd)-25;
+            nameIndex1 = s.indexOf("<name>", indexObjectEnd) - 25;
+            nameIndex2 = s.indexOf("</name>", indexObjectEnd) - 25;
 
             int xmin = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<xmin>", xminIndex1 + 1) + 6, s.indexOf("</xmin>", xminIndex2 + 1))));
             xminIndex1 = s.indexOf("<xmin>", xminIndex1 + 1);
@@ -6485,30 +6644,30 @@ public final class FactoryUtils {
             ymaxIndex1 = s.indexOf("<ymax>", ymaxIndex1 + 1);
             ymaxIndex2 = s.indexOf("</ymax>", ymaxIndex2 + 1);
 
-            PascalVocBoundingBox bbox = new PascalVocBoundingBox(name,new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin), 0, 0,null);
+            PascalVocBoundingBox bbox = new PascalVocBoundingBox(name, new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin), 0, 0, null);
             List<PascalVocAttribute> attributeList = null;
-            String strAttributes="";
-            if (indexAttributes!=-1) {
-                attributeList=new ArrayList();
-                strAttributes=s.substring(indexAttributes,s.indexOf("</attributes>",indexAttributes));
-                int cntAttribute=strAttributes.split("</attribute>").length - 1;
-                int indexAttrBegin=0;
-                int indexAttrEnd=0;
+            String strAttributes = "";
+            if (indexAttributes != -1) {
+                attributeList = new ArrayList();
+                strAttributes = s.substring(indexAttributes, s.indexOf("</attributes>", indexAttributes));
+                int cntAttribute = strAttributes.split("</attribute>").length - 1;
+                int indexAttrBegin = 0;
+                int indexAttrEnd = 0;
                 for (int j = 0; j < cntAttribute; j++) {
-                    indexAttrBegin=strAttributes.indexOf("<attribute>",indexAttrBegin+1);
-                    indexAttrEnd=strAttributes.indexOf("</attribute>",indexAttrEnd+1);
-                    String sMid=strAttributes.substring(indexAttrBegin,indexAttrEnd);
-                    int indexNameBegin=sMid.indexOf("<name>")+6;
-                    int indexNameEnd=sMid.indexOf("</name>");
-                    String attrName=sMid.substring(indexNameBegin, indexNameEnd);
-                    int indexValueBegin=sMid.indexOf("<value>")+7;
-                    int indexValueEnd=sMid.indexOf("</value>");
-                    String attrValue=sMid.substring(indexValueBegin, indexValueEnd);
-                    PascalVocAttribute bbA=new PascalVocAttribute(attrName, attrValue);
+                    indexAttrBegin = strAttributes.indexOf("<attribute>", indexAttrBegin + 1);
+                    indexAttrEnd = strAttributes.indexOf("</attribute>", indexAttrEnd + 1);
+                    String sMid = strAttributes.substring(indexAttrBegin, indexAttrEnd);
+                    int indexNameBegin = sMid.indexOf("<name>") + 6;
+                    int indexNameEnd = sMid.indexOf("</name>");
+                    String attrName = sMid.substring(indexNameBegin, indexNameEnd);
+                    int indexValueBegin = sMid.indexOf("<value>") + 7;
+                    int indexValueEnd = sMid.indexOf("</value>");
+                    String attrValue = sMid.substring(indexValueBegin, indexValueEnd);
+                    PascalVocAttribute bbA = new PascalVocAttribute(attrName, attrValue);
                     attributeList.add(bbA);
                 }
             }
-            
+
             PascalVocObject obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, attributeList);
             lstObjects.add(obj);
         }
@@ -6523,7 +6682,7 @@ public final class FactoryUtils {
      */
     public static String convertPascalVoc2DJLFormat(String srcDirectory, Map<String, Integer> labels) {
         String ret = "{";
-        File[] xmls = FactoryUtils.getFileListInFolderByExtension(srcDirectory, "xml");
+        File[] xmls = FactoryUtils.getFileArrayInFolderByExtension(srcDirectory, "xml");
         for (File xml : xmls) {
             AnnotationPascalVOCFormat voc = deserializePascalVocXML(xml.getAbsolutePath());
             int n = voc.lstObjects.size();
@@ -6547,7 +6706,7 @@ public final class FactoryUtils {
 
     public static String convertPascalVoc2CsvFormat(String srcDirectory) {
         String ret = "filename,width,height,class,xmin,ymin,xmax,ymax\n";
-        File[] xmls = FactoryUtils.getFileListInFolderByExtension(srcDirectory, "xml");
+        File[] xmls = FactoryUtils.getFileArrayInFolderByExtension(srcDirectory, "xml");
         for (File xml : xmls) {
             AnnotationPascalVOCFormat voc = deserializePascalVocXML(xml.getAbsolutePath());
             int n = voc.lstObjects.size();
@@ -6572,7 +6731,7 @@ public final class FactoryUtils {
      */
     public static String[] convertPascalVoc2CsvFormat(String xmlDirectory, float trainSetRatio, float testSetRatio) {
         String header = "filename,width,height,class,xmin,ymin,xmax,ymax";
-        File[] xmls = FactoryUtils.getFileListInFolderByExtension(xmlDirectory, "xml");
+        File[] xmls = FactoryUtils.getFileArrayInFolderByExtension(xmlDirectory, "xml");
         String[] ret = new String[2];
         List<String> lines = new ArrayList();
         for (File xml : xmls) {
@@ -6621,7 +6780,7 @@ public final class FactoryUtils {
     }
 
     public static void convertPascalVoc2YoloFormat(String mainFolderPath, String[] refList) {
-        File[] files = FactoryUtils.getFileListInFolder(mainFolderPath);
+        File[] files = FactoryUtils.getFileArrayInFolderByExtension(mainFolderPath, "xml");
         int x1, x2, y1, y2, w, h, n, class_index;
         float px1, px2, py1, py2;
         //String[] refList = FactoryUtils.readFile(mainFolderPath + "/" + labels_map_file).split("\n");
@@ -6632,8 +6791,10 @@ public final class FactoryUtils {
             map.put(s, i);
         }
         String globalRet = "";
+        int k = 0;
         for (File f : files) {
             if (f.isFile() && FactoryUtils.getFileExtension(f).equals("xml")) {
+                System.out.println("k:" + k++);
                 AnnotationPascalVOCFormat bbp = deserializePascalVocXML(f.getAbsolutePath());
                 w = bbp.size.width;
                 h = bbp.size.height;
@@ -6655,7 +6816,7 @@ public final class FactoryUtils {
                 FactoryUtils.writeToFile(mainFolderPath + "/" + FactoryUtils.getFileName(bbp.fileName) + ".txt", ret);
             }
         }
-        FactoryUtils.writeToFile(mainFolderPath + "/" + "yolov7.txt", globalRet);
+        //FactoryUtils.writeToFile(mainFolderPath + "/" + "yolov7.txt", globalRet);
 
     }
 

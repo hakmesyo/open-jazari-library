@@ -4534,12 +4534,12 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix imread(String path) {
-        File file=new File(path);
+        File file = new File(path);
         String ek;
-        if (file.getName().indexOf(".")==-1) {
-            File[] files=FactoryUtils.getFileListInFolderForImages(path);
-            if (files.length>=0) {
-                path+="\\"+files[0].getName();
+        if (file.getName().indexOf(".") == -1) {
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
+            if (files.length >= 0) {
+                path += "\\" + files[0].getName();
             }
         }
         this.imagePath = path;
@@ -5153,6 +5153,7 @@ public final class CMatrix implements Serializable {
 
     /**
      * default 3x3 median filter
+     *
      * @return
      */
     public CMatrix filterMedian() {
@@ -8547,8 +8548,8 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix startCamera(int fps) {
-        factoryWebCam=new FactoryWebCam().openWebCam(0).startWebCAM(fps);
-        webCam=factoryWebCam.webCam;
+        factoryWebCam = new FactoryWebCam().openWebCam(0).startWebCAM(fps);
+        webCam = factoryWebCam.webCam;
         return this;
     }
 
@@ -8559,33 +8560,33 @@ public final class CMatrix implements Serializable {
      * desired camera index
      * @return
      */
-    public CMatrix startCamera(int cameraIndex,int fps) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex).startWebCAM(fps);
-        webCam=factoryWebCam.webCam;
+    public CMatrix startCamera(int cameraIndex, int fps) {
+        factoryWebCam = new FactoryWebCam().openWebCam(cameraIndex).startWebCAM(fps);
+        webCam = factoryWebCam.webCam;
         return this;
     }
 
-    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size,int fps) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(fps);
-        webCam=factoryWebCam.webCam;
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, int fps) {
+        factoryWebCam = new FactoryWebCam().openWebCam(cameraIndex, size).startWebCAM(fps);
+        webCam = factoryWebCam.webCam;
         return this;
     }
-    
-    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size,java.awt.Dimension resizeDim) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resizeDim);
-        webCam=factoryWebCam.webCam;
+
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resizeDim) {
+        factoryWebCam = new FactoryWebCam().openWebCam(cameraIndex, size).startWebCAM(resizeDim);
+        webCam = factoryWebCam.webCam;
         return this;
     }
-    
-    public CMatrix startCamera(java.awt.Dimension size,int fps) {
-        factoryWebCam=new FactoryWebCam().openWebCam(0,size).startWebCAM(fps);
-        webCam=factoryWebCam.webCam;
+
+    public CMatrix startCamera(java.awt.Dimension size, int fps) {
+        factoryWebCam = new FactoryWebCam().openWebCam(0, size).startWebCAM(fps);
+        webCam = factoryWebCam.webCam;
         return this;
     }
-    
-    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize,int fps) {
-        factoryWebCam=new FactoryWebCam().openWebCam(cameraIndex,size).startWebCAM(resize,fps);
-        webCam=factoryWebCam.webCam;
+
+    public CMatrix startCamera(int cameraIndex, java.awt.Dimension size, java.awt.Dimension resize, int fps) {
+        factoryWebCam = new FactoryWebCam().openWebCam(cameraIndex, size).startWebCAM(resize, fps);
+        webCam = factoryWebCam.webCam;
         return this;
     }
 
@@ -8704,7 +8705,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix imageDataGenerator(String folderPath, int imageWidth, int imageHeight) {
-        File[] files = FactoryUtils.getFileListInFolderForImages(folderPath);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
         float[][][][] data = new float[files.length][3][imageWidth][imageWidth];
         int n = 0;
         for (File file : files) {
@@ -8781,7 +8782,7 @@ public final class CMatrix implements Serializable {
                         indexes[i] = NDArrayIndex.interval(0, sh[i] - Math.abs(a));
                     }
 
-                } else if (s.length==1) {
+                } else if (s.length == 1) {
                     int a = Integer.parseInt(s[0]);
                     if (a >= 0) {
                         indexes[i] = NDArrayIndex.interval(Integer.parseInt(s[0]), sh[i]);
@@ -8807,30 +8808,30 @@ public final class CMatrix implements Serializable {
                     indexes[i] = NDArrayIndex.interval(Integer.parseInt(code[i]), Integer.parseInt(code[i]) + 1);
                 } else {
                     int a = Math.abs(Integer.parseInt(code[i]));
-                    indexes[i] = NDArrayIndex.interval(sh[i] - a, sh[i] - a+1);
+                    indexes[i] = NDArrayIndex.interval(sh[i] - a, sh[i] - a + 1);
                 }
 
             }
         }
-        
+
         this.array = this.array.get(indexes);
         return this;
     }
 
     public CMatrix reduce() {
         long[] sh = this.array.shape();
-        List<Long> lst=new ArrayList();
+        List<Long> lst = new ArrayList();
         for (int i = 0; i < sh.length; i++) {
-            if (sh[i]>1) {
+            if (sh[i] > 1) {
                 lst.add(sh[i]);
             }
         }
-        long[] n=new long[lst.size()];
-        int k=0;
+        long[] n = new long[lst.size()];
+        int k = 0;
         for (Long d : lst) {
-            n[k++]=d;
+            n[k++] = d;
         }
-        this.array=this.array.reshape(n);
+        this.array = this.array.reshape(n);
         return this;
     }
 
@@ -8843,20 +8844,20 @@ public final class CMatrix implements Serializable {
         this.imread(imgPath).imshow();
         return this;
     }
-    
+
     /**
      *
      * @param folderPath : path of the image folder
      * @return
      */
     public CMatrix annotateImages(String folderPath) {
-        File[] files=FactoryUtils.getFileListInFolderForImages(folderPath);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
         this.imread(files[0]).imshow();
         return this;
     }
 
     public CMatrix reduceImageSize(String folderPath, int maxWidth, int maxHeight) {
-        FactoryUtils.reduceImageSize(folderPath,maxWidth,maxHeight);
+        FactoryUtils.reduceImageSize(folderPath, maxWidth, maxHeight);
         return this;
     }
 
@@ -8867,6 +8868,48 @@ public final class CMatrix implements Serializable {
 
     public CMatrix addWebCamListener(WebcamListener wcl) {
         this.webCam.addWebcamListener(wcl);
+        return this;
+    }
+
+    /**
+     *
+     * @param pathSource
+     * @param pathTarget
+     * @param classLabels : it used for hash map forexample new
+     * String[]{"0:obj1","1:obj2", ....}
+     * @return
+     */
+    public CMatrix generateObjectDetectionDataSetYolo(String pathSource, String pathTarget, String[] classLabels) {
+        return generateObjectDetectionDataSetYolo(pathSource, pathTarget, 0.7f, 0.1f, 0.2f, false, 0, "jpg", classLabels);
+    }
+
+    /**
+     *
+     * @param pathSource : source directory should contain image and pascalvoc
+     * formatted xml files
+     * @param pathTarget : target directory
+     * @param trainRatio : ie 0.7f
+     * @param valRatio : ie 0.1f
+     * @param testRatio : ie 0.2f
+     * @param isShuffle : true or false
+     * @param seed : ie new Random(1234)
+     * @param extension : jpg or png or others
+     * @param classLabels : it used for hash map forexample new
+     * String[]{"0:obj1","1:obj2", ....}
+     * @return
+     */
+    public CMatrix generateObjectDetectionDataSetYolo(String pathSource, String pathTarget, float trainRatio, float valRatio, float testRatio, boolean isShuffle, int seed, String extension, String[] classLabels) {
+        FactoryUtils.generateObjectDetectionDataSetYolo(pathSource, pathTarget, trainRatio, valRatio, testRatio, isShuffle, seed, extension, classLabels);
+        return this;
+    }
+
+    public CMatrix diluteDataSet(String path, float ratio, int seed, String extension) {
+        FactoryUtils.diluteDataSet(path, ratio, seed, extension);
+        return this;
+    }
+
+    public CMatrix generateCoCoYamlYolo(String pathTarget, String[] lbl) {
+        FactoryUtils.generateCoCoYamlYolo(pathTarget, lbl);
         return this;
     }
 

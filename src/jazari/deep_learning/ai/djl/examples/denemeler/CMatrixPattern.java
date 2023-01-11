@@ -272,7 +272,7 @@ public class CMatrixPattern {
         final String MODEL_PATH = "models/pistachio_mlp/pistachio_mlp-0030.params";
         final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
 
-        File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(IMAGE_PATH);
 
         CMatrix cm = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
@@ -295,7 +295,7 @@ public class CMatrixPattern {
     private static void preparePistachioDataSet() {
 //        final String DATA_SET = "C:\\ai\\djl\\pistachio_test";
         final String DATA_SET = "data/pistachio/train";
-        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET + "/open");
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(DATA_SET + "/open");
         for (int i = 0; i < files.length; i++) {
             TRoi roi = CMatrix.getInstance()
                     .imread(files[i].getAbsolutePath())
@@ -358,7 +358,7 @@ public class CMatrixPattern {
         final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
 //        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\open";
 
-        File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(IMAGE_PATH);
 
         CMatrix cm = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
@@ -384,7 +384,7 @@ public class CMatrixPattern {
         final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
 //        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\open";
 
-        File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(IMAGE_PATH);
 
         CMatrix cm_gender = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
@@ -407,7 +407,7 @@ public class CMatrixPattern {
 
     private static void extractMultipleID() {
         final String DATA_SET = "C:\\ai\\djl\\dataset_pdr\\AnonimTC\\male";
-        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(DATA_SET);
         String[] tc_gender = FactoryUtils.readFromFileAsString1D("models/tc_numbers/tcno_male.csv");
         double[] tc = new double[tc_gender.length];
         List lst = new ArrayList();
@@ -445,7 +445,7 @@ public class CMatrixPattern {
 
     private static void resizeImages() {
         final String DATA_SET = "C:\\ai\\djl\\dataset_pdr\\AnonimTC\\male";
-        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(DATA_SET);
         String[] tc_gender = FactoryUtils.readFromFileAsString1D("models/tc_numbers/tcno_male.csv");
         double[] tc = new double[tc_gender.length];
         for (int i = 0; i < tc.length; i++) {
@@ -465,7 +465,7 @@ public class CMatrixPattern {
     private static void reIndexImages() {
 //        final String DATA_SET = "C:\\Users\\cezerilab\\Downloads\\pist\\images\\open";
         final String DATA_SET = "models\\pistachio_rest\\images\\train\\close";
-        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(DATA_SET);
         for (int i = 0; i < files.length; i++) {
             CMatrix cm = CMatrix.getInstance()
                     .tic()

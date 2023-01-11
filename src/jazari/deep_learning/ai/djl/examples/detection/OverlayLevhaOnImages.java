@@ -27,9 +27,9 @@ public class OverlayLevhaOnImages {
 
     private static void overlayImage() {
         String path_template = "images/teknofest/template_augment";
-        File[] files_template = FactoryUtils.getFileListInFolderByExtension(path_template, "png");
+        File[] files_template = FactoryUtils.getFileArrayInFolderByExtension(path_template, "png");
         String path_org = "C:\\ds_teknofest\\recorded_images\\parkur_copy";
-        File[] files_org = FactoryUtils.getFileListInFolderByExtension(path_org, "png");
+        File[] files_org = FactoryUtils.getFileArrayInFolderByExtension(path_org, "png");
         String path_overlayed = "C:\\ds_teknofest\\recorded_images\\parkur_overlayed";
         Random r = new Random();
         int cnt = 0;

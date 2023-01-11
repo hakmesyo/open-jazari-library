@@ -31,7 +31,7 @@ public class Datasets {
         List<String> lst_input = new ArrayList();
         List<String> lst_output = new ArrayList();
         for (File dir : dirs) {
-            File[] files = FactoryUtils.getFileListInFolderForImages(dir.getAbsolutePath());
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(dir.getAbsolutePath());
             for (File file : files) {
                 lst_input.add(file.getAbsolutePath());
                 lst_output.add(Arrays.toString(convertOneHotEncoding(dirs.length, dir.getName())));

@@ -40,7 +40,7 @@ public class TestWithMNIST {
         List<double[]> lst_input = new ArrayList();
         List<Double> lst_output = new ArrayList();
         for (File dir : dirs) {
-            File[] files = FactoryUtils.getFileListInFolderForImages(dir.getAbsolutePath());
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(dir.getAbsolutePath());
             for (File file : files) {
                 CMatrix cm = CMatrix.getInstance()
                         .imread(file)

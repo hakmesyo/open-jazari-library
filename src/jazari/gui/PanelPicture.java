@@ -152,7 +152,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         imagePath = path;
         File f = new File(imagePath);
         imageFolder = f.getParent();
-        imageFiles = FactoryUtils.getFileListInFolderForImages(imageFolder);
+        imageFiles = FactoryUtils.getFileArrayInFolderForImages(imageFolder);
         //imageFiles = sortFileListByNumber(imageFiles);
         fileName = f.getName();
         for (int i = 0; i < imageFiles.length; i++) {

@@ -29,7 +29,7 @@ public class MnistInferenceTfjs {
     private static File[] files = FactoryUtils.getFileListDataSetForImageClassification(imgPath);
     
     public static void main(String[] args) {
-        files = FactoryUtils.shuffle(files, new Random(123));
+        files = FactoryUtils.shuffle(files, 123);
 //        files = FactoryUtils.shuffle(files, new Random());
         System.out.println("files size:" + files.length);
 //        int n=files.length/5;

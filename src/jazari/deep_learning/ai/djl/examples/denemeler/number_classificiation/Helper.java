@@ -40,7 +40,7 @@ public class Helper {
 
     private static void renameFiles() {
         String path = "C:\\ai\\djl\\tc_numbers\\tc_images";
-        File[] files = FactoryUtils.getFileListInFolderForImages(path);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
         String[] names = FactoryUtils.readFromFileAsString1D("C:\\ai\\djl\\tc_numbers\\tc.txt");
         int i = 0;
         for (File file : files) {
@@ -52,7 +52,7 @@ public class Helper {
     }
 
     private static void extract_tc_numbers() {
-        File[] files = FactoryUtils.getFileListInFolderForImages(path);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
         System.out.println("files = " + files.length);
         for (int i = 0; i < files.length; i++) {
             //System.out.println("name:"+files[i].getName());
@@ -81,7 +81,7 @@ public class Helper {
     }
 
     private static void extract_gender_char() {
-        File[] files = FactoryUtils.getFileListInFolderForImages(path);
+        File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
         System.out.println("files = " + files.length);
         for (int i = 0; i < files.length; i++) {
             CMatrix cm = CMatrix.getInstance()

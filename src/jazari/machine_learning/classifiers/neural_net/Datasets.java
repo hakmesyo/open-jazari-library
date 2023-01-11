@@ -23,7 +23,7 @@ public class Datasets {
         int num_features=0;
         CMatrix cm = CMatrix.getInstance();
         for (File dir : dirs) {
-            File[] files = FactoryUtils.getFileListInFolderForImages(dir.getAbsolutePath());
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(dir.getAbsolutePath());
             for (File file : files) {
                 cm=cm.imread(file).rgb2gray();
                 double[] d = cm.normalizeZScore().toDoubleArray1D();

@@ -16,11 +16,9 @@ import jazari.matrix.CMatrix;
 public class Deneme {
 
     public static void main(String[] args) {
-        String path_1="D:\\DATASETS\\teknofest_2023_ulaşımda_yapay_zeka\\geçmiş seneler\\images";
-        String path_2="C:\\Users\\cezerilab\\Desktop\\dataset\\ds_ulaşımda yapay zeka\\gecmis_seneler\\images";
-        String path_3="D:\\DATASETS\\teknofest_2023_ulaşımda_yapay_zeka\\geçmiş seneler\\Oturum_2\\V2_1";
+        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\yolov5\\images\\val\\dilute";
         CMatrix cm = CMatrix.getInstance()
-                .annotateImages(path_3)
+                .annotateImages(path_1)
                 ;
 //        CMatrix cm = CMatrix.getInstance()
 //                .range(0, 720)

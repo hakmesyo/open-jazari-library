@@ -31,7 +31,7 @@ public class DataSetUtility {
             FactoryUtils.makeDirectory(p + "\\train");
             FactoryUtils.makeDirectory(p + "\\test");
             for (File sf : sub_folders) {
-                File[] f = FactoryUtils.getFileListInFolderForImages(sf.getAbsolutePath());
+                File[] f = FactoryUtils.getFileArrayInFolderForImages(sf.getAbsolutePath());
                 FactoryUtils.makeDirectory(p + "\\train\\" + sf.getName());
                 FactoryUtils.makeDirectory(p + "\\test\\" + sf.getName());
                 int n = f.length;
@@ -55,7 +55,7 @@ public class DataSetUtility {
             File[] fld = FactoryUtils.getFolderListInFolder(p + "\\test");
             for (File d : fld) {
 //                if (d.getName().equals("rocket")) {
-                    File[] fs = FactoryUtils.getFileListInFolderForImages(d.getAbsolutePath());
+                    File[] fs = FactoryUtils.getFileArrayInFolderForImages(d.getAbsolutePath());
                     for (File f : fs) {
                         CMatrix cm = CMatrix.getInstance()
                                 .imread(f)

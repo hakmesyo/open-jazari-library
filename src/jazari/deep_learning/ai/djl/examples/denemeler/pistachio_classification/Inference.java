@@ -58,7 +58,7 @@ public class Inference {
                 for (int i = 0; i < Models.NUM_OF_OUTPUT; i++) {
                     String imgPath=basePath+lbl[i];
                     
-                    File[] imgFiles = FactoryUtils.getFileListInFolderForImages(imgPath);
+                    File[] imgFiles = FactoryUtils.getFileArrayInFolderForImages(imgPath);
                     for (File imgFile : imgFiles) {
                         totImg++;
                         img = ImageFactory.getInstance().fromFile(Paths.get(imgFile.getAbsolutePath()));

@@ -29,7 +29,7 @@ public class TestResizeAdaptiveImage {
 
     private static void resizeWithAspectRatio(String sourcePath, String destPath) {
         FactoryUtils.makeDirectory(destPath);
-        File[] imgs = FactoryUtils.getFileListInFolderForImages(sourcePath);
+        File[] imgs = FactoryUtils.getFileArrayInFolderForImages(sourcePath);
         Collections.shuffle(Arrays.asList(imgs));
         for (File img : imgs) {
             CMatrix cm = CMatrix.getInstance()
@@ -42,7 +42,7 @@ public class TestResizeAdaptiveImage {
 
     private static void resize(String sourcePath, String destPath) {
         FactoryUtils.makeDirectory(destPath);
-        File[] imgs = FactoryUtils.getFileListInFolderForImages(sourcePath);
+        File[] imgs = FactoryUtils.getFileArrayInFolderForImages(sourcePath);
         Collections.shuffle(Arrays.asList(imgs));
         for (File img : imgs) {
             CMatrix cm = CMatrix.getInstance()

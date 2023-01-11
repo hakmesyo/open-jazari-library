@@ -36,7 +36,7 @@ public class TestVisDroneAnnotationsToPascalVoc {
     }
 
     private static void copyAnnotations() {
-        File[] files = FactoryUtils.getFileListInFolderForImages("C:\\Users\\dell_lab\\Desktop\\Yeni klasör (2)\\images");
+        File[] files = FactoryUtils.getFileArrayInFolderForImages("C:\\Users\\dell_lab\\Desktop\\Yeni klasör (2)\\images");
         String path_from = "D:\\DATASETS\\VisDrone\\image\\VisDrone2019-DET-train\\VisDrone2019-DET-train\\annotations";
         String path_to = "C:\\Users\\dell_lab\\Desktop\\Yeni klasör (2)\\annotations";
         for (File file : files) {

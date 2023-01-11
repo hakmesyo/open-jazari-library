@@ -17,7 +17,7 @@ public class DataSetGenerator {
 
     public static void main(String[] args) {
         String path="C:\\ai\\djl\\pistachio_test\\close\\";
-        File[] files=FactoryUtils.getFileListInFolderForImages(path);
+        File[] files=FactoryUtils.getFileArrayInFolderForImages(path);
         for (File file : files) {
             String f=path+System.nanoTime()+".jpg";
             FactoryUtils.renameFile(file.getAbsolutePath(),f);

@@ -365,7 +365,7 @@ public class TestInferenceAsClassicWay implements InterfaceDeepLearning {
 //        files = FactoryUtils.getFileListInFolderForImages(imgPath);
         String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/test";
         files = FactoryUtils.getFileListDataSetForImageClassification(imgPath);
-        files = FactoryUtils.shuffle(files, new Random(123));
+        files = FactoryUtils.shuffle(files, 123);
 //        files = FactoryUtils.shuffle(files, new Random());
         System.out.println("files size:" + files.length);
         jdlp = new TestInferenceAsClassicWay();

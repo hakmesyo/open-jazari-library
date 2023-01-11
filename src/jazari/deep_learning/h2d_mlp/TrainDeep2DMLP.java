@@ -63,11 +63,10 @@ public class TrainDeep2DMLP {
 
         String p1 = "C:\\ai\\djl\\mnist_train";
         File[] dirs = FactoryUtils.getDirectories(p1);
-        Random rnd = new Random(111);
         for (File dir : dirs) {
             FactoryUtils.makeDirectory(path_train + "/" + dir.getName());
-            File[] files = FactoryUtils.getFileListInFolderForImages(p1 + "/" + dir.getName());
-            files = FactoryUtils.shuffle(files, rnd);
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(p1 + "/" + dir.getName());
+            files = FactoryUtils.shuffle(files, 111);
             for (int i = 0; i < 100; i++) {
                 FactoryUtils.copyFile(files[i], new File(path_train + "/" + dir.getName() + "/" + files[i].getName()));
             }
@@ -77,8 +76,8 @@ public class TrainDeep2DMLP {
         dirs = FactoryUtils.getDirectories(p2);
         for (File dir : dirs) {
             FactoryUtils.makeDirectory(path_test + "/" + dir.getName());
-            File[] files = FactoryUtils.getFileListInFolderForImages(p2 + "/" + dir.getName());
-            files = FactoryUtils.shuffle(files, rnd);
+            File[] files = FactoryUtils.getFileArrayInFolderForImages(p2 + "/" + dir.getName());
+            files = FactoryUtils.shuffle(files, 111);
             for (int i = 0; i < 100; i++) {
                 FactoryUtils.copyFile(files[i], new File(path_test + "/" + dir.getName() + "/" + files[i].getName()));
             }
