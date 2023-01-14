@@ -107,6 +107,7 @@ public class FrameImage extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         isBBox = new javax.swing.JCheckBox();
         isSequence = new javax.swing.JCheckBox();
+        isPolygon = new javax.swing.JCheckBox();
         scroll_pane = new javax.swing.JScrollPane();
         panelPicture = new jazari.gui.PanelPicture(this);
 
@@ -171,6 +172,23 @@ public class FrameImage extends javax.swing.JFrame {
             }
         });
 
+        isPolygon.setText("polygon");
+        isPolygon.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                isPolygonItemStateChanged(evt);
+            }
+        });
+        isPolygon.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                isPolygonMouseMoved(evt);
+            }
+        });
+        isPolygon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isPolygonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -187,6 +205,8 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(isBBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(isSequence)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(isPolygon)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -197,7 +217,8 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel2)
                 .addComponent(isBBox)
-                .addComponent(isSequence))
+                .addComponent(isSequence)
+                .addComponent(isPolygon))
         );
 
         scroll_pane.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -296,6 +317,21 @@ public class FrameImage extends javax.swing.JFrame {
     private void scroll_paneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_scroll_paneFocusGained
     }//GEN-LAST:event_scroll_paneFocusGained
 
+    private void isPolygonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isPolygonItemStateChanged
+        getPicturePanel().activatePolygon = isPolygon.isSelected();
+        getPicturePanel().setImage(this.img, imagePath, this.getTitle());
+        getPicturePanel().requestFocus();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_isPolygonItemStateChanged
+
+    private void isPolygonMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_isPolygonMouseMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_isPolygonMouseMoved
+
+    private void isPolygonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isPolygonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_isPolygonActionPerformed
+
     public PanelPicture getPicturePanel() {
         return ((PanelPicture) panelPicture);
     }
@@ -344,6 +380,7 @@ public class FrameImage extends javax.swing.JFrame {
     private javax.swing.JButton btn_dataGrid;
     private javax.swing.JButton btn_save;
     private javax.swing.JCheckBox isBBox;
+    private javax.swing.JCheckBox isPolygon;
     private javax.swing.JCheckBox isSequence;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;

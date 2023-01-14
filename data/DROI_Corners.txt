@@ -1,3 +1,5 @@
 C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;567,1121;718,1194;678,1275;535,1198;567,1121;
 C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;588,1042;754,1098;720,1184;561,1121;589,1043;
 C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;593,992;758,1029;744,1078;581,1046;594,990;
+D:\DATASETS\teknofest_2023_ulasimda_yapay_zeka\last_years\images\yolov5\images\val\dilute\frame_000464.jpg;cim;427,1070;350,1174;416,1236;555,1238;605,1179;573,1112;519,1081;428,1069;
+D:\DATASETS\teknofest_2023_ulasimda_yapay_zeka\last_years\images\yolov5\images\val\dilute\frame_000464.jpg;uap;576,907;569,931;574,960;587,981;594,998;634,1012;662,1014;697,1004;717,961;722,926;712,884;685,861;646,850;610,856;588,871;572,891;576,908;

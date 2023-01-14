@@ -88,7 +88,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private boolean activateBinarize = false;
     private boolean activateROI = false;
     public boolean activateBoundingBox = false;
-    private boolean activateDrawableROI = false;
+    public boolean activatePolygon = false;
+    public boolean activateDrawableROI = false;
     private boolean activateCloneROI = false;
     private boolean activateGreenChannel = false;
     private boolean activateBlueChannel = false;

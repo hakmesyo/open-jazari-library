@@ -8,6 +8,7 @@ package jazari.device.webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamImageTransformer;
 import com.github.sarxos.webcam.WebcamListener;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
@@ -29,8 +30,8 @@ public class TestJimClientWebCam {
         ref.startJimCommunication("localhost", "8887",wait);
 
         //değişti
-//        CMatrix cm = CMatrix.getInstance().startCamera(new Dimension(1280, 720),5);
-        CMatrix cm = CMatrix.getInstance().startCamera(fps);
+        CMatrix cm = CMatrix.getInstance().startCamera(new Dimension(1280, 720),5);
+//        CMatrix cm = CMatrix.getInstance().startCamera(fps);
 
         //if you want to make image process on the image taken and then show on the current frame
         cm.addWebCamListener(new WebcamListener() {
