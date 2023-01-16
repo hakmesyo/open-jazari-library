@@ -18,7 +18,7 @@ public class AnnotationPascalVOCFormat {
     public String folder;
     public String fileName;
     public PascalVocSource source = new PascalVocSource();
-    public String path;
+    public String imagePath;
     public PascalVocSize size;
     public BufferedImage image;
     public List<PascalVocObject> lstObjects;
@@ -26,7 +26,7 @@ public class AnnotationPascalVOCFormat {
     public AnnotationPascalVOCFormat(String folder, String fileName, PascalVocSource source, String path, BufferedImage image, List<PascalVocObject> lstObjects) {
         this.folder = folder;
         this.fileName = fileName;
-        this.path = path;
+        this.imagePath = path;
         this.source = (source != null) ? source : new PascalVocSource();
         int type = image.getType();
         int depth = 3;
@@ -50,7 +50,7 @@ public class AnnotationPascalVOCFormat {
         return "<annotation>\n"
                 + "\t<folder>" + folder + "</folder>\n"
                 + "\t<filename>" + fileName + "</filename>\n"
-                + "\t<path>" + path + "</path>\n"
+                + "\t<path>" + imagePath + "</path>\n"
                 + source.toString()
                 + size.toString()
                 + "\t<segmented>0</segmented>\n"

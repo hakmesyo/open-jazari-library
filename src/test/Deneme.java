@@ -6,9 +6,16 @@
 package test;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
+import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
+import org.apache.commons.io.FileUtils;
 /**
  *
  * @author cezerilab
@@ -16,11 +23,36 @@ import jazari.matrix.CMatrix;
 public class Deneme {
 
     public static void main(String[] args) {
-        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\yolov5\\images\\val\\dilute";
+//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\frame_009148.jpg";
+//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
+        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
+        //String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
         CMatrix cm = CMatrix.getInstance()
                 .annotateImages(path_1)
                 ;
-//        CMatrix cm = CMatrix.getInstance()
+
+//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\0000002_00005_d_0000014.xml";
+//        String s1=FactoryUtils.updatePascalVocObjectNames(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
+//        String s2=FactoryUtils.removePascalVocObjectNames(path,"ignored","tricycle");
+//        System.out.println("s2 = " + s2);
+        
+//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
+//        FactoryUtils.updatePascalVocObjectNamesBatchProcess(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","bus:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
+//        FactoryUtils.removePascalVocObjectNamesBatchProcess(path,"ignored","tricycle","awning-tricycle");
+        
+        
+        //FactoryUtils.removeFilesContains(path,"Kopya");
+//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1";
+//        FactoryUtils.diluteDataSet(path, 0.25f, 123, "jpg");
+        
+//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\veriler.json";
+//        //String str=FactoryUtils.readJSONFile(path);
+//        CMatrix cm2 = CMatrix.getInstance().readJsonFile(path);
+//        System.out.println(cm2.valueString);
+        
+         
+        
+ //        CMatrix cm = CMatrix.getInstance()
 //                .range(0, 720)
 //                .toRadians()
 //                .sin()
@@ -28,9 +60,8 @@ public class Deneme {
 //                .plot()
 //                ;
         
-        
-        
-        
+
+       
         
         
         

@@ -15,8 +15,10 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import jazari.image_processing.ImageProcess;
 
 /**
  *
@@ -65,6 +67,15 @@ public class FrameImage extends javax.swing.JFrame {
         this.img = cm.getImage();
         this.imagePath = imagePath;
         getPicturePanel().activateBoundingBox = isBBox.isSelected();
+        if (img.getHeight()>950) {
+            float zoom_factor=950.0f/img.getHeight();
+            int w=(int)(img.getWidth()*zoom_factor);
+            int h=(int)(img.getHeight()*zoom_factor);
+            this.lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat(zoom_factor,4));
+            getPicturePanel().original_zoom_factor=FactoryUtils.formatFloat(zoom_factor,4);
+            getPicturePanel().rawImage=ImageProcess.clone(img);
+            img=ImageProcess.resizeAspectRatio(img, w, h);
+        }
         getPicturePanel().setImage(img, imagePath, caption);
         getPicturePanel().setFrame(this);
         setFrameSize(img);
@@ -108,6 +119,7 @@ public class FrameImage extends javax.swing.JFrame {
         isBBox = new javax.swing.JCheckBox();
         isSequence = new javax.swing.JCheckBox();
         isPolygon = new javax.swing.JCheckBox();
+        lbl_zoom_factor = new javax.swing.JLabel();
         scroll_pane = new javax.swing.JScrollPane();
         panelPicture = new jazari.gui.PanelPicture(this);
 
@@ -189,6 +201,8 @@ public class FrameImage extends javax.swing.JFrame {
             }
         });
 
+        lbl_zoom_factor.setText("zoom factor:1");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -207,7 +221,9 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(isSequence)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(isPolygon)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbl_zoom_factor)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -218,7 +234,8 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addComponent(isBBox)
                 .addComponent(isSequence)
-                .addComponent(isPolygon))
+                .addComponent(isPolygon)
+                .addComponent(lbl_zoom_factor))
         );
 
         scroll_pane.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -340,6 +357,10 @@ public class FrameImage extends javax.swing.JFrame {
         PanelPicture cp = ((PanelPicture) panelPicture);
         FactoryUtils.savePanel(cp, txt_dpi.getText());
     }
+    
+    public void setZoomFactor(double z){
+        lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat((float)z,4));
+    }
 
     /**
      * @param args the command line arguments
@@ -384,6 +405,7 @@ public class FrameImage extends javax.swing.JFrame {
     private javax.swing.JCheckBox isSequence;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lbl_zoom_factor;
     private javax.swing.JPanel panelPicture;
     private javax.swing.JScrollPane scroll_pane;
     private javax.swing.JTextField txt_dpi;

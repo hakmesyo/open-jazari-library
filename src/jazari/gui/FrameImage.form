@@ -68,6 +68,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="isPolygon" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
+                  <Component id="lbl_zoom_factor" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -81,6 +83,7 @@
                   <Component id="isBBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="isSequence" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="isPolygon" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lbl_zoom_factor" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -141,6 +144,11 @@
             <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="isPolygonMouseMoved"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="isPolygonActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lbl_zoom_factor">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="zoom factor:1"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

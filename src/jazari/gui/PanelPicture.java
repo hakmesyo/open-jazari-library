@@ -190,6 +190,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         return files;
 
     }
+    
+    public BufferedImage rawImage; 
 
     public void setImage(BufferedImage image, String imagePath, String caption) {
         System.gc();
@@ -207,21 +209,11 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 AnnotationPascalVOCFormat bb = FactoryUtils.deserializePascalVocXML(folderName + "/" + fileName);
                 listPascalVocObject.clear();
                 listPascalVocObject = bb.lstObjects;
-
-//                List<PascalVocBoundingBox> listBBoxRect = new ArrayList();
-//                List<List<PascalVocAttribute>> listAttribute = new ArrayList();
                 showRegion = true;
                 activateBoundingBox = true;
                 source = bb.source;
-//                for (PascalVocObject obj : bb.lstObjects) {
-//                    listBBoxRect.add(obj.bndbox);
-//                    listAttribute.add(obj.attributeList);
-//                }
-
             }
         }
-//        originalBufferedImageTemp=originalBufferedImage=currBufferedImage=image;
-
         currBufferedImage = ImageProcess.clone(image);
         originalBufferedImage = ImageProcess.clone(image);
         originalBufferedImageTemp = ImageProcess.clone(image);
@@ -233,6 +225,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             stat = TStatistics.getStatistics(currBufferedImage);
         }
         //setPreferredSize(new Dimension(originalBufferedImage.getWidth() + 100, originalBufferedImage.getHeight() + 100));
+        zoom_factor = original_zoom_factor;
         repaint();
         if (!this.imagePath.equals(imagePath)) {
             setImagePath(imagePath);
@@ -245,20 +238,16 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             String fileName = FactoryUtils.getFileName(imagePath) + ".xml";
             String folderName = FactoryUtils.getFolderPath(imagePath);
             boolean checkXML = new File(folderName, fileName).exists();
+            /*
             if (checkXML) {
                 AnnotationPascalVOCFormat bb = FactoryUtils.deserializePascalVocXML(folderName + "/" + fileName);
                 listPascalVocObject.clear();
                 listPascalVocObject = bb.lstObjects;
-//                listBBoxRect.clear();
-//                listAttribute.clear();
                 showRegion = true;
                 source = bb.source;
                 activateBoundingBox = true;
-//                for (PascalVocObject obj : bb.lstObjects) {
-//                    listBBoxRect.add(obj.bndbox);
-//                    listAttribute.add(obj.attributeList);
-//                }
             }
+             */
         }
 
         currBufferedImage = image;
@@ -292,7 +281,6 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private boolean isBBoxCancelled = false;
     private boolean isBBoxDragged = false;
     private Point referenceDragPos;
-//    private Color boundingBoxColor = Color.yellow;
 
     @Override
     public void paint(Graphics grn) {
@@ -333,7 +321,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 paintStatistics(gr);
             }
             if (!activateROI && !activateDrawableROI && !activateBoundingBox) {
-                paintPixelInfo(gr, wImg, hImg);
+                //paintPixelInfo(gr, wImg, hImg);
                 paintDrawableROI(gr);
             } else {
                 if (showRegion && activateROI) {
@@ -345,6 +333,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 }
             }
             if (isMouseInCanvas()) {
+                paintPixelInfo(gr, wImg, hImg);
                 paintMouseGrayDashedLines(gr, wPanel, hPanel);
             }
             this.paintComponents(gr);
@@ -440,7 +429,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         }
                         lastSelectedClassName = ret.split(":")[0];
                         lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
-                        selectedPascalVocObject.name=lastSelectedClassName;
+                        selectedPascalVocObject.name = lastSelectedClassName;
 
                         //System.out.println("updated classLabel = " + selectedClass);
                         if (!(lastSelectedClassName == null || lastSelectedClassName.isEmpty())) {
@@ -450,13 +439,9 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                             return;
                         }
                     } else {
-////                    drawableMousePos = e.getPoint();
-////                    drawableRoiList.add(drawableMousePos);
                         currBufferedImage = ImageProcess.clone(originalBufferedImage);
-                        setImage(currBufferedImage, imagePath, caption);
-                        activateDrawableROI = false;
+                        adjustImageToPanel(currBufferedImage);
                         repaint();
-                        return;
                     }
                 }
             }
@@ -466,37 +451,26 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 if ((activateROI || activateBoundingBox) && e.getButton() == MouseEvent.BUTTON1) {
                     showRegion = true;
                     mousePosTopLeft = constraintMousePosition(e);
-                    if (mousePosTopLeft.x < fromLeft) {
-                        mousePosTopLeft.x = fromLeft;
-                    }
-                    if (mousePosTopLeft.x > fromLeft + currBufferedImage.getWidth()) {
-                        mousePosTopLeft.x = fromLeft + currBufferedImage.getWidth();
-                    }
-                    if (mousePosTopLeft.y < fromTop) {
-                        mousePosTopLeft.y = fromTop;
-                    }
-                    if (mousePosTopLeft.y > fromTop + currBufferedImage.getHeight()) {
-                        mousePosTopLeft.y = fromTop + currBufferedImage.getHeight();
-                    }
                     if (!isBBoxDragged) {
                         //selectedBBox = isMouseClickedOnBoundingBox();
                     }
                     if (selectedBBox != null) {
-                        Point p = e.getPoint();
+                        Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
+                        //Point p = e.getPoint();
                         isBBoxResizeTopLeft = false;
                         isBBoxResizeTopRight = false;
                         isBBoxResizeBottomLeft = false;
                         isBBoxResizeBottomRight = false;
                         int t = 10;
-                        if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                        if (p.x > scaleWithZoomFactor(selectedBBox.xmin) - t && p.x < scaleWithZoomFactor(selectedBBox.xmin) + t && p.y > scaleWithZoomFactor(selectedBBox.ymin) - t && p.y < scaleWithZoomFactor(selectedBBox.ymin) + t) {
                             isBBoxResizeTopLeft = true;
-                        } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                        } else if (p.x > scaleWithZoomFactor(selectedBBox.xmax) - t && p.x < scaleWithZoomFactor(selectedBBox.xmax) + t && p.y > scaleWithZoomFactor(selectedBBox.ymin) - t && p.y < scaleWithZoomFactor(selectedBBox.ymin) + t) {
                             isBBoxResizeTopRight = true;
-                        } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                        } else if (p.x > scaleWithZoomFactor(selectedBBox.xmax) - t && p.x < scaleWithZoomFactor(selectedBBox.xmax) + t && p.y > scaleWithZoomFactor(selectedBBox.ymax) - t && p.y < scaleWithZoomFactor(selectedBBox.ymax) + t) {
                             isBBoxResizeBottomRight = true;
-                        } else if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                        } else if (p.x > scaleWithZoomFactor(selectedBBox.xmin) - t && p.x < scaleWithZoomFactor(selectedBBox.xmin) + t && p.y > scaleWithZoomFactor(selectedBBox.ymax) - t && p.y < scaleWithZoomFactor(selectedBBox.ymax) + t) {
                             isBBoxResizeBottomLeft = true;
-                        } else if (p.x > selectedBBox.xmin + fromLeft && p.x < selectedBBox.xmax + fromLeft && p.y > selectedBBox.ymin + fromTop && p.y < selectedBBox.ymax + fromTop) {
+                        } else if (p.x > scaleWithZoomFactor(selectedBBox.xmin) && p.x < scaleWithZoomFactor(selectedBBox.xmax) && p.y > scaleWithZoomFactor(selectedBBox.ymin) && p.y < scaleWithZoomFactor(selectedBBox.ymax)) {
                             isBBoxDragged = true;
                             referenceDragPos = e.getPoint();
                         } else {
@@ -641,14 +615,16 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
 
             private PascalVocBoundingBox isMouseClickedOnBoundingBox() {
                 PascalVocBoundingBox ret = null;
+                Point scaledMousePos = new Point(mousePos.x - fromLeft, mousePos.y - fromTop);
+                //System.out.println("scaledMousePos = " + scaledMousePos);
                 if (listPascalVocObject.size() == 0) {
                     return null;
                 } else {
                     for (PascalVocObject obj : listPascalVocObject) {
                         PascalVocBoundingBox bbox = obj.bndbox;
-                        if (FactoryUtils.isPointInROI(mousePos, bbox.getRectangle(fromLeft, fromTop, 5))) {
+                        if (FactoryUtils.isPointInROI(scaledMousePos, scaleWithZoomFactor(bbox.getRectangle(5)))) {
                             ret = bbox;
-                            selectedPascalVocObject=obj;
+                            selectedPascalVocObject = obj;
                             return ret;
                         }
                     }
@@ -661,21 +637,21 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
 
             public void mouseMoved(java.awt.event.MouseEvent e) {
-                //drawableMousePos = new CPoint(e.getPoint().y - fromTop, e.getPoint().x - fromLeft);
                 isMouseDragged = false;
                 mousePos = e.getPoint();
                 if (activateBoundingBox && selectedBBox != null) {
-                    Point p = e.getPoint();
+                    //Point p = e.getPoint();
+                    Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
                     int t = 10;
-                    if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                    if (p.x > scaleWithZoomFactor(selectedBBox.xmin) - t && p.x < scaleWithZoomFactor(selectedBBox.xmin) + t && p.y > scaleWithZoomFactor(selectedBBox.ymin) - t && p.y < scaleWithZoomFactor(selectedBBox.ymin) + t) {
                         setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
-                    } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymin + fromTop - t && p.y < selectedBBox.ymin + fromTop + t) {
+                    } else if (p.x > scaleWithZoomFactor(selectedBBox.xmax) - t && p.x < scaleWithZoomFactor(selectedBBox.xmax) + t && p.y > scaleWithZoomFactor(selectedBBox.ymin) - t && p.y < scaleWithZoomFactor(selectedBBox.ymin) + t) {
                         setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
-                    } else if (p.x > selectedBBox.xmax + fromLeft - t && p.x < selectedBBox.xmax + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                    } else if (p.x > scaleWithZoomFactor(selectedBBox.xmax) - t && p.x < scaleWithZoomFactor(selectedBBox.xmax) + t && p.y > scaleWithZoomFactor(selectedBBox.ymax) - t && p.y < scaleWithZoomFactor(selectedBBox.ymax) + t) {
                         setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
-                    } else if (p.x > selectedBBox.xmin + fromLeft - t && p.x < selectedBBox.xmin + fromLeft + t && p.y > selectedBBox.ymax + fromTop - t && p.y < selectedBBox.ymax + fromTop + t) {
+                    } else if (p.x > scaleWithZoomFactor(selectedBBox.xmin) - t && p.x < scaleWithZoomFactor(selectedBBox.xmin) + t && p.y > scaleWithZoomFactor(selectedBBox.ymax) - t && p.y < scaleWithZoomFactor(selectedBBox.ymax) + t) {
                         setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
-                    } else if (p.x > selectedBBox.xmin + fromLeft && p.x < selectedBBox.xmax + fromLeft && p.y > selectedBBox.ymin + fromTop && p.y < selectedBBox.ymax + fromTop) {
+                    } else if (p.x > scaleWithZoomFactor(selectedBBox.xmin) && p.x < scaleWithZoomFactor(selectedBBox.xmax) && p.y > scaleWithZoomFactor(selectedBBox.ymin) && p.y < scaleWithZoomFactor(selectedBBox.ymax)) {
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     } else {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -689,63 +665,30 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 mousePos = constraintMousePosition(e);
                 repaint();
             }
-
         }
         );
-
-//        this.addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                activateAutoSizeAspect = true;
-//                repaint();
-//            }
-//        });
     }
 
     private AffineTransform afft = new AffineTransform();
     private AffineTransform temp_afft = new AffineTransform();
     private AffineTransform inverseScale = new AffineTransform();
-    double zoom = 1;
+    float zoom_factor = 1;
+    float original_zoom_factor = 1;
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-//        zoom=(1-e.getWheelRotation()/30.0);
-//        
-//        
-//        if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-//            Point2D p1 = e.getPoint();
-//            p1.setLocation(p1.getX(), getHeight() - p1.getY());
-//            Point2D p2 = null;
-//            try {
-//                p2 = afft.inverseTransform(p1, null);
-//            } catch (NoninvertibleTransformException ex) {
-//                ex.printStackTrace();
-//                return;
-//            }
-//
-//            zoom -= (0.1 * e.getWheelRotation());
-//            zoom = Math.max(0.01, zoom);
-//
-//            afft.setToIdentity();
-//            afft.translate(p1.getX(), p1.getY());
-//            afft.scale(zoom, zoom);
-//            afft.translate(-p2.getX(), -p2.getY());
-//
-//            try {
-//                inverseScale = afft.createInverse();
-//            } catch (NoninvertibleTransformException ex) {
-//                Logger.getLogger(PanelPicture.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            revalidate();
-//            repaint();
-//        }
+        zoom_factor -= e.getWheelRotation() / 32.0f;
+        float w = (1.0f * originalBufferedImage.getWidth() * zoom_factor);
+        float h = (1.0f * originalBufferedImage.getHeight() * zoom_factor);
+        if(original_zoom_factor<1){
+            originalBufferedImage=ImageProcess.clone(rawImage);
+            w = (1.0f * rawImage.getWidth() * zoom_factor);
+            h = (1.0f * rawImage.getHeight() * zoom_factor);
+        }
+        //System.out.println(e.getWheelRotation()+" zoom factor:"+zoom_factor);
+        frm.setZoomFactor(zoom_factor);
 
-//        zoomAmount+=e.getWheelRotation()/10.0;
-        int w = (int) (currBufferedImage.getWidth() * (1 - e.getWheelRotation() / 30.0));
-        int h = (int) (currBufferedImage.getHeight() * (1 - e.getWheelRotation() / 30.0));
-
-        currBufferedImage = ImageProcess.resize(originalBufferedImage, w, h);
+        currBufferedImage = ImageProcess.resizeAspectRatio(originalBufferedImage, (int) w, (int) h);
         setZoomImage(currBufferedImage, imagePath, caption);
 //        frm.setFrameSize(currBufferedImage);
 //        
@@ -793,41 +736,57 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         ImageProcess.imwrite(currBufferedImage, fileName);
     }
 
-    private void drawBoundingBox(Graphics2D gr, PascalVocBoundingBox bbox, int stroke, Point p1, Point p2, Color col, boolean isCornerVisible) {
+    private void drawBoundingBox(Graphics2D gr, PascalVocBoundingBox bbox, int stroke, Point p1, Point p2, Color col, boolean isCornerVisible, boolean isScale) {
         if (FactoryUtils.isMousePosEqual(p1, p2)) {
             return;
         }
-        int w = Math.abs(p2.x - p1.x);
-        int h = Math.abs(p2.y - p1.y);
 
         if (bbox != null) {
             gr.setColor(col);
             int width = gr.getFontMetrics().stringWidth(bbox.name) + 8;
-            gr.fillRect(p1.x - 1, p1.y - 22, width, 22);
+            gr.fillRect(scaleWithZoomFactorX(p1.x) - 1, scaleWithZoomFactorY(p1.y) - 22, width, 22);
 
             gr.setStroke(new BasicStroke(stroke));
             gr.setColor(Color.BLACK);
             gr.setFont(new Font("Dialog", Font.BOLD, 12));
-            gr.drawString(bbox.name, p1.x + 2, p1.y - 5);
+            gr.drawString(bbox.name, scaleWithZoomFactorX(p1.x) + 2, scaleWithZoomFactorY(p1.y) - 5);
         }
+        int w = 0;
+        int h = 0;
+        w = scaleWithZoomFactor(Math.abs(p2.x - p1.x));
+        h = scaleWithZoomFactor(Math.abs(p2.y - p1.y));
 
+//        if (isScale) {
+//            w = scaleWithZoomFactor(Math.abs(p2.x - p1.x));
+//            h = scaleWithZoomFactor(Math.abs(p2.y - p1.y));
+//        } else {
+//        }
         gr.setStroke(new BasicStroke(stroke));
         gr.setColor(col);
-        gr.drawRect(p1.x, p1.y, w, h);
+        //draw bounding box with specialized color
+        gr.drawRect(scaleWithZoomFactorX(p1.x), scaleWithZoomFactorY(p1.y), w, h);
+//        if (isScale) {
+//            gr.drawRect(scaleWithZoomFactorX(p1.x), scaleWithZoomFactorY(p1.y), w, h);
+//        } else {
+//            //gr.drawRect(unScaleWithZoomFactor(p1.x), unScaleWithZoomFactor(p1.y), w, h);
+//            gr.drawRect((p1.x), (p1.y), w, h);
+//        }
+
+        //System.out.println(scaleWithZoomFactor(p1.x)+":"+scaleWithZoomFactor(p1.y));
         if (isCornerVisible) {
             int wx = 12;
             int ww = 6;
             gr.setColor(Color.white);
-            gr.fillRect(p1.x - ww, p1.y - ww, wx, wx);
-            gr.fillRect(p1.x - ww + w, p1.y - ww, wx, wx);
-            gr.fillRect(p1.x - ww + w, p1.y - ww + h, wx, wx);
-            gr.fillRect(p1.x - ww, p1.y - ww + h, wx, wx);
+            gr.fillRect(scaleWithZoomFactorX(p1.x) - ww, scaleWithZoomFactorY(p1.y) - ww, wx, wx);
+            gr.fillRect(scaleWithZoomFactorX(p1.x) - ww + w, scaleWithZoomFactorY(p1.y) - ww, wx, wx);
+            gr.fillRect(scaleWithZoomFactorX(p1.x) - ww + w, scaleWithZoomFactorY(p1.y) - ww + h, wx, wx);
+            gr.fillRect(scaleWithZoomFactorX(p1.x) - ww, scaleWithZoomFactorY(p1.y) - ww + h, wx, wx);
             gr.setStroke(new BasicStroke(1));
             gr.setColor(Color.black);
-            gr.drawRect(p1.x - ww, p1.y - ww, wx, wx);
-            gr.drawRect(p1.x - ww + w, p1.y - ww, wx, wx);
-            gr.drawRect(p1.x - ww + w, p1.y - ww + h, wx, wx);
-            gr.drawRect(p1.x - ww, p1.y - ww + h, wx, wx);
+            gr.drawRect(scaleWithZoomFactorX(p1.x) - ww, scaleWithZoomFactorY(p1.y) - ww, wx, wx);
+            gr.drawRect(scaleWithZoomFactorX(p1.x) - ww + w, scaleWithZoomFactorY(p1.y) - ww, wx, wx);
+            gr.drawRect(scaleWithZoomFactorX(p1.x) - ww + w, scaleWithZoomFactorY(p1.y) - ww + h, wx, wx);
+            gr.drawRect(scaleWithZoomFactorX(p1.x) - ww, scaleWithZoomFactorY(p1.y) - ww + h, wx, wx);
         }
     }
 
@@ -840,25 +799,27 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         if (isBBoxResizeTopLeft) {
             this.setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
             Point p = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + fromTop);
-            drawBoundingBox(gr, selectedBBox, sw, mousePos, p, mapBBoxColor.get(selectedBBox.name), true);
+            drawBoundingBox(gr, selectedBBox, sw, mousePos, p, mapBBoxColor.get(selectedBBox.name), true, false);
         } else if (isBBoxResizeTopRight) {
             this.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
             int dy1 = mousePos.y - (selectedBBox.ymin + fromTop);
             int dx2 = mousePos.x - (selectedBBox.xmax + fromLeft);
             Point p1 = new Point(selectedBBox.xmax + fromLeft + dx2, selectedBBox.ymax + fromTop);
             Point p2 = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop + dy1);
-            drawBoundingBox(gr, selectedBBox, sw, p2, p1, mapBBoxColor.get(selectedBBox.name), true);
+            drawBoundingBox(gr, selectedBBox, sw, p2, p1, mapBBoxColor.get(selectedBBox.name), true, false);
         } else if (isBBoxResizeBottomLeft) {
             this.setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
             int dy1 = mousePos.y - (selectedBBox.ymax + fromTop);
             int dx2 = mousePos.x - (selectedBBox.xmin + fromLeft);
             Point p1 = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + dy1 + fromTop);
             Point p2 = new Point(selectedBBox.xmin + fromLeft + dx2, selectedBBox.ymin + fromTop);
-            drawBoundingBox(gr, selectedBBox, sw, p2, p1, mapBBoxColor.get(selectedBBox.name), true);
+            drawBoundingBox(gr, selectedBBox, sw, p2, p1, mapBBoxColor.get(selectedBBox.name), true, false);
         } else if (isBBoxResizeBottomRight) {
             this.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
-            Point p = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop);
-            drawBoundingBox(gr, selectedBBox, sw, p, mousePos, mapBBoxColor.get(selectedBBox.name), true);
+            Point p1 = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop);
+            Point p2 = mousePos;
+            //System.out.println("p2 = " + p2);
+            drawBoundingBox(gr, selectedBBox, sw, p1, p2, mapBBoxColor.get(selectedBBox.name), true, false);
         } else if (selectedBBox != null && isBBoxDragged && isMouseDragged) {
             this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
             int p1x = selectedBBox.xmin + fromLeft + (mousePos.x - referenceDragPos.x);
@@ -877,24 +838,22 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
             Point p1 = new Point(p1x, p1y);
             Point p2 = new Point(p2x, p2y);
-            drawBoundingBox(gr, selectedBBox, sw, p1, p2, Color.orange, true);
+            //System.out.println("zoom_factor = " + zoom_factor);
+            drawBoundingBox(gr, selectedBBox, sw, p1, p2, Color.orange, true, false);
         } else if (selectedBBox == null && !isBBoxCancelled && isMouseDragged) {
-            drawBoundingBox(gr, selectedBBox, sw, mousePosTopLeft, mousePos, defaultBoundingBoxColor, true);
+            drawBoundingBox(gr, selectedBBox, sw, mousePosTopLeft, mousePos, defaultBoundingBoxColor, true, true);
         }
 
         for (PascalVocObject obj : listPascalVocObject) {
             PascalVocBoundingBox bbox = obj.bndbox;
-//            if (bbox.equals(selectedBBox)) {
-//                continue;
-//            }
             Point p1 = new Point(bbox.xmin + fromLeft, bbox.ymin + fromTop);
             Point p2 = new Point(bbox.xmax + fromLeft, bbox.ymax + fromTop);
-            drawBoundingBox(gr, bbox, sw, p1, p2, mapBBoxColor.get(obj.name), false);
+            drawBoundingBox(gr, bbox, sw, p1, p2, mapBBoxColor.get(obj.name), false, true);
         }
         if (selectedBBox != null && !isMouseDragged) {
             Point p1 = new Point(selectedBBox.xmin + fromLeft, selectedBBox.ymin + fromTop);
             Point p2 = new Point(selectedBBox.xmax + fromLeft, selectedBBox.ymax + fromTop);
-            drawBoundingBox(gr, selectedBBox, sw, p1, p2, mapBBoxColor.get(selectedBBox.name), true);
+            drawBoundingBox(gr, selectedBBox, sw, p1, p2, mapBBoxColor.get(selectedBBox.name), true, true);
         }
     }
 
@@ -1035,6 +994,76 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             ret.put(msg[0], buildColor(msg[1]));
         }
         return ret;
+    }
+
+    private BufferedImage adjustImageToPanel(BufferedImage bf) {
+        if (bf.getHeight() > 950) {
+            float zoom_factor = 950.0f / bf.getHeight();
+            int w = (int) (bf.getWidth() * zoom_factor);
+            int h = (int) (bf.getHeight() * zoom_factor);
+            frm.setZoomFactor(FactoryUtils.formatFloat(zoom_factor, 4));
+            original_zoom_factor = FactoryUtils.formatFloat(zoom_factor, 4);
+            zoom_factor = original_zoom_factor;
+            bf = ImageProcess.resizeAspectRatio(bf, w, h);
+        }else{
+            zoom_factor=original_zoom_factor=1.0f;
+            frm.setZoomFactor(FactoryUtils.formatFloat(zoom_factor, 4));
+        }
+        frm.setTitle(imageFiles[imageIndex].getPath());
+        fileName = imageFiles[imageIndex].getName();
+        imagePath = imageFiles[imageIndex].getAbsolutePath();
+        listPascalVocObject.clear();
+        selectedBBox = null;
+        //setDefaultValues();
+        setImage(bf, imagePath, caption);
+        frm.setFrameSize(bf);
+        frm.img = bf;
+        frm.imagePath = imagePath;
+        return bf;
+    }
+
+    private int scaleWithZoomFactor(int val) {
+        return (int) (val * zoom_factor);
+    }
+
+    private int unScaleWithZoomFactor(int val) {
+        return (int) (val / zoom_factor);
+    }
+
+    private Point shiftPointTo(Point p, int valX, int valY) {
+        return new Point(p.x + valX, p.y + valY);
+    }
+
+    private Point scaleWithZoomFactor(Point val) {
+        return new Point(scaleWithZoomFactorX(val.x), scaleWithZoomFactorY(val.y));
+    }
+
+    private Point unScaleWithZoomFactor(Point val) {
+        return new Point(unScaleWithZoomFactorX(val.x), unScaleWithZoomFactorY(val.y));
+    }
+
+    private Rectangle scaleWithZoomFactor(Rectangle p) {
+        return new Rectangle(scaleWithZoomFactor(p.x), scaleWithZoomFactor(p.y), scaleWithZoomFactor(p.width), scaleWithZoomFactor(p.height));
+    }
+
+    private int scaleWithZoomFactorX(int val) {
+        int pureVal = val - fromLeft;
+        return (int) (pureVal * zoom_factor) + fromLeft;
+    }
+
+    private int scaleWithZoomFactorY(int val) {
+        int pureVal = val - fromTop;
+        return (int) (pureVal * zoom_factor) + fromTop;
+    }
+
+    private int unScaleWithZoomFactorX(int val) {
+        int pureVal = val - fromLeft;
+        return (int) (pureVal / zoom_factor) + fromLeft;
+    }
+
+    private int unScaleWithZoomFactorY(int val) {
+        int pureVal = val - fromTop;
+        return (int) (pureVal / zoom_factor) + fromTop;
     }
 
     private class ItemHandler implements ActionListener {
@@ -1336,28 +1365,25 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_UP) {
-//            loadNextImage();
             if (imageIndex < imageFiles.length - 1) {
                 imageIndex++;
             }
         } else if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_DOWN) {
-//            loadPrevImage();
             if (imageIndex > 0) {
                 imageIndex--;
             }
         } else if (key == KeyEvent.VK_S) {
-            savePascalVocXML();
-            imageIndex++;
-            if (!isSeqenceVideoFrame) {
-                listPascalVocObject.clear();
-                selectedBBox = null;
+            if (activateBoundingBox) {
+                savePascalVocXML();
+                imageIndex++;
+                if (!isSeqenceVideoFrame) {
+                    listPascalVocObject.clear();
+                    selectedBBox = null;
+                }
+                BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
+                rawImage=ImageProcess.clone(bf);
+                adjustImageToPanel(bf);
             }
-            BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-            frm.setTitle(imageFiles[imageIndex].getPath());
-            fileName = imageFiles[imageIndex].getName();
-            imagePath = imageFiles[imageIndex].getAbsolutePath();
-            setImage(bf, imagePath, caption);
-            //repaint();
             return;
         } else if (key == KeyEvent.VK_DELETE) {
             if (selectedBBox != null) {
@@ -1379,37 +1405,12 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             return;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
-        frm.setTitle(imageFiles[imageIndex].getPath());
-        fileName = imageFiles[imageIndex].getName();
-        imagePath = imageFiles[imageIndex].getAbsolutePath();
-        listPascalVocObject.clear();
-        selectedBBox = null;
-        //setDefaultValues();
-        setImage(bf, imagePath, caption);
-        frm.setFrameSize(bf);
-        frm.img = bf;
-        frm.imagePath = imagePath;
+        rawImage=ImageProcess.clone(bf);
+        adjustImageToPanel(bf);
         e.consume();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
     }
-//    public boolean isActivateAutoSize() {
-//        return activateAutoSize;
-//    }
-//
-//    public void setActivateAutoSize(boolean activateAutoSize) {
-//        this.activateAutoSize = activateAutoSize;
-//        repaint();
-//    }
-//
-//    public boolean isActivateAutoSizeAspect() {
-//        return activateAutoSizeAspect;
-//    }
-//
-//    public void setActivateAutoSizeAspect(boolean activateAutoSizeAspect) {
-//        this.activateAutoSizeAspect = activateAutoSizeAspect;
-//        repaint();
-//    }
 }

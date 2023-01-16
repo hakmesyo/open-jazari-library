@@ -37,9 +37,13 @@ public class PascalVocBoundingBox {
         this.color = (color != null) ? color : Color.yellow;
     }
 
-    public Rectangle getRectangle(int fromLeft, int fromTop, int padding) {
-        rect.x = xmin + fromLeft - padding;
-        rect.y = ymin + fromTop - padding;
+    public Rectangle getRectangle(int padding) {
+//        rect.x = xmin + fromLeft - padding;
+//        rect.y = ymin + fromTop - padding;
+//        rect.width = xmax - xmin + 2 * padding;
+//        rect.height = ymax - ymin + 2 * padding;
+        rect.x = xmin - padding;
+        rect.y = ymin - padding;
         rect.width = xmax - xmin + 2 * padding;
         rect.height = ymax - ymin + 2 * padding;
         return rect;

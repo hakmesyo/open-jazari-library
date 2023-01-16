@@ -83,6 +83,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 import org.w3c.dom.Element;
+import test.Deneme;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
@@ -6007,16 +6008,16 @@ public final class FactoryUtils {
         if (xmlFile.length == listFile.length && xmlFile.length > 0) {
             for (int i = 0; i < listFile.length; i++) {
                 float v = rnd.nextFloat();
-                if (v <= ratio) {
+                if (v < ratio) {
                     FactoryUtils.copyFile(listFile[i], new File(path + "/dilute/" + listFile[i].getName()));
                     FactoryUtils.copyFile(xmlFile[i], new File(path + "/dilute/" + xmlFile[i].getName()));
                     //FactoryUtils.copyFile(listFile.get(i).getAbsolutePath(),path+"/dilute/"+listFile.get(i).getName());
                 }
             }
-        }else{
+        } else {
             for (int i = 0; i < listFile.length; i++) {
                 float v = rnd.nextFloat();
-                if (v <= ratio) {
+                if (v < ratio) {
                     FactoryUtils.copyFile(listFile[i], new File(path + "/dilute/" + listFile[i].getName()));
                 }
             }
@@ -6037,6 +6038,75 @@ public final class FactoryUtils {
 
         }
         return ret;
+    }
+
+    public static void removeFilesContains(String path, String key) {
+        File[] files = getFileListInFolder(path);
+        int k = 0;
+        for (File file : files) {
+            if (file.getName().contains(key)) {
+                deleteFile(file);
+                System.out.println(k + " --> " + file.getName() + " deleted");
+                k++;
+            }
+        }
+        System.out.println(k + " files were deleted successfully.");
+    }
+
+    public static String readJSONFile(String path) {
+        try {
+            return FileUtils.readFileToString(new File(path), StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            Logger.getLogger(Deneme.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public static String updatePascalVocObjectNames(String pathXML, String... params) {
+        String xml = FactoryUtils.readPascalVocXMLAsString(pathXML);
+        for (int i = 0; i < params.length; i++) {
+            String[] s = params[i].split(":");
+            xml = xml.replaceAll(s[0], s[1]);
+        }
+        FactoryUtils.writeToFile(pathXML, xml);
+        return xml;
+    }
+
+    public static String removePascalVocObjectNames(String pathXML, String... params) {
+        if (pathXML.contains("frame_000004.xml")) {
+            int a=11;
+        }
+        AnnotationPascalVOCFormat apv = FactoryUtils.readPascalVocXML(pathXML);
+        List<PascalVocObject> lstObj = apv.lstObjects;
+        List<PascalVocObject> ret = new ArrayList();
+        for (PascalVocObject obj : lstObj) {
+            for (String param : params) {
+                if (obj.name.equals(param)) {
+                    ret.add(obj);
+                }
+            }
+        }
+        lstObj.removeAll(ret);
+        String ext=(!apv.imagePath.equals("null"))?FactoryUtils.getFileExtension(apv.imagePath):"jpg";
+        String imagePath=pathXML.replace("xml", ext);
+        serializePascalVocXML(apv.folder, apv.fileName, imagePath, apv.source, lstObj);
+        return readPascalVocXMLAsString(pathXML);
+    }
+
+    public static void updatePascalVocObjectNamesBatchProcess(String path, String ... params) {
+        File[] files=FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
+        for (File file : files) {
+            updatePascalVocObjectNames(file.getAbsolutePath(), params);
+            System.out.println(file.getName()+" updated");
+        }
+    }
+
+    public static void removePascalVocObjectNamesBatchProcess(String path, String ... params) {
+        File[] files=FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
+        for (File file : files) {
+            removePascalVocObjectNames(file.getAbsolutePath(), params);
+            System.out.println(file.getName()+" updated");
+        }
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
@@ -6566,6 +6636,14 @@ public final class FactoryUtils {
 
     }
 
+    public static AnnotationPascalVOCFormat readPascalVocXML(String filePath) {
+        return deserializePascalVocXML(filePath);
+    }
+
+    public static String readPascalVocXMLAsString(String filePath) {
+        return deserializePascalVocXML(filePath).toString();
+    }
+
     public static AnnotationPascalVOCFormat deserializePascalVocXML(String filepath) {
         String s = FactoryUtils.readFile(filepath);
         String folder = s.substring(s.indexOf("<folder>") + 8, s.indexOf("</folder>"));
@@ -6575,7 +6653,7 @@ public final class FactoryUtils {
         ret.fileName = fileName;
         if (s.indexOf("<path>") != -1) {
             String path = s.substring(s.indexOf("<path>") + 6, s.indexOf("</path>"));
-            ret.path = path;
+            ret.imagePath = path;
         }
 
         PascalVocSource source = new PascalVocSource();

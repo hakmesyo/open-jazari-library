@@ -195,6 +195,7 @@ public final class CMatrix implements Serializable {
     public INDArray array;
     public FactoryWebCam factoryWebCam;
     public Webcam webCam;
+    public String valueString;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -8853,6 +8854,23 @@ public final class CMatrix implements Serializable {
     public CMatrix annotateImages(String folderPath) {
         File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
         this.imread(files[0]).imshow();
+        return this;
+    }
+
+    /**
+     *
+     * @param folderPath : path of the image folder
+     * @param filterKey  : filter folder based on this key parameter i.e. "Kopya"
+     * @return
+     */
+    public CMatrix removeFilesContains(String folderPath, String filterKey) {
+        FactoryUtils.removeFilesContains(folderPath, filterKey);
+        return this;
+    }
+    
+    public CMatrix readJsonFile(String path) {
+        String str=FactoryUtils.readJSONFile(path);
+        this.valueString=str;
         return this;
     }
 
