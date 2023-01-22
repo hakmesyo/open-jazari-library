@@ -16,6 +16,7 @@ import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
 import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
 import org.apache.commons.io.FileUtils;
+
 /**
  *
  * @author cezerilab
@@ -23,79 +24,68 @@ import org.apache.commons.io.FileUtils;
 public class Deneme {
 
     public static void main(String[] args) {
-//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\frame_009148.jpg";
-//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
-        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
-        //String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
+        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
+//        CMatrix cm = CMatrix.getInstance().imread(path_1+"/frame_000000.jpg").imresize(0.5f).imshow().imsave(path_1, "frame_000001.jpg");
+//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
+//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
         CMatrix cm = CMatrix.getInstance()
-                .annotateImages(path_1)
-                ;
+                .annotateImages(path_1);
+        //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\0000002_00005_d_0000014.xml";
+        //        String s1=FactoryUtils.updatePascalVocObjectNames(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
+        //        String s2=FactoryUtils.removePascalVocObjectNames(path,"ignored","tricycle");
+        //        System.out.println("s2 = " + s2);
 
-//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\0000002_00005_d_0000014.xml";
-//        String s1=FactoryUtils.updatePascalVocObjectNames(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
-//        String s2=FactoryUtils.removePascalVocObjectNames(path,"ignored","tricycle");
-//        System.out.println("s2 = " + s2);
-        
-//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
-//        FactoryUtils.updatePascalVocObjectNamesBatchProcess(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","bus:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
-//        FactoryUtils.removePascalVocObjectNamesBatchProcess(path,"ignored","tricycle","awning-tricycle");
-        
-        
+        //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
+        //        FactoryUtils.updatePascalVocObjectNamesBatchProcess(path,"car:Taşıt","van:Taşıt","truck:Taşıt","motor:Taşıt","bus:Taşıt","pedestrian:İnsan","people:İnsan","bicycle:İnsan");
+        //        FactoryUtils.removePascalVocObjectNamesBatchProcess(path,"ignored","tricycle","awning-tricycle");
+
         //FactoryUtils.removeFilesContains(path,"Kopya");
-//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1";
-//        FactoryUtils.diluteDataSet(path, 0.25f, 123, "jpg");
-        
-//        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\veriler.json";
-//        //String str=FactoryUtils.readJSONFile(path);
-//        CMatrix cm2 = CMatrix.getInstance().readJsonFile(path);
-//        System.out.println(cm2.valueString);
-        
-         
-        
- //        CMatrix cm = CMatrix.getInstance()
-//                .range(0, 720)
-//                .toRadians()
-//                .sin()
-//                .println()
-//                .plot()
-//                ;
-        
+        //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1";
+        //        FactoryUtils.diluteDataSet(path, 0.25f, 123, "jpg");
 
-       
-        
-        
-        
-        
-//        CMatrix cm = CMatrix.getInstance()
-//                .imread("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2\\cropped_image_0_0.png")
-//                .imshow()
-//                
-//                ;
-//        CMatrix cm = CMatrix.getInstance()
-//                .range2D(0, 10, 100)
-//                .println();
-////        for (int i = 9; i < 10; i++) {
-////            cm.clone().cmd(i*10+":"+(i*10+10), ":").println();
-////        }
-//
-//        cm.clone().cmd("90:100", ":").println();
+        //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\veriler.json";
+        //        //String str=FactoryUtils.readJSONFile(path);
+        //        CMatrix cm2 = CMatrix.getInstance().readJsonFile(path);
+        //        System.out.println(cm2.valueString);
 
-//        CMatrix cm = CMatrix.getInstance()
-//                //.imread("images/pullar.png")
-//                .imread("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2\\TM39_6125_4134.tif")
-//                ;
-//
-//        int w = 1000;
-//        int h = 500;
-//        for (int i = 0; i < 15; i++) {
-//            for (int j = 0; j < 20; j++) {
-//                System.out.println("j = " + j);
-//                CMatrix cm1 = cm.clone()
-//                        .imcrop(i * w, j * h, w, h) //.imshow()
-//                        .imsave("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2", "cropped_image_"+i+"_"+j+".png")
-//                        ;
-//            }
-//        }
+        //        CMatrix cm = CMatrix.getInstance()
+        //                .range(0, 720)
+        //                .toRadians()
+        //                .sin()
+        //                .println()
+        //                .plot()
+        //                ;
+
+        //        CMatrix cm = CMatrix.getInstance()
+        //                .imread("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2\\cropped_image_0_0.png")
+        //                .imshow()
+        //                
+        //                ;
+        //        CMatrix cm = CMatrix.getInstance()
+        //                .range2D(0, 10, 100)
+        //                .println();
+        ////        for (int i = 9; i < 10; i++) {
+        ////            cm.clone().cmd(i*10+":"+(i*10+10), ":").println();
+        ////        }
+        //
+        //        cm.clone().cmd("90:100", ":").println();
+
+        //        CMatrix cm = CMatrix.getInstance()
+        //                //.imread("images/pullar.png")
+        //                .imread("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2\\TM39_6125_4134.tif")
+        //                ;
+        //
+        //        int w = 1000;
+        //        int h = 500;
+        //        for (int i = 0; i < 15; i++) {
+        //            for (int j = 0; j < 20; j++) {
+        //                System.out.println("j = " + j);
+        //                CMatrix cm1 = cm.clone()
+        //                        .imcrop(i * w, j * h, w, h) //.imshow()
+        //                        .imsave("C:\\Users\\dell_lab\\Downloads\\Resim 2\\Resim 2", "cropped_image_"+i+"_"+j+".png")
+        //                        ;
+        //            }
+        //        }
         //      .imshow()
         //.rgb2gray()
         //.imshow("RGB")

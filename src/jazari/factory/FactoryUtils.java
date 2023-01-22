@@ -3444,7 +3444,25 @@ public final class FactoryUtils {
         };
         File[] list = dir.listFiles(IMAGE_FILTER);
         //Arrays.sort(list, Comparator.comparingLong(File::lastModified));
-        Arrays.sort(list, Comparator.comparing(File::getName));
+        //Arrays.sort(list, Comparator.comparing(File::getName));
+        //Arrays.sort(list, (a, b) -> a.getName().compareTo(b.getName()));
+        //Arrays.sort(list,Comparator.naturalOrder());
+        Arrays.sort(list, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return extractInt(f1.getName()) - extractInt(f2.getName());
+            }
+
+            int extractInt(String s) {
+                String num="";
+                try {
+                    return Integer.parseInt(s.replaceAll("\\D", ""));
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+                //return num.isEmpty() ? 0 : Integer.parseInt(num);
+            }
+        });
+
         return list;
     }
 
@@ -6074,7 +6092,7 @@ public final class FactoryUtils {
 
     public static String removePascalVocObjectNames(String pathXML, String... params) {
         if (pathXML.contains("frame_000004.xml")) {
-            int a=11;
+            int a = 11;
         }
         AnnotationPascalVOCFormat apv = FactoryUtils.readPascalVocXML(pathXML);
         List<PascalVocObject> lstObj = apv.lstObjects;
@@ -6087,26 +6105,41 @@ public final class FactoryUtils {
             }
         }
         lstObj.removeAll(ret);
-        String ext=(!apv.imagePath.equals("null"))?FactoryUtils.getFileExtension(apv.imagePath):"jpg";
-        String imagePath=pathXML.replace("xml", ext);
+        String ext = (!apv.imagePath.equals("null")) ? FactoryUtils.getFileExtension(apv.imagePath) : "jpg";
+        String imagePath = pathXML.replace("xml", ext);
         serializePascalVocXML(apv.folder, apv.fileName, imagePath, apv.source, lstObj);
         return readPascalVocXMLAsString(pathXML);
     }
 
-    public static void updatePascalVocObjectNamesBatchProcess(String path, String ... params) {
-        File[] files=FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
+    public static void updatePascalVocObjectNamesBatchProcess(String path, String... params) {
+        File[] files = FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
         for (File file : files) {
             updatePascalVocObjectNames(file.getAbsolutePath(), params);
-            System.out.println(file.getName()+" updated");
+            System.out.println(file.getName() + " updated");
         }
     }
 
-    public static void removePascalVocObjectNamesBatchProcess(String path, String ... params) {
-        File[] files=FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
+    public static void removePascalVocObjectNamesBatchProcess(String path, String... params) {
+        File[] files = FactoryUtils.getFileArrayInFolderByExtension(path, "xml");
         for (File file : files) {
             removePascalVocObjectNames(file.getAbsolutePath(), params);
-            System.out.println(file.getName()+" updated");
+            System.out.println(file.getName() + " updated");
         }
+    }
+
+    public static Point[] clone(Point[] ps) {
+        Point[] ret = new Point[ps.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = clone(ps[i]);
+        }
+        return ret;
+    }
+
+    public static Point clone(Point p) {
+        Point ret = new Point();
+        ret.x = p.x;
+        ret.y = p.y;
+        return ret;
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
