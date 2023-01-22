@@ -4034,6 +4034,18 @@ public final class FactoryUtils {
     }
 
     /**
+     * return current date as String for file name or other issues
+     *
+     * @return
+     */
+    public static String getDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        Calendar cal = Calendar.getInstance();
+        String ret = dateFormat.format(cal.getTime());
+        return ret;
+    }
+
+    /**
      * calculate number of peaks of each column
      *
      * @param d:two dimensional matrix
