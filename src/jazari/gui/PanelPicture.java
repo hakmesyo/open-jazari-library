@@ -610,7 +610,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         } else {
                             isBBoxCancelled = false;
                         }
-                        System.out.println("fromLeft:"+fromLeft+" fromTop:"+fromTop);
+                        //System.out.println("fromLeft:"+fromLeft+" fromTop:"+fromTop);
                         Rectangle r = new Rectangle(unScaleWithZoomFactor(mousePosTopLeft.x - fromLeft), unScaleWithZoomFactor(mousePosTopLeft.y - fromTop), w, h);
                         PascalVocBoundingBox bbox = new PascalVocBoundingBox(lastSelectedClassName, r, 0, 0, lastSelectedBoundingBoxColor);
                         selectedBBox = bbox;
