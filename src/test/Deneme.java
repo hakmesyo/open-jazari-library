@@ -27,7 +27,8 @@ public class Deneme {
 //        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
 //        CMatrix cm = CMatrix.getInstance().imread(path_1+"/frame_000000.jpg").imresize(0.5f).imshow().imsave(path_1, "frame_000001.jpg");
 //        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
-        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
+        //String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
+        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
         CMatrix cm = CMatrix.getInstance()
                 .annotateImages(path_1);
         //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\0000002_00005_d_0000014.xml";

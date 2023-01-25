@@ -783,6 +783,7 @@ public final class FactoryUtils {
 
     public static String readFile(String fileName) {
         String ret = "";
+        StringBuilder builder = new StringBuilder("");
         File file = new File(fileName);
         if (!file.exists()) {
             showMessage(fileName + " isminde bir dosya yok");
@@ -791,13 +792,15 @@ public final class FactoryUtils {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String s;
             while ((s = br.readLine()) != null) {
-                ret = ret + s + "\n";
+                //ret = ret + s + "\n";
+                builder.append(s).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
             return ret;
         }
-        return ret;
+
+        return builder.toString();
     }
 
     public static String readFile() {
@@ -807,25 +810,12 @@ public final class FactoryUtils {
             return null;
         }
         String fileName = getFile.getAbsolutePath();
-        File file = new File(fileName);
-        if (!file.exists()) {
-            showMessage(fileName + " isminde bir dosya yok");
-            return ret;
-        }
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String s;
-            while ((s = br.readLine()) != null) {
-                ret = ret + s + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ret;
-        }
-        return ret;
+        return readFile(fileName);
     }
 
     public static String readFileUntil(String fileName, int index) {
         String ret = "";
+        StringBuilder sBuilder = new StringBuilder();
         File file = new File(fileName);
         if (!file.exists()) {
             showMessage(fileName + " isminde bir dosya yok");
@@ -839,11 +829,12 @@ public final class FactoryUtils {
             while (fis.available() > 0 && k++ < index) {
                 val = fis.read();
                 current = (char) val;
-                ret += current;
+                sBuilder.append(current);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ret = sBuilder.toString();
         return ret;
     }
 
@@ -1889,6 +1880,21 @@ public final class FactoryUtils {
         }
         Path p = Paths.get(str);
         String fileName = p.getFileName().toString();
+        return fileName;
+    }
+    
+    /**
+     * parse the file name from file path string
+     *
+     * @param str:file path contains filename
+     * @return file name
+     */
+    public static String getParentFromPath(String str) {
+        if (str == null || str.equals("") || str.isEmpty()) {
+            return null;
+        }
+        Path p = Paths.get(str);
+        String fileName = p.getParent().toString();
         return fileName;
     }
 
@@ -3453,7 +3459,7 @@ public final class FactoryUtils {
             }
 
             int extractInt(String s) {
-                String num="";
+                String num = "";
                 try {
                     return Integer.parseInt(s.replaceAll("\\D", ""));
                 } catch (NumberFormatException e) {
@@ -5940,11 +5946,14 @@ public final class FactoryUtils {
     }
 
     public static void generateObjectDetectionDataSetYolo(String pathSource, String pathTarget, float trainRatio, float valRatio, float testRatio, boolean shuffle, int seed, String extension, String[] classLabels) {
-
+        //FactoryUtils.balanceDatasetBasedOnFileExt(pathSource,"txt","jpg","xml");
         FactoryUtils.convertPascalVoc2YoloFormat(pathSource, classLabels);
+        FactoryUtils.deleteEmptyFiles(pathSource, new String[]{"txt", "xml", "jpg"});
 
         File[] imgFiles = getFileArrayInFolderByExtension(pathSource, extension);
+        Map<String, File> mapImg = generateHashMapForFile(imgFiles);
         File[] xmlFiles = getFileArrayInFolderByExtension(pathSource, "xml");
+        Map<String, File> mapXml = generateHashMapForFile(xmlFiles);
         File[] txtFiles = getFileArrayInFolderByExtension(pathSource, "txt");
 
         List<File> listTxtFiles = new ArrayList(Arrays.asList(txtFiles));
@@ -5964,24 +5973,24 @@ public final class FactoryUtils {
         makeDirectory(pathTarget + "/labels/test");
 
         if (shuffle) {
-            FactoryUtils.shuffle(imgFiles, seed);
-            FactoryUtils.shuffle(xmlFiles, seed);
+//            FactoryUtils.shuffle(imgFiles, seed);
+//            FactoryUtils.shuffle(xmlFiles, seed);
             FactoryUtils.shuffle(txtFiles, seed);
         }
-        int n = imgFiles.length;
+        int n = txtFiles.length;
         for (int i = 0; i < n; i++) {
             if (i <= (int) (n * trainRatio)) {
-                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/train/" + imgFiles[i].getName()));
-                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/train/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/train/" + getFileName(txtFiles[i].getName())+".jpg"));
+                //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/train/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/train/" + txtFiles[i].getName()));
 
             } else if (i > (int) (n * trainRatio) && i <= (int) (n * (trainRatio + valRatio))) {
-                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/val/" + imgFiles[i].getName()));
-                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/val/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/val/" + getFileName(txtFiles[i].getName())+".jpg"));
+                //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/val/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/val/" + txtFiles[i].getName()));
             } else {
-                FactoryUtils.copyFile(imgFiles[i], new File(pathTarget + "/images/test/" + imgFiles[i].getName()));
-                FactoryUtils.copyFile(xmlFiles[i], new File(pathTarget + "/images/test/" + xmlFiles[i].getName()));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/test/" + getFileName(txtFiles[i].getName())+".jpg"));
+                //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/test/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/test/" + txtFiles[i].getName()));
             }
             System.out.println(i + ".items copied from " + n + " of items");
@@ -6152,6 +6161,76 @@ public final class FactoryUtils {
         ret.x = p.x;
         ret.y = p.y;
         return ret;
+    }
+
+    public static void reIndexFilesBasedOnPrefixAndTimeStamp(String pathFolder, String extensions) {
+        String[] exts = extensions.split(",");
+        File[] files = getFileArrayInFolderByExtension(pathFolder, exts[0]);
+        for (File file : files) {
+            String newName = System.nanoTime() + ".";
+            String path = getFolderPath(file.getAbsolutePath());
+            String fileName = getFileName(file.getName());
+            renameFile(new File(path + "/" + fileName + "." + exts[0]), new File(path + "/" + newName + exts[0]));
+            for (int i = 1; i < exts.length; i++) {
+                if (isFileExist(path + "/" + fileName + "." + exts[i])) {
+                    renameFile(new File(path + "/" + fileName + "." + exts[i]), new File(path + "/" + newName + exts[i]));
+                }
+            }
+        }
+
+    }
+
+    private static Map<String, File> generateHashMapForFile(File[] imgFiles) {
+        Map<String, File> ret = new HashMap();
+        int n = imgFiles.length;
+        for (int i = 0; i < n; i++) {
+            ret.put(getFileName(imgFiles[i].getName()), imgFiles[i]);
+        }
+        return ret;
+    }
+
+    private static void deleteEmptyFiles(String pathSource, String[] extensions) {
+        File[] files = getFileArrayInFolderByExtension(pathSource, extensions[0]);
+        List<String> emptyFiles = new ArrayList();
+        for (File f : files) {
+            if (isFileEmpty(f)) {
+                emptyFiles.add(f.getAbsolutePath());
+            }
+        }
+        files=null;
+        System.gc();
+        for (String ef : emptyFiles) {
+            for (int i = 0; i < extensions.length; i++) {
+                try {
+                    Files.deleteIfExists(Paths.get(getParentFromPath(ef)+"/"+getFileName(getFileNameFromPath(ef)) + "." + extensions[i]));
+                } catch (IOException ex) {
+                    Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
+    }
+
+    private static boolean isFileEmpty(File f) {
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+            if (br.readLine() == null) {
+                return true;
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    private static void balanceDatasetBasedOnFileExt(String pathSource, String ... ext) {
+        String filter=ext[0];
+        File[] files=getFileArrayInFolderByExtension(pathSource, filter);
+        Map<String,File>[] maps=new HashMap[ext.length-1];
+        System.out.println("bu metod henuz sonlanmadı");
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
@@ -6922,7 +7001,6 @@ public final class FactoryUtils {
                 w = bbp.size.width;
                 h = bbp.size.height;
                 String ret = "";
-
                 for (PascalVocObject pv : bbp.lstObjects) {
                     x1 = pv.bndbox.xmin;
                     y1 = pv.bndbox.ymin;
@@ -6932,15 +7010,20 @@ public final class FactoryUtils {
                     py1 = (y1 + y2) / 2.0f / h;
                     px2 = (x2 - x1) * 1.0f / w;
                     py2 = (y2 - y1) * 1.0f / h;
+                    //System.out.println(pv.name);
+                    if (!map.containsKey(pv.name)) {
+                        continue;
+                    }
                     class_index = map.get(pv.name);
                     ret += class_index + " " + px1 + " " + py1 + " " + px2 + " " + py2 + "\n";
                 }
                 globalRet += ret;
-                FactoryUtils.writeToFile(mainFolderPath + "/" + FactoryUtils.getFileName(bbp.fileName) + ".txt", ret);
+                //FactoryUtils.writeToFile(mainFolderPath + "/" + FactoryUtils.getFileName(bbp.fileName) + ".txt", ret);
+                FactoryUtils.writeToFile(mainFolderPath + "/" + FactoryUtils.getFileName(f.getName()) + ".txt", ret);
             }
         }
         //FactoryUtils.writeToFile(mainFolderPath + "/" + "yolov7.txt", globalRet);
-
+        System.out.println("convertPascalVoc2YoloFormat finished");
     }
 
     public static String formatFloatDot2Comma(float p) {

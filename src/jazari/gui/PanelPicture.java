@@ -139,6 +139,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private Point referenceMousePositionForImageMovement;
     private Point currentMousePositionForImageMovement;
     private int defaultStrokeWidth = 2;
+    private int indexOfCurrentImageFile=0;
 
     public PanelPicture(FrameImage frame) {
         this.frame = frame;
@@ -214,7 +215,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     mapBBoxColor = buildHashMap(folderName + "/class_labels.txt");
                 }
                 AnnotationPascalVOCFormat bb = FactoryUtils.deserializePascalVocXML(folderName + "/" + fileName);
-                if (isClearBbox) {
+                if (isClearBbox && !isSeqenceVideoFrame) {
                     listPascalVocObject.clear();
                     listPascalVocObject = bb.lstObjects;
                 }
@@ -349,7 +350,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
             if (isMouseInCanvas()) {
                 paintPixelInfo(gr, currBufferedImage.getWidth(), currBufferedImage.getHeight());
-                paintMouseGrayDashedLines(gr, wPanel, hPanel);
+                paintMouseDashedLines(gr, wPanel, hPanel, Color.black);
             }
             this.paintComponents(gr);
         }
@@ -995,7 +996,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         gr.setStroke(new BasicStroke(1));
     }
 
-    private void paintMouseGrayDashedLines(Graphics2D gr, int wPanel, int hPanel) {
+    private void paintMouseDashedLines(Graphics2D gr, int wPanel, int hPanel,Color color) {
         Stroke dashed = new BasicStroke(3,
                 BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_BEVEL,
@@ -1003,7 +1004,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 new float[]{9},
                 0);
         gr.setStroke(dashed);
-        gr.setColor(Color.lightGray);
+        gr.setColor(color);
         gr.drawLine(0, mousePos.y, wPanel - 1, mousePos.y);
         gr.drawLine(mousePos.x, 0, mousePos.x, hPanel - 1);
     }
@@ -1132,12 +1133,16 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             zoom_factor = original_zoom_factor = 1.0f;
             frm.setZoomFactor(FactoryUtils.formatFloat(zoom_factor, 4));
         }
-        frm.setTitle(imageFiles[imageIndex].getPath());
+        frm.setTitle(imageFiles[imageIndex].getPath()+"      [ "+imageIndex+" / "+imageFiles.length+" ]");
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
         
-        listPascalVocObject.clear();
-        selectedBBox = null;
+        if (!isSeqenceVideoFrame) {
+            listPascalVocObject.clear();
+            selectedBBox = null;
+        }
+        
+        
         //setDefaultValues();
         setImage(bf, imagePath, caption, isClearBbox);
         frm.setFrameSize(bf);
@@ -1471,11 +1476,6 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     }
 
     private void loadNextImage() {
-//        imageIndex++;
-//        if (imageIndex > imageFiles.length - 1) {
-//            imageIndex--;
-//            return;
-//        }
         if (imageIndex < imageFiles.length - 1) {
             imageIndex++;
         }

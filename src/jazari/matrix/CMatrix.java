@@ -8931,5 +8931,11 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix reIndexFilesBasedOnPrefixAndTimeStamp(String pathFolder, String extensions) {
+        FactoryUtils.reIndexFilesBasedOnPrefixAndTimeStamp(pathFolder,extensions);
+        System.out.println("b. successfully reindex all filenames to satify uniqueness");
+        return this;
+    }
+
 
 }
