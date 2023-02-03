@@ -71,7 +71,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import jazari.gui.FrameImage;
 import jazari.image_processing.ImageProcess;
+import jazari.matrix.CRectangle;
 import jazari.utils.pascalvoc.PascalVocBoundingBox;
 import jazari.utils.pascalvoc.PascalVocAttribute;
 import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
@@ -6231,6 +6233,60 @@ public final class FactoryUtils {
         File[] files=getFileArrayInFolderByExtension(pathSource, filter);
         Map<String,File>[] maps=new HashMap[ext.length-1];
         System.out.println("bu metod henuz sonlanmadı");
+    }
+
+    /**
+     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param destinationFolder : cropped images stored in that folder
+     * @param fileCaption : cropped image prefix name
+     * @param imageExtension : cropped images extension ie "jpg", "png"
+     * @param isShow : boolean isVisibile
+     * @return void
+     */
+    public static void cropImageArray2D(BufferedImage img, int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
+        int w = img.getWidth() / nc;
+        int h = img.getHeight() / nr;
+        FactoryUtils.makeDirectory(destinationFolder);
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                BufferedImage temp = ImageProcess.cropImage(img, new CRectangle(i * h, j * w, w, h));
+                ImageProcess.saveImage(temp, destinationFolder + "/" + fileCaption + "_" + i + "_" + j + "." + imageExtension);
+                if (isShow) {
+                    FrameImage frm = new FrameImage();
+                    frm.setImage(temp, destinationFolder, fileCaption + "_" + i + "_" + j + "." + imageExtension);
+                    frm.setVisible(isShow);
+                }
+            }
+        }
+    }
+
+    /**
+     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param destinationFolder : cropped images stored in that folder
+     * @param fileCaption : cropped image prefix name
+     * @param imageExtension : cropped images extension ie "jpg", "png"
+     * @param isShow : boolean isVisibile
+     * @return void
+     */
+    public static void cropImageArray2DByCropSize(BufferedImage img, int width, int height, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
+        int nr = img.getWidth() / width;
+        int nc = img.getHeight() / height;
+        FactoryUtils.makeDirectory(destinationFolder);
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                BufferedImage temp = ImageProcess.cropImage(img, new CRectangle(i * height, j * width, width, height));
+                ImageProcess.saveImage(temp, destinationFolder + "/" + fileCaption + "_" + i + "_" + j + "." + imageExtension);
+                if (isShow) {
+                    FrameImage frm = new FrameImage();
+                    frm.setImage(temp, destinationFolder, fileCaption + "_" + i + "_" + j + "." + imageExtension);
+                    frm.setVisible(isShow);
+                }
+            }
+        }
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {

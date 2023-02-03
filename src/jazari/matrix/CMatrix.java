@@ -8697,21 +8697,22 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix cropImageArray2D(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
-        BufferedImage img = this.getImage();
-        int w = img.getWidth() / nc;
-        int h = img.getHeight() / nr;
-        FactoryUtils.makeDirectory(destinationFolder);
-        for (int i = 0; i < nr; i++) {
-            for (int j = 0; j < nc; j++) {
-                BufferedImage temp = ImageProcess.cropImage(img, new CRectangle(i * h, j * w, w, h));
-                ImageProcess.saveImage(temp, destinationFolder + "/" + fileCaption + "_" + i + "_" + j + "." + imageExtension);
-                if (isShow) {
-                    FrameImage frm = new FrameImage();
-                    frm.setImage(temp, destinationFolder, fileCaption + "_" + i + "_" + j + "." + imageExtension);
-                    frm.setVisible(isShow);
-                }
-            }
-        }
+        FactoryUtils.cropImageArray2D(this.getImage(),nr,nc,destinationFolder,fileCaption,imageExtension,isShow);
+        return this;
+    }
+    
+    /**
+     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * @param width : crop image width
+     * @param height : crop image height
+     * @param destinationFolder : cropped images stored in that folder
+     * @param fileCaption : cropped image prefix name
+     * @param imageExtension : cropped images extension ie "jpg", "png"
+     * @param isShow : boolean isVisibile
+     * @return
+     */
+    public CMatrix cropImageArray2DByCropSize(int width, int height, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
+        FactoryUtils.cropImageArray2DByCropSize(this.getImage(),width,height,destinationFolder,fileCaption,imageExtension,isShow);
         return this;
     }
     
