@@ -19,7 +19,7 @@ public class TestCropOrTileImage {
         CMatrix cm = CMatrix.getInstance()
                 .imread(path)
                 .imshow("original tif image")
-                .cropImages(20,15,"D:\\zeytin_gis\\cropped_images","temp","png",false);
+                .cropImageArray2D(20,15,"D:\\zeytin_gis\\cropped_images","temp","png",false);
                 ;
 
         //To Annotate the images

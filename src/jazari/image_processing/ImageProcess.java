@@ -529,19 +529,19 @@ public final class ImageProcess {
     }
 
     public static BufferedImage cropImage(BufferedImage src, CRectangle rect) {
-        if (src.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-            return src.getSubimage(rect.column, rect.row, rect.width, rect.height);
-        } else {
-            return toBGR(src.getSubimage(rect.column, rect.row, rect.width, rect.height));
-        }
+        return cropImage(src, rect.column, rect.row, rect.width, rect.height);
+    }
 
-//        BufferedImage dest = clone(src);
-//        try {
-//            src = src.getSubimage(rect.column, rect.row, rect.width, rect.height);
-//        } catch (Exception ex) {
-//            Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return dest;
+    public static BufferedImage cropImage(BufferedImage src, Rectangle rect) {
+        return cropImage(src, rect.x, rect.y, rect.width, rect.height);
+    }
+
+    public static BufferedImage cropImage(BufferedImage src, int px, int py, int width, int height) {
+        if (src.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            return src.getSubimage(px, py, width, height);
+        } else {
+            return toBGR(src.getSubimage(px, py, width, height));
+        }
     }
 
     public static BufferedImage convertImageToPencilSketch(BufferedImage src) {

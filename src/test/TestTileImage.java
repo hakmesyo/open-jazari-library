@@ -19,7 +19,7 @@ public class TestTileImage {
                 //.imread("images/peppers.png")
                 .imread(path)
                 //.imshow("zeytin")
-                .cropImages(20,15,"D:\\zeytin_remote_sensing\\tif\\cropped_images","temp","png",false);
+                .cropImageArray2D(20,15,"D:\\zeytin_remote_sensing\\tif\\cropped_images","temp","png",false);
                 ;
 
 //        CMatrix cm = CMatrix.getInstance()

@@ -8686,7 +8686,17 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public CMatrix cropImages(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
+    /**
+     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * @param nr : number of rows
+     * @param nc : number of columns
+     * @param destinationFolder : cropped images stored in that folder
+     * @param fileCaption : cropped image prefix name
+     * @param imageExtension : cropped images extension ie "jpg", "png"
+     * @param isShow : boolean isVisibile
+     * @return
+     */
+    public CMatrix cropImageArray2D(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
         BufferedImage img = this.getImage();
         int w = img.getWidth() / nc;
         int h = img.getHeight() / nr;
@@ -8704,6 +8714,31 @@ public final class CMatrix implements Serializable {
         }
         return this;
     }
+    
+    /**
+     * crop the specified region in image you can get same result by applying cmd(String s1,String s2) command as well
+     * @param px : top left x coordinate
+     * @param py : top left y coordinate
+     * @param width : crop width
+     * @param height: crop height
+     * @return
+     */
+    public CMatrix cropImage(int px, int py, int width, int height) {
+        BufferedImage cropped_image = ImageProcess.cropImage(this.getImage(), px, py, width, height);
+        this.setImage(cropped_image);
+        return this;
+    }
+    
+    /**
+     * crop the specified region in image you can get same result by applying cmd(String s1,String s2) command as well
+     * @param rect : crop rectangle
+     * @return
+     */
+    public CMatrix cropImage(Rectangle rect) {
+        return cropImage(rect.x, rect.y, rect.width, rect.height);
+    }
+    
+    
 
     public CMatrix imageDataGenerator(String folderPath, int imageWidth, int imageHeight) {
         File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
