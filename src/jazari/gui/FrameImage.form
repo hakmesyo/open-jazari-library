@@ -67,6 +67,8 @@
                   <Component id="isSequence" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="isPolygon" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="btn_dashedLineColor" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="lbl_zoom_factor" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -84,6 +86,7 @@
                   <Component id="isSequence" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="isPolygon" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lbl_zoom_factor" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btn_dashedLineColor" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -149,6 +152,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="zoom factor:1"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btn_dashedLineColor">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="dashed line color"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_dashedLineColorActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

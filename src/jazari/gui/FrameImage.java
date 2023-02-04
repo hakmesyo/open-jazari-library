@@ -120,6 +120,7 @@ public class FrameImage extends javax.swing.JFrame {
         isSequence = new javax.swing.JCheckBox();
         isPolygon = new javax.swing.JCheckBox();
         lbl_zoom_factor = new javax.swing.JLabel();
+        btn_dashedLineColor = new javax.swing.JButton();
         scroll_pane = new javax.swing.JScrollPane();
         panelPicture = new jazari.gui.PanelPicture(this);
 
@@ -203,6 +204,13 @@ public class FrameImage extends javax.swing.JFrame {
 
         lbl_zoom_factor.setText("zoom factor:1");
 
+        btn_dashedLineColor.setText("dashed line color");
+        btn_dashedLineColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_dashedLineColorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -221,6 +229,8 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(isSequence)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(isPolygon)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_dashedLineColor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lbl_zoom_factor)
                 .addContainerGap())
@@ -235,7 +245,8 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(isBBox)
                 .addComponent(isSequence)
                 .addComponent(isPolygon)
-                .addComponent(lbl_zoom_factor))
+                .addComponent(lbl_zoom_factor)
+                .addComponent(btn_dashedLineColor))
         );
 
         scroll_pane.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -349,6 +360,10 @@ public class FrameImage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_isPolygonActionPerformed
 
+    private void btn_dashedLineColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dashedLineColorActionPerformed
+        changeDashedLineColor();
+    }//GEN-LAST:event_btn_dashedLineColorActionPerformed
+
     public PanelPicture getPicturePanel() {
         return ((PanelPicture) panelPicture);
     }
@@ -398,6 +413,7 @@ public class FrameImage extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_dashedLineColor;
     private javax.swing.JButton btn_dataGrid;
     private javax.swing.JButton btn_save;
     private javax.swing.JCheckBox isBBox;
@@ -424,5 +440,9 @@ public class FrameImage extends javax.swing.JFrame {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
         //this.pack();
+    }
+
+    private void changeDashedLineColor() {
+        getPicturePanel().setDashedLineColor();
     }
 }
