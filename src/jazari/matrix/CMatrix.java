@@ -3891,6 +3891,32 @@ public final class CMatrix implements Serializable {
     public CMatrix findItemsByIndex(int... p) {
         return getMatrixValueByIndex(p);
     }
+    
+    /**
+     * operates as Matlab's find method try to find 1D indexes of the matrix
+     * based on the specified matrix operator logical conditions returns cloned
+     * matrix indeed found indexes are provided in int[] d parameter object
+     *
+     * @param op:logical criteria
+     * @param x :Target value or matching constant number
+     * @return
+     */
+    public CMatrix findItemsByIndex(CMatrix cm) {
+        return getMatrixValueByIndex(cm.toIntArray1D());
+    }
+
+    /**
+     * operates as Matlab's find method try to find 1D indexes of the matrix
+     * based on the specified matrix operator logical conditions returns cloned
+     * matrix indeed found indexes are provided in int[] d parameter object
+     *
+     * @param op:logical criteria
+     * @param x :Target value or matching constant number
+     * @return
+     */
+    public CMatrix findValuesByIndex(CMatrix cm) {
+        return getMatrixValueByIndex(cm.toIntArray1D());
+    }
 
     /**
      * Find metodu istenilen bir karşılaştırma işlemi ve karşılaştırmada
