@@ -2305,7 +2305,7 @@ public final class CMatrix implements Serializable {
             ret.image = ImageProcess.toGrayLevel(ret.image);
             ret.array = Nd4j.create(ImageProcess.bufferedImageToArray2D(ret.image));
         } else {
-            ret.array = Nd4j.create(ImageProcess.bufferedImageToArray2D(ret.image));
+            //ret.array = Nd4j.create(ImageProcess.bufferedImageToArray2D(ret.image));
             ret.image = ImageProcess.pixelsToImageGray(ret.array.toFloatMatrix());
         }
         return ret;

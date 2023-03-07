@@ -1,0 +1,29 @@
+<annotation>
+	<folder>images</folder>
+	<filename>bird.jpg</filename>
+	<path>D:\Dropbox\NetbeansProjects\open-jazari-library\images\bird.jpg</path>
+	<source>
+		<database>Unknown</database>
+		<annotation>Unknown</annotation>
+		<image>Unknown</image>
+	</source>
+	<size>
+		<width>640</width>
+		<height>399</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>goz</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>271</xmin>
+			<ymin>118</ymin>
+			<xmax>303</xmax>
+			<ymax>158</ymax>
+		</bndbox>
+	</object>
+</annotation>

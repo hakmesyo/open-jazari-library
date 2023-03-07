@@ -223,7 +223,7 @@ public class FrameImage extends javax.swing.JFrame {
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(29, 29, 29)
                 .addComponent(isBBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(isSequence)
@@ -266,11 +266,11 @@ public class FrameImage extends javax.swing.JFrame {
         panelPicture.setLayout(panelPictureLayout);
         panelPictureLayout.setHorizontalGroup(
             panelPictureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 733, Short.MAX_VALUE)
+            .addGap(0, 812, Short.MAX_VALUE)
         );
         panelPictureLayout.setVerticalGroup(
             panelPictureLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 569, Short.MAX_VALUE)
+            .addGap(0, 603, Short.MAX_VALUE)
         );
 
         scroll_pane.setViewportView(panelPicture);
@@ -321,7 +321,7 @@ public class FrameImage extends javax.swing.JFrame {
     private void isBBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isBBoxActionPerformed
         if (isBBox.isSelected()) {
             FactoryUtils.showMessage("Use Arrow Keys to locate prev and next images.\nPress S to save bboxes and go to next image.\nDouble click on bbox to change attributes");
-            //isBBox.setSelected(true);
+            isPolygon.setSelected(false);
         }
     }//GEN-LAST:event_isBBoxActionPerformed
 
@@ -357,7 +357,9 @@ public class FrameImage extends javax.swing.JFrame {
     }//GEN-LAST:event_isPolygonMouseMoved
 
     private void isPolygonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isPolygonActionPerformed
-        // TODO add your handling code here:
+        if (isPolygon.isSelected()) {
+            isBBox.setSelected(false);
+        }
     }//GEN-LAST:event_isPolygonActionPerformed
 
     private void btn_dashedLineColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dashedLineColorActionPerformed
@@ -428,6 +430,9 @@ public class FrameImage extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public void setFrameSize(BufferedImage img) {
+        if (img.getWidth()*img.getHeight()<550*550) {
+            return;
+        }
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         pw = 30;
         //pw = 70;

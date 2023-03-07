@@ -1,0 +1,29 @@
+<annotation>
+	<folder>images</folder>
+	<filename>bf.png</filename>
+	<path>D:\Dropbox\NetbeansProjects\open-jazari-library\images\bf.png</path>
+	<source>
+		<database>Unknown</database>
+		<annotation>Unknown</annotation>
+		<image>Unknown</image>
+	</source>
+	<size>
+		<width>782</width>
+		<height>606</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>kelebek</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>236</xmin>
+			<ymin>140</ymin>
+			<xmax>704</xmax>
+			<ymax>537</ymax>
+		</bndbox>
+	</object>
+</annotation>
