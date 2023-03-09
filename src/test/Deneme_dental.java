@@ -16,7 +16,7 @@ public class Deneme_dental {
         CMatrix cm = CMatrix.getInstance()
                 //.imread("C:\\Users\\dell_lab\\Desktop\\Arşiv (1)\\225006_1.png")
                 //.imread("images/artificial.jpg")
-                .imread("images/bf.png")
+                .imread("images/bird.jpg")
                 .imshow()
                 ;
     }

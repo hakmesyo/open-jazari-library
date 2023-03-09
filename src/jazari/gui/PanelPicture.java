@@ -90,6 +90,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private boolean activateRevert = false;
     private boolean activateBinarize = false;
     private boolean activateROI = false;
+    private boolean activateCrop = false;
+    private boolean isCropStarted = false;
     private boolean isMouseDraggedForImageMovement;
     public boolean activateBoundingBox = false;
     public boolean activatePolygon = false;
@@ -141,7 +143,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private Point currentMousePositionForImageMovement;
     private int defaultStrokeWidth = 2;
     private int indexOfCurrentImageFile = 0;
-    private Color colorDashedLine=new Color(255, 255, 0);
+    private Color colorDashedLine = new Color(255, 255, 0);
 
     public PanelPicture(FrameImage frame) {
         this.frame = frame;
@@ -350,6 +352,9 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     paintShowDrawableROI(gr);
                 }
             }
+            if (activateCrop && isCropStarted) {
+                paintCrop(gr);
+            }
             if (isMouseInCanvas()) {
                 paintPixelInfo(gr, currBufferedImage.getWidth(), currBufferedImage.getHeight());
                 paintMouseDashedLines(gr, wPanel, hPanel, colorDashedLine);
@@ -402,6 +407,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             "Equalize",
             "Smooth",
             "Sharpen",
+            "Crop",
             //"Save Bounding Box as Pascal VOC XML",
             "ROI",
             "Clone ROI",
@@ -495,6 +501,13 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     }
                 }
 
+                if (activateCrop && e.getButton() == MouseEvent.BUTTON1) {
+                    isCropStarted = true;
+                    mousePosTopLeft = constraintMousePosition(e);
+                    repaint();
+                    return;
+                }
+
                 if ((activateROI || activateBoundingBox) && e.getButton() == MouseEvent.BUTTON1) {
                     showRegion = true;
                     mousePosTopLeft = constraintMousePosition(e);
@@ -544,6 +557,13 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         repaint();
                         return;
                     }
+                }
+
+                if (activateCrop) {
+                    //activateCrop = false;
+                    isCropStarted = false;
+                    mousePosBottomRight = constraintMousePosition(e);
+                    cropImage();
                 }
 
                 if ((activateROI || activateBoundingBox) && e.getButton() == MouseEvent.BUTTON1) {
@@ -671,6 +691,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             public void mouseMoved(java.awt.event.MouseEvent e) {
                 isMouseDraggedForBoundingBoxMovement = false;
                 mousePos = e.getPoint();
+                isCropStarted = false;
                 if (activateBoundingBox && selectedBBox != null) {
                     Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
                     int t = 10;
@@ -692,12 +713,13 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
 
             public void mouseDragged(java.awt.event.MouseEvent e) {
-                if (activateBoundingBox) {
+                if (activateBoundingBox || activateCrop) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
                         isMouseDraggedForBoundingBoxMovement = true;
                         mousePos = constraintMousePosition(e);
                     }
                 }
+
                 if (SwingUtilities.isMiddleMouseButton(e)) {
                     if (currBufferedImage.getWidth() > getWidth() || currBufferedImage.getHeight() > getHeight()) {
                         isMouseDraggedForImageMovement = true;
@@ -709,6 +731,20 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
         }
         );
+    }
+
+    private void cropImage() {
+        mousePosTopLeft.x -= fromLeft;
+        mousePosTopLeft.y -= fromTop;
+        mousePosBottomRight.x -= fromLeft;
+        mousePosBottomRight.y -= fromTop;
+        CRectangle cr = new CRectangle(mousePosTopLeft.y, mousePosTopLeft.x,
+                Math.abs(mousePosBottomRight.x - mousePosTopLeft.x), Math.abs(mousePosBottomRight.y - mousePosTopLeft.y));
+        if (cr.width <= 0 || cr.height <= 0) {
+            return;
+        }
+        BufferedImage bf = ImageProcess.cropImage(currBufferedImage, cr);
+        new FrameImage(CMatrix.getInstance(bf), imageFolder + "/cropped image", "cropped image temp").setVisible(true);
     }
 
     private AffineTransform afft = new AffineTransform();
@@ -981,6 +1017,31 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             Point p2 = new Point(bbox.xmax + fromLeft, bbox.ymax + fromTop);
             drawBoundingBoxOnImage(gr, bbox, defaultStrokeWidth, p1, p2, mapBBoxColor.get(obj.name));
         }
+    }
+
+    private void paintCrop(Graphics2D gr) {
+
+        Stroke dashed = new BasicStroke(3,
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_BEVEL,
+                0,
+                new float[]{9},
+                0);
+        gr.setStroke(dashed);
+        gr.setColor(colorDashedLine);
+
+//        gr.setStroke(new BasicStroke(3));
+//        gr.setColor(Color.blue);
+        int w = Math.abs(mousePos.x - mousePosTopLeft.x);
+        int h = Math.abs(mousePos.y - mousePosTopLeft.y);
+        gr.drawRect(mousePosTopLeft.x, mousePosTopLeft.y, w, h);
+        gr.setColor(Color.red);
+        int wx = 5;
+        gr.drawRect(mousePosTopLeft.x - 2, mousePosTopLeft.y - 2, wx, wx);
+        gr.drawRect(mousePosTopLeft.x - 2 + w, mousePosTopLeft.y - 2, wx, wx);
+        gr.drawRect(mousePosTopLeft.x - 2 + w, mousePosTopLeft.y - 2 + h, wx, wx);
+        gr.drawRect(mousePosTopLeft.x - 2, mousePosTopLeft.y - 2 + h, wx, wx);
+        gr.setStroke(new BasicStroke(1));
     }
 
     private void paintROI(Graphics2D gr) {
@@ -1419,6 +1480,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     activateAutoSizeAspect = true;
                 } else if (obj.getText().equals("ROI")) {
                     activateROI = true;
+                } else if (obj.getText().equals("Crop")) {
+                    activateCrop = true;
                 } else if (obj.getText().equals("Save Bounding Box as Pascal VOC XML")) {
                     savePascalVocXML();
                 } else if (obj.getText().equals("Clone ROI")) {
@@ -1548,6 +1611,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
 
     private void setDefaultValues() {
         activateROI = false;
+        activateCrop = false;
         activateBoundingBox = false;
         activateDrawableROI = false;
         activateSaveImage = false;
