@@ -3280,7 +3280,8 @@ public final class FactoryMatrix implements Serializable {
     public static float[][] reshapeBasedOnRows(float[] d, int r, int c) {
         float[][] ret = new float[r][c];
         if (d.length != r * c) {
-            showMessage("size mismatch");
+            //showMessage("size mismatch");
+            System.err.println("size mismatch");
             return ret;
         }
         int k = 0;

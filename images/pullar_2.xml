@@ -1,9 +1,11 @@
 <annotation>
 	<folder>images</folder>
-	<filename>pullar.png</filename>
-	<path>D:\Dropbox\NetbeansProjects\open-jazari-library\images\pullar.png</path>
+	<filename>pullar_2.xml</filename>
+	<path>images/pullar.png</path>
 	<source>
 		<database>Unknown</database>
+		<annotation>Unknown</annotation>
+		<image>Unknown</image>
 	</source>
 	<size>
 		<width>518</width>
@@ -13,26 +15,28 @@
 	<segmented>0</segmented>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
-        <polygon>
-            <x1>1</x1>
-            <y1>2</y1>
-            <x2>3</x2>
-            <y2>4</y2>
-            <x3>5</x3>
-            <y3>6</y3>
-        </polygon>
+		<polygon>
+			<x1>1</x1>
+			<y1>2</y1>
+			<x2>3</x2>
+			<y2>4</y2>
+			<x3>5</x3>
+			<y3>6</y3>
+		</polygon>
 		<bndbox>
-			<xmin>104</xmin>
-			<ymin>19</ymin>
-			<xmax>153</xmax>
-			<ymax>68</ymax>
+			<xmin>1</xmin>
+			<ymin>2</ymin>
+			<xmax>5</xmax>
+			<ymax>6</ymax>
 		</bndbox>
 	</object>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -45,6 +49,7 @@
 	</object>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -57,6 +62,7 @@
 	</object>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -69,6 +75,7 @@
 	</object>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -81,6 +88,7 @@
 	</object>
 	<object>
 		<name>red_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -93,6 +101,7 @@
 	</object>
 	<object>
 		<name>yellow_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -105,6 +114,7 @@
 	</object>
 	<object>
 		<name>yellow_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -117,6 +127,7 @@
 	</object>
 	<object>
 		<name>yellow_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -129,6 +140,7 @@
 	</object>
 	<object>
 		<name>yellow_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -141,6 +153,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -153,6 +166,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -165,6 +179,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -177,6 +192,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -189,6 +205,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -201,6 +218,7 @@
 	</object>
 	<object>
 		<name>green_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -213,6 +231,7 @@
 	</object>
 	<object>
 		<name>blue_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -225,6 +244,7 @@
 	</object>
 	<object>
 		<name>blue_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -237,6 +257,7 @@
 	</object>
 	<object>
 		<name>blue_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -249,6 +270,7 @@
 	</object>
 	<object>
 		<name>blue_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -261,6 +283,7 @@
 	</object>
 	<object>
 		<name>blue_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -273,6 +296,7 @@
 	</object>
 	<object>
 		<name>orange_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -285,6 +309,7 @@
 	</object>
 	<object>
 		<name>orange_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -297,6 +322,7 @@
 	</object>
 	<object>
 		<name>orange_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -309,6 +335,7 @@
 	</object>
 	<object>
 		<name>orange_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
@@ -321,6 +348,7 @@
 	</object>
 	<object>
 		<name>orange_pul</name>
+		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>

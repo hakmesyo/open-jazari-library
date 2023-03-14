@@ -14,9 +14,9 @@ import jazari.matrix.CMatrix;
 public class Deneme_dental {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                //.imread("C:\\Users\\dell_lab\\Desktop\\Arşiv (1)\\225006_1.png")
                 //.imread("images/artificial.jpg")
-                .imread("images/bird.jpg")
+                //.imread("images/bird.jpg")
+                .imread("images/dental_1.png")
                 .imshow()
                 ;
     }

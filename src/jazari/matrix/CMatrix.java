@@ -1007,14 +1007,30 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
+    public static CMatrix cloneMatrix(CMatrix cm) {
+        CMatrix ret = new CMatrix(cm.array.dup());
+        ret.name = cm.name;
+        ret.hold_on = cm.hold_on;
+        ret.framePlot = cm.framePlot;
+        ret.wekaInstance = cm.wekaInstance;
+        ret.columnNames = FactoryUtils.clone(cm.columnNames);
+        ret.classLabels = FactoryUtils.clone(cm.classLabels);
+        return ret;
+    }
+
+    /**
+     * make a deep copy of the given matrix
+     *
+     * @return CMatrix
+     */
     public CMatrix clone(CMatrix cm) {
         CMatrix ret = new CMatrix(cm.array.dup());
         ret.name = cm.name;
         ret.hold_on = cm.hold_on;
         ret.framePlot = cm.framePlot;
         ret.wekaInstance = cm.wekaInstance;
-        ret.columnNames = FactoryUtils.clone(this.columnNames);
-        ret.classLabels = FactoryUtils.clone(this.classLabels);
+        ret.columnNames = FactoryUtils.clone(cm.columnNames);
+        ret.classLabels = FactoryUtils.clone(cm.classLabels);
         return ret;
     }
 
@@ -5115,9 +5131,10 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix getAdaptiveExposureMatrix() {
-        int n = 24;
-        CMatrix y1 = CMatrix.getInstance().range(0, 127).minusScalar(127).pow(n);
-        CMatrix y2 = CMatrix.getInstance().range(128, 255).minusScalar(128).pow(n);
+        //int n = 24;
+        int n = 3;
+        CMatrix y1 = CMatrix.getInstance().range(0, 128).minusScalar(127).pow(n);
+        CMatrix y2 = CMatrix.getInstance().range(128, 256).minusScalar(128).pow(n);
         CMatrix y = y1.cat(2, y2).normalizeMinMax();
 
 //        CMatrix y = CMatrix.getInstance().vector(0, 255).minusScalar(127).pow(8).normalizeMinMax().plot();
@@ -7466,7 +7483,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateColumn(int n) {
         CMatrix ret = this.clone();
         CMatrix ret2 = this.clone();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n-1; i++) {
             ret = ret.cat(1, ret2);
         }
         return ret;
@@ -7506,7 +7523,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateRow(int n) {
         CMatrix ret = this.clone();
         CMatrix ret2 = this.clone();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n-1; i++) {
             ret = ret.cat(2, ret2);
         }
         return ret;
@@ -8997,6 +9014,14 @@ public final class CMatrix implements Serializable {
         FactoryUtils.reIndexFilesBasedOnPrefixAndTimeStamp(pathFolder,extensions);
         System.out.println("b. successfully reindex all filenames to satify uniqueness");
         return this;
+    }
+
+    public CMatrix nonZeroIndices() {
+        return this.findIndex(TMatrixOperator.NOT_EQUALS, 0);
+    }
+    
+    public CMatrix nonZeroValues() {
+        return this.findItemsByIndex(findIndex(TMatrixOperator.NOT_EQUALS, 0));
     }
 
 

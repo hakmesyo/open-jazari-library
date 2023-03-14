@@ -106,7 +106,7 @@ public class TestVisDroneAnnotationsToPascalVoc {
                         new PascalVocBoundingBox(object_name,
                                 new Rectangle(px, py, w, h),
                                 0,
-                                0,null),null);
+                                0,null),null,null);
                 lstObjects.add(voc);
             }
             String folderName = "images";

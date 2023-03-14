@@ -5,8 +5,12 @@
  */
 package test;
 
+import java.awt.Point;
+import java.awt.Polygon;
+import jazari.factory.FactoryUtils;
 import jazari.matrix.CMatrix;
 import jazari.types.TMatrixOperator;
+import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
 
 /**
  *
@@ -14,12 +18,20 @@ import jazari.types.TMatrixOperator;
  */
 public class Deneme2 {
     public static void main(String[] args) {
-        CMatrix cm = CMatrix.getInstance()
-                .rand(5,3)
-                .dump()
-                ;
-        cm.clone().mean().mean().println();
-        cm.clone().std().std().println();
+        Polygon poly=new Polygon();
+        for (int i = 0; i < 10; i++) {
+            Point p=new Point(i,2*i);
+            poly.addPoint(p.x, p.y);
+            System.out.println(poly.npoints);
+        }
+        //AnnotationPascalVOCFormat apv= FactoryUtils.deserializePascalVocXML("images/pullar.xml");
+        //FactoryUtils.serializePascalVocXML("images", "pullar_2.xml", "images/pullar.png", apv.source, apv.lstObjects);
+//        CMatrix cm = CMatrix.getInstance()
+//                .rand(5,3)
+//                .dump()
+//                ;
+//        cm.clone().mean().mean().println();
+//        cm.clone().std().std().println();
         
 //        CMatrix cm = CMatrix.getInstance()
 //                .rand(4,3,0,30)

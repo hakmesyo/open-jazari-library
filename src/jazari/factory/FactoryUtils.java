@@ -23,6 +23,7 @@ import jazari.websocket.SocketServer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -78,6 +79,7 @@ import jazari.utils.pascalvoc.PascalVocBoundingBox;
 import jazari.utils.pascalvoc.PascalVocAttribute;
 import jazari.utils.pascalvoc.AnnotationPascalVOCFormat;
 import jazari.utils.pascalvoc.PascalVocObject;
+import jazari.utils.pascalvoc.PascalVocPolygon;
 import jazari.utils.pascalvoc.PascalVocSize;
 import jazari.utils.pascalvoc.PascalVocSource;
 import org.apache.commons.io.FileUtils;
@@ -1884,7 +1886,7 @@ public final class FactoryUtils {
         String fileName = p.getFileName().toString();
         return fileName;
     }
-    
+
     /**
      * parse the file name from file path string
      *
@@ -5844,6 +5846,20 @@ public final class FactoryUtils {
         cp.setSize((int) (cp.getWidth() / scale), (int) (cp.getHeight() / scale));
     }
 
+    public static String saveImageAs(BufferedImage img, String str_dpi) {
+        int dpi = Integer.parseInt(str_dpi);
+        float scale = dpi / 96.0f;
+        img = ImageProcess.resizeAspectRatio(img, (int) (img.getWidth() * scale), (int) (img.getHeight() * scale));
+        File file = FactoryUtils.getFileFromChooserSave();
+        if (file != null) {
+            ImageProcess.saveImage(img, file.getAbsolutePath());
+            return file.getAbsolutePath();
+        } else {
+            FactoryUtils.showMessage("kaydedilemedi CPlotFrame.savePanel()");
+            return null;
+        }
+    }
+
     public static String getUUID() {
         return UUID.randomUUID().toString();
     }
@@ -5982,16 +5998,16 @@ public final class FactoryUtils {
         int n = txtFiles.length;
         for (int i = 0; i < n; i++) {
             if (i <= (int) (n * trainRatio)) {
-                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/train/" + getFileName(txtFiles[i].getName())+".jpg"));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/train/" + getFileName(txtFiles[i].getName()) + ".jpg"));
                 //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/train/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/train/" + txtFiles[i].getName()));
 
             } else if (i > (int) (n * trainRatio) && i <= (int) (n * (trainRatio + valRatio))) {
-                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/val/" + getFileName(txtFiles[i].getName())+".jpg"));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/val/" + getFileName(txtFiles[i].getName()) + ".jpg"));
                 //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/val/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/val/" + txtFiles[i].getName()));
             } else {
-                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/test/" + getFileName(txtFiles[i].getName())+".jpg"));
+                FactoryUtils.copyFile(mapImg.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/test/" + getFileName(txtFiles[i].getName()) + ".jpg"));
                 //FactoryUtils.copyFile(mapXml.get(getFileName(txtFiles[i].getName())), new File(pathTarget + "/images/test/" + xmlFiles[i].getName()));
                 FactoryUtils.copyFile(txtFiles[i], new File(pathTarget + "/labels/test/" + txtFiles[i].getName()));
             }
@@ -6199,12 +6215,12 @@ public final class FactoryUtils {
                 emptyFiles.add(f.getAbsolutePath());
             }
         }
-        files=null;
+        files = null;
         System.gc();
         for (String ef : emptyFiles) {
             for (int i = 0; i < extensions.length; i++) {
                 try {
-                    Files.deleteIfExists(Paths.get(getParentFromPath(ef)+"/"+getFileName(getFileNameFromPath(ef)) + "." + extensions[i]));
+                    Files.deleteIfExists(Paths.get(getParentFromPath(ef) + "/" + getFileName(getFileNameFromPath(ef)) + "." + extensions[i]));
                 } catch (IOException ex) {
                     Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -6228,15 +6244,17 @@ public final class FactoryUtils {
         return false;
     }
 
-    private static void balanceDatasetBasedOnFileExt(String pathSource, String ... ext) {
-        String filter=ext[0];
-        File[] files=getFileArrayInFolderByExtension(pathSource, filter);
-        Map<String,File>[] maps=new HashMap[ext.length-1];
+    private static void balanceDatasetBasedOnFileExt(String pathSource, String... ext) {
+        String filter = ext[0];
+        File[] files = getFileArrayInFolderByExtension(pathSource, filter);
+        Map<String, File>[] maps = new HashMap[ext.length - 1];
         System.out.println("bu metod henuz sonlanmadı");
     }
 
     /**
-     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * try to divide image into 2D cropped images and save them on target folder
+     * with specified image format
+     *
      * @param nr : number of rows
      * @param nc : number of columns
      * @param destinationFolder : cropped images stored in that folder
@@ -6263,7 +6281,9 @@ public final class FactoryUtils {
     }
 
     /**
-     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * try to divide image into 2D cropped images and save them on target folder
+     * with specified image format
+     *
      * @param nr : number of rows
      * @param nc : number of columns
      * @param destinationFolder : cropped images stored in that folder
@@ -6288,6 +6308,59 @@ public final class FactoryUtils {
             }
         }
     }
+
+    public static boolean isNear(Point p1, Point p2, int d) {
+        if (Math.abs(p1.x-p2.x)<=d && Math.abs(p1.y-p2.y)<=d) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static Polygon clone(Polygon p) {
+        Polygon ret=new Polygon(clone(p.xpoints),clone(p.ypoints),p.npoints);
+        return ret;
+    }
+
+    public static Polygon shiftPolygon(Polygon p, int dx, int dy) {
+        int n=p.npoints;
+        for (int i = 0; i < n; i++) {
+            p.xpoints[i]+=dx;
+            p.ypoints[i]+=dy;
+        }
+        return p;
+    }
+
+//    public static Rectangle getBoundingRectangle(Polygon polygon) {
+//        if (polygon.npoints <= 0) {
+//            return null;
+//        }
+//        Rectangle ret = new Rectangle();
+//        Point p = listPolygon.get(0);
+//        int minX = p.x;
+//        int minY = p.y;
+//        int maxX = p.x;
+//        int maxY = p.y;
+//        for (Point point : listPolygon) {
+//            if (point.x < minX) {
+//                minX = point.x;
+//            }
+//            if (point.y < minY) {
+//                minY = point.y;
+//            }
+//            if (point.x > maxX) {
+//                maxX = point.x;
+//            }
+//            if (point.y > maxY) {
+//                maxY = point.y;
+//            }
+//        }
+//        ret.x = minX;
+//        ret.y = minY;
+//        ret.width = maxX - minX;
+//        ret.height = maxY - minY;
+//        return ret;
+//    }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
@@ -6879,12 +6952,43 @@ public final class FactoryUtils {
         int indexAttributes = 0;
         int indexAttributesEnd = 0;
         int indexObjectEnd = 0;
+        
+        int x_index1=0; //for parsing polygon
+        int x_index2=0; //for parsing polygon
+        int y_index1=0; //for parsing polygon
+        int y_index2=0; //for parsing polygon
+        
         for (int i = 0; i < count; i++) {
             indexAttributes = s.indexOf("<attributes>", indexAttributes + 1);
             indexObjectEnd = s.indexOf("</object>", indexObjectEnd + 1);
             String name = s.substring(s.indexOf("<name>", nameIndex1 + 1) + 6, s.indexOf("</name>", nameIndex2 + 1));
             nameIndex1 = s.indexOf("<name>", indexObjectEnd) - 25;
             nameIndex2 = s.indexOf("</name>", indexObjectEnd) - 25;
+
+            boolean isPolygonExist = (s.indexOf("<polygon>", xminIndex1 + 1) != -1) ? true : false;
+            PascalVocPolygon polygon=null;
+            if (isPolygonExist) {
+                int k=0;
+                Polygon poly=new Polygon();
+                while(true){
+                    k++;
+                    x_index1=s.indexOf("<x"+k+">", x_index1 + 1);
+                    if (x_index1==-1) {
+                        break;
+                    }
+                    x_index2=s.indexOf("</x"+k+">", x_index2 + 1);
+                    int x=Integer.parseInt(s.substring(x_index1+("<x"+k+">").length(),x_index2));
+                    
+                    y_index1=s.indexOf("<y"+k+">", y_index1 + 1);
+                    y_index2=s.indexOf("</y"+k+">", y_index2 + 1);
+                    int y=Integer.parseInt(s.substring(y_index1+("<y"+k+">").length(),y_index2));
+                    
+                    poly.addPoint(x, y);
+                    //System.out.println(p);
+                }
+                polygon=new PascalVocPolygon("polygon", poly, 0, 0, Color.yellow);
+            }
+            
 
             int xmin = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<xmin>", xminIndex1 + 1) + 6, s.indexOf("</xmin>", xminIndex2 + 1))));
             xminIndex1 = s.indexOf("<xmin>", xminIndex1 + 1);
@@ -6925,8 +7029,13 @@ public final class FactoryUtils {
                     attributeList.add(bbA);
                 }
             }
-
-            PascalVocObject obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, attributeList);
+            PascalVocObject obj=null;
+            if (isPolygonExist) {
+                obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, polygon, attributeList);
+            }else{
+                obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, null,attributeList);
+            }
+            
             lstObjects.add(obj);
         }
         ret.lstObjects = lstObjects;

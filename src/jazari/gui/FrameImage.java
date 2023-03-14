@@ -62,28 +62,7 @@ public class FrameImage extends javax.swing.JFrame {
      */
     public FrameImage(CMatrix cm, String imagePath, String caption) {
         initComponents();
-        this.setTitle(caption);
-        this.cm = cm;
-        this.img = cm.getImage();
-        this.imagePath = imagePath;
-        getPicturePanel().activateBoundingBox = isBBox.isSelected();
-        if (img.getHeight()>950) {
-            float zoom_factor=950.0f/img.getHeight();
-            int w=(int)(img.getWidth()*zoom_factor);
-            int h=(int)(img.getHeight()*zoom_factor);
-            this.lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat(zoom_factor,4));
-            getPicturePanel().original_zoom_factor=FactoryUtils.formatFloat(zoom_factor,4);
-            getPicturePanel().rawImage=ImageProcess.clone(img);
-            img=ImageProcess.resizeAspectRatio(img, w, h);
-        }
-        getPicturePanel().setImage(img, imagePath, caption);
-        getPicturePanel().setFrame(this);
-        setFrameSize(img);
-        getPicturePanel().setFocusable(true);
-//        getPicturePanel().requestFocus();
-        getPicturePanel().requestFocusInWindow();
-        isSequence.setVisible(false);
-        //scroll_pane.setWheelScrollingEnabled(false);
+        loadImage(cm,imagePath,caption);
     }
 
     public void setImage(BufferedImage img, String imagePath, String caption) {
@@ -140,14 +119,14 @@ public class FrameImage extends javax.swing.JFrame {
             }
         });
 
-        btn_save.setText("Save");
+        btn_save.setText("Save As");
         btn_save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_saveActionPerformed(evt);
             }
         });
 
-        txt_dpi.setText("300");
+        txt_dpi.setText("96");
 
         jLabel2.setText("dpi");
 
@@ -218,12 +197,12 @@ public class FrameImage extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(btn_dataGrid)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
+                .addGap(42, 42, 42)
                 .addComponent(isBBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(isSequence)
@@ -300,7 +279,7 @@ public class FrameImage extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_dataGridActionPerformed
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
-        savePanel();
+        saveImageAs();
     }//GEN-LAST:event_btn_saveActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
@@ -313,6 +292,7 @@ public class FrameImage extends javax.swing.JFrame {
 
     private void isBBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isBBoxItemStateChanged
         getPicturePanel().activateBoundingBox = isBBox.isSelected();
+        getPicturePanel().activatePolygon = isPolygon.isSelected();
         getPicturePanel().setImage(this.img, imagePath, this.getTitle());
         isSequence.setVisible(isBBox.isSelected());
         getPicturePanel().requestFocus();
@@ -347,9 +327,9 @@ public class FrameImage extends javax.swing.JFrame {
 
     private void isPolygonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isPolygonItemStateChanged
         getPicturePanel().activatePolygon = isPolygon.isSelected();
+        getPicturePanel().activateBoundingBox = isBBox.isSelected();
         getPicturePanel().setImage(this.img, imagePath, this.getTitle());
         getPicturePanel().requestFocus();
-        // TODO add your handling code here:
     }//GEN-LAST:event_isPolygonItemStateChanged
 
     private void isPolygonMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_isPolygonMouseMoved
@@ -370,9 +350,10 @@ public class FrameImage extends javax.swing.JFrame {
         return ((PanelPicture) panelPicture);
     }
 
-    public void savePanel() {
-        PanelPicture cp = ((PanelPicture) panelPicture);
-        FactoryUtils.savePanel(cp, txt_dpi.getText());
+    public void saveImageAs() {
+        String imagePath=FactoryUtils.saveImageAs(getPicturePanel().getImage(), txt_dpi.getText());
+        CMatrix cm = CMatrix.getInstance().imread(imagePath);
+        loadImage(cm, imagePath, imagePath);
     }
     
     public void setZoomFactor(double z){
@@ -449,5 +430,28 @@ public class FrameImage extends javax.swing.JFrame {
 
     private void changeDashedLineColor() {
         getPicturePanel().setDashedLineColor();
+    }
+
+    private void loadImage(CMatrix cm, String imagePath, String caption) {
+        this.setTitle(caption);
+        this.cm = cm;
+        this.img = cm.getImage();
+        this.imagePath = imagePath;
+        getPicturePanel().activateBoundingBox = isBBox.isSelected();
+        if (img.getHeight()>950) {
+            float zoom_factor=950.0f/img.getHeight();
+            int w=(int)(img.getWidth()*zoom_factor);
+            int h=(int)(img.getHeight()*zoom_factor);
+            this.lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat(zoom_factor,4));
+            getPicturePanel().original_zoom_factor=FactoryUtils.formatFloat(zoom_factor,4);
+            getPicturePanel().rawImage=ImageProcess.clone(img);
+            img=ImageProcess.resizeAspectRatio(img, w, h);
+        }
+        getPicturePanel().setImage(img, imagePath, caption);
+        getPicturePanel().setFrame(this);
+        setFrameSize(img);
+        getPicturePanel().setFocusable(true);
+        getPicturePanel().requestFocusInWindow();
+        isSequence.setVisible(false);
     }
 }
