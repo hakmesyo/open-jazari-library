@@ -612,7 +612,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         isPolygonDragged = false;
                         selectedPolygon = getSelectedPolygon(constraintMousePosition(e));
                     }
-                } else if (activatePolygon && isPolygonPressed && SwingUtilities.isRightMouseButton(e)) {
+                }
+                if (activatePolygon && isPolygonPressed && SwingUtilities.isRightMouseButton(e)) {
                     isCancelledPolygon = true;
                 }
                 repaint();
@@ -896,7 +897,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         for (int i = 0; i < n - 1; i++) {
             poly.addPoint(xList.get(i), yList.get(i));
         }
-        
+
     }
 
     private void insertPointOnPolygonAt(Polygon poly, Point p, int index) {
@@ -1949,29 +1950,49 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
             return;
         } else if (key == KeyEvent.VK_DELETE) {
-            if (selectedBBox != null) {
-                PascalVocObject temp_obj = null;
-                for (PascalVocObject obj : listPascalVocObject) {
-                    if (obj.bndbox.equals(selectedBBox)) {
-                        temp_obj = obj;
-                        break;
+            if (activateBoundingBox) {
+                if (selectedBBox != null) {
+                    PascalVocObject temp_obj = null;
+                    for (PascalVocObject obj : listPascalVocObject) {
+                        if (obj.bndbox.equals(selectedBBox)) {
+                            temp_obj = obj;
+                            break;
+                        }
                     }
+                    if (temp_obj != null) {
+                        listPascalVocObject.remove(temp_obj);
+                    }
+                    selectedBBox = null;
+                } else {
+                    listPascalVocObject.clear();
                 }
-                if (temp_obj != null) {
-                    listPascalVocObject.remove(temp_obj);
+            } else if (activatePolygon) {
+                if (selectedPolygon != null) {
+                    PascalVocObject temp_obj = null;                    
+                    for (PascalVocObject obj : listPascalVocObject) {
+                        if (obj.polygonContainer.equals(selectedPolygon)) {
+                            temp_obj = obj;
+                            break;
+                        }
+                    }
+                    if (temp_obj != null) {
+                        listPascalVocObject.remove(temp_obj);
+                    }
+                    selectedPolygon = null;
+                } else {
+                    listPascalVocObject.clear();
                 }
-                selectedBBox = null;
-            } else {
-                listPascalVocObject.clear();
+
             }
             repaint();
             return;
         }
         BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
         rawImage = ImageProcess.clone(bf);
-        if (!(activateBoundingBox || activatePolygon)) {
-            adjustImageToPanel(bf, true);
-        }
+//        if (!(activateBoundingBox || activatePolygon)) {
+//            adjustImageToPanel(bf, true);
+//        }
+        adjustImageToPanel(bf, true);
 
         e.consume();
     }
