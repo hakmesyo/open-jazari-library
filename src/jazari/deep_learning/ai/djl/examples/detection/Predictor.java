@@ -8,6 +8,7 @@ package jazari.deep_learning.ai.djl.examples.detection;
 import ai.djl.Device;
 import ai.djl.Model;
 import ai.djl.metric.Metrics;
+import ai.djl.metric.Unit;
 import ai.djl.ndarray.LazyNDArray;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
@@ -222,8 +223,9 @@ public class Predictor<I, O> implements AutoCloseable {
             waitToRead(list);
             long tmp = System.nanoTime();
             long duration = tmp - timestamp;
+            Unit unit=Unit.KILOBYTES;
             timestamp = tmp;
-            metrics.addMetric("Preprocess", duration, "nano");
+            metrics.addMetric("Preprocess", duration, unit);
         }
     }
 
@@ -233,7 +235,7 @@ public class Predictor<I, O> implements AutoCloseable {
             long tmp = System.nanoTime();
             long duration = tmp - timestamp;
             timestamp = tmp;
-            metrics.addMetric("Inference", duration, "nano");
+            metrics.addMetric("Inference", duration, Unit.KILOBYTES);
         }
     }
 
@@ -242,8 +244,8 @@ public class Predictor<I, O> implements AutoCloseable {
             long tmp = System.nanoTime();
             long duration = tmp - timestamp;
             timestamp = tmp;
-            metrics.addMetric("Postprocess", duration, "nano");
-            metrics.addMetric("Total", tmp - begin, "nano");
+            metrics.addMetric("Postprocess", duration, Unit.NONE);
+            metrics.addMetric("Total", tmp - begin, Unit.NONE);
         }
     }
 

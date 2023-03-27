@@ -17,6 +17,7 @@ import jazari.deep_learning.ai.djl.examples.inference.benchmark.util.AbstractBen
 import jazari.deep_learning.ai.djl.examples.inference.benchmark.util.Arguments;
 import ai.djl.inference.Predictor;
 import ai.djl.metric.Metrics;
+import ai.djl.metric.Unit;
 import ai.djl.repository.zoo.ZooModel;
 import ai.djl.training.listener.MemoryTrainingListener;
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class MultithreadedBenchmark extends AbstractBenchmark {
 
         int successThreads = 0;
         try {
-            metrics.addMetric("mt_start", System.currentTimeMillis(), "mills");
+            metrics.addMetric("mt_start", System.currentTimeMillis(), Unit.COUNT);
             try {
                 List<Future<Object>> futures;
                 if (delay > 0) {

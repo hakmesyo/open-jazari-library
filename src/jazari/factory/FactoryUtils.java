@@ -6331,6 +6331,7 @@ public final class FactoryUtils {
         return p;
     }
 
+
 //    public static Rectangle getBoundingRectangle(Polygon polygon) {
 //        if (polygon.npoints <= 0) {
 //            return null;

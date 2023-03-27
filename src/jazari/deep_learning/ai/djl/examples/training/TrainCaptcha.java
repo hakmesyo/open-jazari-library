@@ -99,7 +99,7 @@ public final class TrainCaptcha {
                 });
         SimpleCompositeLoss loss = new SimpleCompositeLoss();
         for (int i = 0; i < CaptchaDataset.CAPTCHA_LENGTH; i++) {
-            loss.addLoss(new SoftmaxCrossEntropyLoss("loss_digit_" + i), i);
+            loss.addLoss(new SoftmaxCrossEntropyLoss("loss_digit_" + i));
         }
 
         DefaultTrainingConfig config =

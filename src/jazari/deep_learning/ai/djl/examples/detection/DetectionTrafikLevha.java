@@ -211,6 +211,11 @@ public class DetectionTrafikLevha extends ObjectDetectionDataset {
         return Optional.empty();
     }
 
+    @Override
+    public List<String> getClasses() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * A builder for a {@link DetectionTrafikLevha}.
      */

@@ -44,7 +44,7 @@ public final class Train {
     private static final int EPOCHS = 10;
 
     public static void main(String[] args) throws IOException, TranslateException {
-        System.setProperty("DJL_CACHE_DIR", "c:/ai/djl/my_cache");
+        System.setProperty("DJL_CACHE_DIR", "c:/ai/djl");
         // the location to save the model
         Path modelDir = Paths.get("models");
 

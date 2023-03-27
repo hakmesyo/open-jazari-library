@@ -19,10 +19,10 @@ import jazari.factory.FactoryUtils;
  */
 public class PascalVocPolygon {
 
-    public int xmin;
-    public int ymin;
-    public int xmax;
-    public int ymax;
+    private int xmin;
+    private int ymin;
+    private int xmax;
+    private int ymax;
     private Rectangle rect;
     public int fromLeft = 0;
     public int fromTop = 0;
@@ -49,6 +49,22 @@ public class PascalVocPolygon {
         rect.width = xmax - xmin + 2 * padding;
         rect.height = ymax - ymin + 2 * padding;
         return rect;
+    }
+    
+    public int getXMin(){
+        return polygon.getBounds().x;
+    }
+
+    public int getYMin(){
+        return polygon.getBounds().y;
+    }
+    
+    public int getXMax(){
+        return polygon.getBounds().x+polygon.getBounds().width;
+    }
+
+    public int getYMax(){
+        return polygon.getBounds().y+polygon.getBounds().height;
     }
 
     @Override
@@ -122,6 +138,16 @@ public class PascalVocPolygon {
 
     public int getHeight() {
         return Math.abs(ymax - ymin);
+    }
+
+    public void translate(int dx, int dy) {
+        polygon.translate(dx, dy);
+    }
+    
+    public void setLocationTopLeft(int px,int py){
+        int dx=px-getXMin();
+        int dy=py-getYMin();
+        translate(dx, dy);
     }
 
 }

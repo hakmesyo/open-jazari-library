@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -120,6 +121,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private String caption;
     private String lastSelectedClassName;
     private Color lastSelectedBoundingBoxColor;
+    private Color lastSelectedPolygonColor;
     private Color defaultBoundingBoxColor = new Color(255, 255, 0);
     private boolean isMouseDraggedForBoundingBoxMovement = false;
     private boolean isMouseDraggedForPolygonMovement = false;
@@ -139,6 +141,9 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private Point lastPolygonPoint = new Point(0, 0);
     private Polygon polygon = new Polygon();
     private boolean isCancelledPolygon = false;
+    private int selectedNodeIndexLeftMouse = -1;
+    private int selectedNodeIndexRightMouse = -1;
+    private boolean isFirstClickOutside;
 
     public PanelPicture(FrameImage frame) {
         this.frame = frame;
@@ -295,6 +300,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     int prev_width = 500;
     int prev_height = 500;
     private boolean isBBoxCancelled = false;
+    private boolean isPolygonCancelled = false;
     private boolean isBBoxDragged = false;
     private Point referenceDragPos;
     private Point relativeDragPosFromTop = new Point();
@@ -465,10 +471,47 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                             repaint();
                             return;
                         }
+                    } else if (activatePolygon && selectedPolygon != null) {
+                        String ret = setBoundingBoxProperties(selectedPolygon.name);
+                        mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
+                        if (ret.split(":").length == 0) {
+                            System.err.println("MyDialog dan gelen mesaj ikiye bölünemedi");
+                        }
+                        lastSelectedClassName = ret.split(":")[0];
+                        lastSelectedPolygonColor = buildColor(ret.split(":")[1]);
+
+                        //System.out.println("updated classLabel = " + selectedClass);
+                        if (!(lastSelectedClassName == null || lastSelectedClassName.isEmpty())) {
+                            isPolygonCancelled = false;
+                            selectedPolygon.name = lastSelectedClassName;
+                            selectedPolygon.color = lastSelectedPolygonColor;
+                            for (PascalVocObject pvo : listPascalVocObject) {
+                                if (pvo.polygonContainer.equals(selectedPolygon)) {
+                                    pvo.name = lastSelectedClassName;
+                                }
+                            }
+                            repaint();
+                            return;
+                        }
+
                     } else {
                         currBufferedImage = ImageProcess.clone(originalBufferedImage);
                         adjustImageToPanel(currBufferedImage, false);
                         repaint();
+                    }
+                } else if (e.getClickCount() == 1 && !e.isConsumed()) {
+                    e.consume();
+                    if (activatePolygon && selectedPolygon != null) {
+                        Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
+                        int node_index = isClickedOnPolygonEdge(selectedPolygon.polygon, p);
+                        //System.out.println("node_index = " + node_index);
+                        if (node_index != -1) {
+                            Point point = constraintMousePosition(e);
+                            point.x = unScaleWithZoomFactor(point.x - fromLeft);
+                            point.y = unScaleWithZoomFactor(point.y - fromTop);
+                            insertPointOnPolygonAt(selectedPolygon.polygon, point, node_index);
+                            repaint();
+                        }
                     }
                 }
             }
@@ -528,22 +571,46 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         isBBoxCancelled = false;
                         isBBoxDragged = false;
                     }
-                } else if (activatePolygon && e.getButton() == MouseEvent.BUTTON1) {
+                } else if (activatePolygon) {
                     showRegion = true;
                     isPolygonPressed = true;
                     lastPolygonPoint = constraintMousePosition(e);
                     Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
+                    int t = 10;
                     if (selectedPolygon != null) {
-                        if (p.x > scaleWithZoomFactor(selectedPolygon.xmin) && p.x < scaleWithZoomFactor(selectedPolygon.xmax) && p.y > scaleWithZoomFactor(selectedPolygon.ymin) && p.y < scaleWithZoomFactor(selectedPolygon.ymax)) {
+                        int n = selectedPolygon.polygon.npoints;
+                        Polygon poly = selectedPolygon.polygon;
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            selectedNodeIndexLeftMouse = -1;
+                            for (int i = 0; i < n; i++) {
+                                if (p.x > scaleWithZoomFactor(poly.xpoints[i]) - t && p.x < scaleWithZoomFactor(poly.xpoints[i]) + t && p.y > scaleWithZoomFactor(poly.ypoints[i]) - t && p.y < scaleWithZoomFactor(poly.ypoints[i]) + t) {
+                                    selectedNodeIndexLeftMouse = i;
+                                    isPolygonDragged = false;
+                                    return;
+                                }
+                            }
+                        } else if (SwingUtilities.isRightMouseButton(e)) {
+                            selectedNodeIndexRightMouse = -1;
+                            for (int i = 0; i < n; i++) {
+                                if (p.x > scaleWithZoomFactor(poly.xpoints[i]) - t && p.x < scaleWithZoomFactor(poly.xpoints[i]) + t && p.y > scaleWithZoomFactor(poly.ypoints[i]) - t && p.y < scaleWithZoomFactor(poly.ypoints[i]) + t) {
+                                    selectedNodeIndexRightMouse = i;
+                                    isPolygonDragged = false;
+                                    return;
+                                }
+                            }
+                        }
+                        if (p.x > scaleWithZoomFactor(selectedPolygon.getXMin()) && p.x < scaleWithZoomFactor(selectedPolygon.getXMax()) && p.y > scaleWithZoomFactor(selectedPolygon.getYMin()) && p.y < scaleWithZoomFactor(selectedPolygon.getYMax())) {
                             isPolygonDragged = true;
-                            referencePolygonDragPos = e.getPoint();
-                            relativePolygonDragPosFromTop.x = referencePolygonDragPos.x - (scaleWithZoomFactor(selectedPolygon.xmin) + fromLeft);
-                            relativePolygonDragPosFromTop.y = referencePolygonDragPos.y - (scaleWithZoomFactor(selectedPolygon.ymin) + fromTop);
+                            referencePolygonDragPos = constraintMousePosition(e);
+                            relativePolygonDragPosFromTop.x = referencePolygonDragPos.x - (scaleWithZoomFactor(selectedPolygon.getXMin()) + fromLeft);
+                            relativePolygonDragPosFromTop.y = referencePolygonDragPos.y - (scaleWithZoomFactor(selectedPolygon.getYMin()) + fromTop);
                         } else {
                             isPolygonDragged = false;
                         }
                     } else {
+                        isPolygonCancelled = false;
                         isPolygonDragged = false;
+                        selectedPolygon = getSelectedPolygon(constraintMousePosition(e));
                     }
                 } else if (activatePolygon && isPolygonPressed && SwingUtilities.isRightMouseButton(e)) {
                     isCancelledPolygon = true;
@@ -564,10 +631,18 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
 
                 if (activatePolygon && e.getButton() == MouseEvent.BUTTON1) {
                     Point p = constraintMousePosition(e);
-                    selectedPolygon = getSelectedPolygon(p);
-                    if (selectedPolygon != null) {
-                        repaint();
-                        return;
+                    if (!isPolygonDragged && selectedNodeIndexLeftMouse == -1) {
+                        selectedPolygon = getSelectedPolygon(p);
+                        if (selectedPolygon != null) {
+                            repaint();
+                            return;
+                        } else {
+                            if (isFirstClickOutside) {
+                                isFirstClickOutside = false;
+                                repaint();
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -584,32 +659,50 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     repaint();
                     return;
 
+                } else if (activatePolygon && isPolygonPressed && SwingUtilities.isRightMouseButton(e)) {
+                    if (selectedPolygon != null && selectedNodeIndexRightMouse != -1) {
+                        setDefaultCursor();
+                        removePointFromPolygon(selectedPolygon.polygon, selectedNodeIndexRightMouse);
+                        repaint();
+                        return;
+                    }
                 } else if (activatePolygon && isPolygonPressed && e.getButton() == MouseEvent.BUTTON1) {
                     setDefaultCursor();
                     mousePos = constraintMousePosition(e);
-                    Point p = constraintMousePosition(e);
 
-                    if (isReleasedNearStartPolygon(p, polygon)) {
-                        String ret = setBoundingBoxProperties("");
-                        mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
-                        lastSelectedClassName = ret.split(":")[0];
-                        lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
-                        Polygon pol = FactoryUtils.clone(polygon);
-                        pol = unScaleWithZoomFactor(pol);
-                        PascalVocPolygon poly = new PascalVocPolygon(lastSelectedClassName, pol, 0, 0, lastSelectedBoundingBoxColor);
-                        selectedPolygon = poly;
-                        listPascalVocObject.add(new PascalVocObject(selectedPolygon.name, "Unspecified", 0, 0, 0, null, selectedPolygon, null));
-                        polygon.reset();
-                        isPolygonPressed = false;
-                    } else {
-                        polygon.addPoint(p.x, p.y);
-                        //System.out.println("polygon size:" + polygon.npoints);
+                    if (selectedPolygon != null && selectedNodeIndexLeftMouse != -1) {
+                        setDefaultCursor();
+                        mousePos = constraintMousePosition(e);
+                        selectedPolygon.polygon.xpoints[selectedNodeIndexLeftMouse] = unScaleWithZoomFactorX(mousePos.x) - fromLeft;
+                        selectedPolygon.polygon.ypoints[selectedNodeIndexLeftMouse] = unScaleWithZoomFactorY(mousePos.y) - fromTop;
+                        repaint();
+                        return;
                     }
+                    if (!isPolygonDragged) {
+                        Point p = constraintMousePosition(e);
+                        if (isReleasedNearStartPolygon(p, polygon)) {
+                            String ret = setBoundingBoxProperties("");
+                            mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
+                            lastSelectedClassName = ret.split(":")[0];
+                            lastSelectedPolygonColor = buildColor(ret.split(":")[1]);
+                            Polygon pol = FactoryUtils.clone(polygon);
+                            pol = unScaleWithZoomFactor(pol);
+                            PascalVocPolygon poly = new PascalVocPolygon(lastSelectedClassName, pol, 0, 0, lastSelectedPolygonColor);
+                            selectedPolygon = poly;
+                            listPascalVocObject.add(new PascalVocObject(selectedPolygon.name, "Unspecified", 0, 0, 0, null, selectedPolygon, null));
+                            polygon.reset();
+                            isPolygonPressed = false;
+                            isFirstClickOutside = true;
+                        } else {
+                            polygon.addPoint(p.x, p.y);
+                        }
+                    }
+
                 } else if (activateBoundingBox && e.getButton() == MouseEvent.BUTTON1) {
                     setDefaultCursor();
                     mousePos = constraintMousePosition(e);
 
-                    //if (activateBoundingBox) {
+                    //eğer bounding box noktaları resize edilmişse
                     if (isBBoxResizeTopLeft && selectedBBox != null) {
                         mousePosTopLeft = constraintMousePosition(e);
                         selectedBBox.xmin = unScaleWithZoomFactorX(mousePosTopLeft.x) - fromLeft;
@@ -643,7 +736,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         selectedBBox = isMouseClickedOnBoundingBox();
                         repaint();
                     }
-                    //}
+
                     mousePosBottomRight = constraintMousePosition(e);
                     if (!FactoryUtils.isMousePosEqual(mousePosTopLeft, mousePosBottomRight)) {
                         if (isBBoxDragged) {
@@ -736,9 +829,21 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     } else {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
-                } else if (activatePolygon && isPolygonPressed && selectedPolygon == null) {
-                    showRegion = true;
-                    mousePos = constraintMousePosition(e);
+                } else if (activatePolygon && selectedPolygon != null) {
+                    Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
+                    int t = 10;
+                    int n = selectedPolygon.polygon.npoints;
+                    Polygon poly = selectedPolygon.polygon;
+                    if (poly.contains(p)) {
+                        setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
+                    for (int i = 0; i < n; i++) {
+                        if (p.x > scaleWithZoomFactor(poly.xpoints[i]) - t && p.x < scaleWithZoomFactor(poly.xpoints[i]) + t && p.y > scaleWithZoomFactor(poly.ypoints[i]) - t && p.y < scaleWithZoomFactor(poly.ypoints[i]) + t) {
+                            setCursor(new Cursor(Cursor.HAND_CURSOR));
+                        }
+                    }
                 }
                 repaint();
             }
@@ -754,6 +859,16 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     mousePos = constraintMousePosition(e);
                 }
 
+                if (selectedPolygon != null && selectedNodeIndexLeftMouse != -1) {
+                    mousePos = constraintMousePosition(e);
+                    setDefaultCursor();
+                    mousePos = constraintMousePosition(e);
+                    selectedPolygon.polygon.xpoints[selectedNodeIndexLeftMouse] = unScaleWithZoomFactorX(mousePos.x) - fromLeft;
+                    selectedPolygon.polygon.ypoints[selectedNodeIndexLeftMouse] = unScaleWithZoomFactorY(mousePos.y) - fromTop;
+                    repaint();
+                    return;
+                }
+
                 if (SwingUtilities.isMiddleMouseButton(e)) {
                     if (currBufferedImage.getWidth() > getWidth() || currBufferedImage.getHeight() > getHeight()) {
                         isMouseDraggedForImageMovement = true;
@@ -767,6 +882,65 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         );
     }
 
+    private void removePointFromPolygon(Polygon poly, int index) {
+        List<Integer> xList = new ArrayList();
+        List<Integer> yList = new ArrayList();
+        int n = poly.npoints;
+        for (int i = 0; i < n; i++) {
+            xList.add(poly.xpoints[i]);
+            yList.add(poly.ypoints[i]);
+        }
+        xList.remove(index);
+        yList.remove(index);
+        poly.reset();
+        for (int i = 0; i < n - 1; i++) {
+            poly.addPoint(xList.get(i), yList.get(i));
+        }
+        
+    }
+
+    private void insertPointOnPolygonAt(Polygon poly, Point p, int index) {
+        List<Integer> xList = new ArrayList();
+        List<Integer> yList = new ArrayList();
+        int n = poly.npoints;
+        for (int i = 0; i < n; i++) {
+            xList.add(poly.xpoints[i]);
+            yList.add(poly.ypoints[i]);
+        }
+        xList.add(index + 1, p.x);
+        yList.add(index + 1, p.y);
+        poly.reset();
+        for (int i = 0; i < n + 1; i++) {
+            poly.addPoint(xList.get(i), yList.get(i));
+        }
+    }
+
+    private int isClickedOnPolygonEdge(Polygon poly, Point p) {
+        int n = poly.npoints;
+        int x_from = 0;
+        int y_from = 0;
+        int x_to = 0;
+        int y_to = 0;
+        for (int i = 1; i <= n; i++) {
+            x_from = scaleWithZoomFactor(poly.xpoints[i - 1]);
+            y_from = scaleWithZoomFactor(poly.ypoints[i - 1]);
+            if (i < n) {
+                x_to = scaleWithZoomFactor(poly.xpoints[i]);
+                y_to = scaleWithZoomFactor(poly.ypoints[i]);
+            } else {
+                x_to = scaleWithZoomFactor(poly.xpoints[0]);
+                y_to = scaleWithZoomFactor(poly.ypoints[0]);
+            }
+
+            Line2D line = new Line2D.Double(x_from, y_from, x_to, y_to);
+            //System.out.println("mesafe:" + line.ptLineDist(p));
+            if (line.ptLineDist(p) <= 5) {
+                return i - 1;
+            }
+        }
+        return -1;
+    }
+
     private PascalVocPolygon getSelectedPolygon(Point mp) {
         selectedPolygon = null;
         for (PascalVocObject pvo : listPascalVocObject) {
@@ -774,6 +948,9 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             if (poly.contains(mp)) {
                 selectedPolygon = pvo.polygonContainer;
             }
+        }
+        if (selectedPolygon != null) {
+            isFirstClickOutside = true;
         }
         return selectedPolygon;
     }
@@ -993,16 +1170,16 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         if (poly != null) {
             gr.setStroke(new BasicStroke(stroke));
             gr.setColor(col);
-            Polygon p = scaleWithZoomFactor(FactoryUtils.clone(poly.polygon));
-            int dx = p1.x - poly.xmin;
-            int dy = p1.y - poly.ymin;
-            System.out.println(dx + ":" + dy);
-            p = FactoryUtils.shiftPolygon(p, dx, dy);
-            int n = p.npoints;
-            gr.drawPolygon(p.xpoints, p.ypoints, n);
-            for (int i = 0; i < n; i++) {
-                //gr.f
-            }
+
+            int w = scaleWithZoomFactor(poly.getWidth());
+            int h = scaleWithZoomFactor(poly.getHeight());
+//            gr.setStroke(new BasicStroke(stroke));
+//            gr.setColor(col);
+//            gr.drawRect(p1.x, p1.y, w, h);
+
+            int dx = p1.x - (scaleWithZoomFactor(selectedPolygon.getXMin()) + fromLeft);
+            int dy = p1.y - (scaleWithZoomFactor(selectedPolygon.getYMin()) + fromTop);
+            translateSelectedPolygonPosition(dx, dy);
         }
     }
 
@@ -1083,6 +1260,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             //eğer bbox tutulup hareket ettiriliyorsa
             this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
             lastPositionOfDraggedBBox = calculateDraggingBBoxPosition();
+            //System.out.println(lastPositionOfDraggedBBox[0]);
             draggedSelectedBoundingBoxOnScreen(gr, selectedBBox, defaultStrokeWidth, lastPositionOfDraggedBBox[0], lastPositionOfDraggedBBox[1], Color.orange);
         } else if (selectedBBox == null && !isBBoxCancelled && isMouseDraggedForBoundingBoxMovement) {
             //şayet herhangi bir bbox seçilmeden ekranda yeni bir bbox çiziliyorsa
@@ -1101,29 +1279,14 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private void paintPolygons(Graphics2D gr) {
         int w = 12;
         gr.setStroke(new BasicStroke(2));
-        //System.out.println(":"+isPolygonDragged+":"+isMouseDraggedForPolygonMovement);
         if (selectedPolygon != null && isPolygonDragged && isMouseDraggedForPolygonMovement) {
             //eğer bbox tutulup hareket ettiriliyorsa
             this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-//            int prev_x=0;
-//            int prev_y=0;
-//            if (lastPositionOfDraggedPolygon!=null){
-//                prev_x=lastPositionOfDraggedPolygon[0].x;
-//                prev_y=lastPositionOfDraggedPolygon[0].y;
-//            }else{
-//                prev_x=scaleWithZoomFactor(selectedPolygon.xmin);
-//                prev_y=scaleWithZoomFactor(selectedPolygon.ymin);
-//            }
             lastPositionOfDraggedPolygon = calculateDraggingPolygonPosition();
-//            int dx=lastPositionOfDraggedPolygon[0].x-prev_x;
-//            int dy=lastPositionOfDraggedPolygon[0].y-prev_y;
-//            System.out.println(dx+":"+dy);
             draggedSelectedPolygonOnScreen(gr, selectedPolygon, defaultStrokeWidth, lastPositionOfDraggedPolygon[0], lastPositionOfDraggedPolygon[1], Color.orange);
         }
-        //System.out.println(listPascalVocObject.size());
         for (PascalVocObject pvo : listPascalVocObject) {
             Polygon poly = scaleWithZoomFactor(pvo.polygonContainer.polygon);
-            //Polygon poly = (pvo.polygonContainer.polygon);
             gr.setColor(mapBBoxColor.get(pvo.name));
             gr.drawPolygon(poly);
             drawPolygonNodesAsCircle(gr, poly, w, mapBBoxColor.get(pvo.name));
@@ -1336,11 +1499,11 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         }
         return pol;
     }
-    
+
     private Polygon scaleWithZoomFactor(Polygon poly) {
         Polygon ret = new Polygon();
         for (int i = 0; i < poly.npoints; i++) {
-            ret.addPoint(scaleWithZoomFactorX(poly.xpoints[i]+fromLeft),scaleWithZoomFactorY(poly.ypoints[i]+fromTop));
+            ret.addPoint(scaleWithZoomFactorX(poly.xpoints[i] + fromLeft), scaleWithZoomFactorY(poly.ypoints[i] + fromTop));
         }
         return ret;
     }
@@ -1353,11 +1516,14 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         return new Point(scaleWithZoomFactorX(val.x), scaleWithZoomFactorY(val.y));
     }
 
+    private Point unScaleWithZoomFactor(Point val) {
+        return new Point(unScaleWithZoomFactorX(val.x), unScaleWithZoomFactorY(val.y));
+    }
+
 //
 //    private Point unScaleWithZoomFactor(Point val) {
 //        return new Point(unScaleWithZoomFactorX(val.x), unScaleWithZoomFactorY(val.y));
 //    }
-
     private Rectangle scaleWithZoomFactor(Rectangle p) {
         return new Rectangle(scaleWithZoomFactor(p.x), scaleWithZoomFactor(p.y), scaleWithZoomFactor(p.width), scaleWithZoomFactor(p.height));
     }
@@ -1393,18 +1559,30 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         }
     }
 
+    private void updateSelectedPolygonPosition(int dx, int dy) {
+        if (selectedPolygon != null && lastPositionOfDraggedPolygon != null) {
+            selectedPolygon.setLocationTopLeft(dx, dy);
+        }
+    }
+
+    private void translateSelectedPolygonPosition(int dx, int dy) {
+        if (selectedPolygon != null && lastPositionOfDraggedPolygon != null) {
+            selectedPolygon.translate(dx, dy);
+        }
+    }
+
     private Point[] calculateDraggingBBoxPosition() {
         Point[] ret = new Point[2];
         int p1x = mousePos.x - relativeDragPosFromTop.x;
         p1x = (p1x > fromLeft) ? p1x : fromLeft;
         int p1y = mousePos.y - relativeDragPosFromTop.y;
         p1y = (p1y > fromTop) ? p1y : fromTop;
-        int p2x = p1x + (selectedBBox.xmax - selectedBBox.xmin);
+        int p2x = p1x + scaleWithZoomFactor(selectedBBox.xmax - selectedBBox.xmin);
         if (p2x > fromLeft + currBufferedImage.getWidth()) {
             p2x = fromLeft + currBufferedImage.getWidth();
             p1x = p2x - scaleWithZoomFactor(selectedBBox.getWidth());
         }
-        int p2y = p1y + (selectedBBox.ymax - selectedBBox.ymin);
+        int p2y = p1y + scaleWithZoomFactor(selectedBBox.ymax - selectedBBox.ymin);
         if (p2y > fromTop + currBufferedImage.getHeight()) {
             p2y = fromTop + currBufferedImage.getHeight();
             p1y = p2y - scaleWithZoomFactor(selectedBBox.getHeight());
@@ -1422,12 +1600,12 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         p1x = (p1x > fromLeft) ? p1x : fromLeft;
         int p1y = mousePos.y - relativePolygonDragPosFromTop.y;
         p1y = (p1y > fromTop) ? p1y : fromTop;
-        int p2x = p1x + (selectedPolygon.xmax - selectedPolygon.xmin);
+        int p2x = p1x + scaleWithZoomFactor(selectedPolygon.getWidth());
         if (p2x > fromLeft + currBufferedImage.getWidth()) {
             p2x = fromLeft + currBufferedImage.getWidth();
             p1x = p2x - scaleWithZoomFactor(selectedPolygon.getWidth());
         }
-        int p2y = p1y + (selectedPolygon.ymax - selectedPolygon.ymin);
+        int p2y = p1y + scaleWithZoomFactor(selectedPolygon.getHeight());
         if (p2y > fromTop + currBufferedImage.getHeight()) {
             p2y = fromTop + currBufferedImage.getHeight();
             p1y = p2y - scaleWithZoomFactor(selectedPolygon.getHeight());
