@@ -6310,27 +6310,26 @@ public final class FactoryUtils {
     }
 
     public static boolean isNear(Point p1, Point p2, int d) {
-        if (Math.abs(p1.x-p2.x)<=d && Math.abs(p1.y-p2.y)<=d) {
+        if (Math.abs(p1.x - p2.x) <= d && Math.abs(p1.y - p2.y) <= d) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public static Polygon clone(Polygon p) {
-        Polygon ret=new Polygon(clone(p.xpoints),clone(p.ypoints),p.npoints);
+        Polygon ret = new Polygon(clone(p.xpoints), clone(p.ypoints), p.npoints);
         return ret;
     }
 
     public static Polygon shiftPolygon(Polygon p, int dx, int dy) {
-        int n=p.npoints;
+        int n = p.npoints;
         for (int i = 0; i < n; i++) {
-            p.xpoints[i]+=dx;
-            p.ypoints[i]+=dy;
+            p.xpoints[i] += dx;
+            p.ypoints[i] += dy;
         }
         return p;
     }
-
 
 //    public static Rectangle getBoundingRectangle(Polygon polygon) {
 //        if (polygon.npoints <= 0) {
@@ -6362,7 +6361,6 @@ public final class FactoryUtils {
 //        ret.height = maxY - minY;
 //        return ret;
 //    }
-
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -6953,12 +6951,13 @@ public final class FactoryUtils {
         int indexAttributes = 0;
         int indexAttributesEnd = 0;
         int indexObjectEnd = 0;
-        
-        int x_index1=0; //for parsing polygon
-        int x_index2=0; //for parsing polygon
-        int y_index1=0; //for parsing polygon
-        int y_index2=0; //for parsing polygon
-        
+
+        int x_temp_index1 = 0;
+        int x_index1 = 0; //for parsing polygon
+        int x_index2 = 0; //for parsing polygon
+        int y_index1 = 0; //for parsing polygon
+        int y_index2 = 0; //for parsing polygon
+
         for (int i = 0; i < count; i++) {
             indexAttributes = s.indexOf("<attributes>", indexAttributes + 1);
             indexObjectEnd = s.indexOf("</object>", indexObjectEnd + 1);
@@ -6967,29 +6966,43 @@ public final class FactoryUtils {
             nameIndex2 = s.indexOf("</name>", indexObjectEnd) - 25;
 
             boolean isPolygonExist = (s.indexOf("<polygon>", xminIndex1 + 1) != -1) ? true : false;
-            PascalVocPolygon polygon=null;
+            PascalVocPolygon polygon = null;
             if (isPolygonExist) {
-                int k=0;
-                Polygon poly=new Polygon();
-                while(true){
+                int k = 0;
+                Polygon poly = new Polygon();
+                int temp = x_temp_index1;
+                int exit_polygon_index = s.indexOf("</polygon>", xminIndex1 + 1);
+                while (true) {
+                    if (i == 5) {
+                        int dur = 0;
+                    }
                     k++;
-                    x_index1=s.indexOf("<x"+k+">", x_index1 + 1);
-                    if (x_index1==-1) {
+                    x_temp_index1 = s.indexOf("<x" + k + ">", x_temp_index1 + 1);
+                    if (x_temp_index1 > exit_polygon_index) {
+                        x_temp_index1 = x_index1;
                         break;
                     }
-                    x_index2=s.indexOf("</x"+k+">", x_index2 + 1);
-                    int x=Integer.parseInt(s.substring(x_index1+("<x"+k+">").length(),x_index2));
-                    
-                    y_index1=s.indexOf("<y"+k+">", y_index1 + 1);
-                    y_index2=s.indexOf("</y"+k+">", y_index2 + 1);
-                    int y=Integer.parseInt(s.substring(y_index1+("<y"+k+">").length(),y_index2));
-                    
+
+                    if (x_temp_index1 == -1) {
+                        x_temp_index1 = x_index1;
+                        break;
+                    } else {
+                        x_index1 = x_temp_index1;
+                    }
+
+                    x_index2 = s.indexOf("</x" + k + ">", x_index2 + 1);
+
+                    int x = Integer.parseInt(s.substring(x_index1 + ("<x" + k + ">").length(), x_index2));
+
+                    y_index1 = s.indexOf("<y" + k + ">", y_index1 + 1);
+                    y_index2 = s.indexOf("</y" + k + ">", y_index2 + 1);
+                    int y = Integer.parseInt(s.substring(y_index1 + ("<y" + k + ">").length(), y_index2));
+
                     poly.addPoint(x, y);
                     //System.out.println(p);
                 }
-                polygon=new PascalVocPolygon("polygon", poly, 0, 0, Color.yellow);
+                polygon = new PascalVocPolygon(name, poly, 0, 0, Color.yellow);
             }
-            
 
             int xmin = (int) Math.round(Double.parseDouble(s.substring(s.indexOf("<xmin>", xminIndex1 + 1) + 6, s.indexOf("</xmin>", xminIndex2 + 1))));
             xminIndex1 = s.indexOf("<xmin>", xminIndex1 + 1);
@@ -7030,13 +7043,13 @@ public final class FactoryUtils {
                     attributeList.add(bbA);
                 }
             }
-            PascalVocObject obj=null;
+            PascalVocObject obj = null;
             if (isPolygonExist) {
                 obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, polygon, attributeList);
-            }else{
-                obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, null,attributeList);
+            } else {
+                obj = new PascalVocObject(name, "Unspecified", 0, 0, 0, bbox, null, attributeList);
             }
-            
+
             lstObjects.add(obj);
         }
         ret.lstObjects = lstObjects;

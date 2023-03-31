@@ -210,7 +210,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         this.caption = caption;
         String folderName = FactoryUtils.getFolderPath(imagePath);
         currentFolderName = folderName;
-        if (activateBoundingBox && imagePath != null && !imagePath.isEmpty()) {
+        if ((activateBoundingBox || activatePolygon) && imagePath != null && !imagePath.isEmpty()) {
             String fileName = FactoryUtils.getFileName(imagePath) + ".xml";
             xmlFileName = folderName + "/" + fileName;
             boolean checkXML = new File(folderName, fileName).exists();
@@ -225,7 +225,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 }
 
                 showRegion = true;
-                activateBoundingBox = true;
+                //activateBoundingBox = true;
                 source = bb.source;
             }
         }
@@ -457,20 +457,17 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     if (activateBoundingBox && selectedBBox != null) {
                         String ret = setBoundingBoxProperties(selectedBBox.name);
                         mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
-                        if (ret.split(":").length == 0) {
-                            System.err.println("MyDialog dan gelen mesaj ikiye bölünemedi");
-                        }
-                        lastSelectedClassName = ret.split(":")[0];
-                        lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
-                        selectedPascalVocObject.name = lastSelectedClassName;
-
-                        //System.out.println("updated classLabel = " + selectedClass);
-                        if (!(lastSelectedClassName == null || lastSelectedClassName.isEmpty())) {
+                        if (ret != null && !ret.split(":")[0].isEmpty()) {
+                            lastSelectedClassName = ret.split(":")[0];
+                            lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
+                            selectedPascalVocObject.name = lastSelectedClassName;
                             isBBoxCancelled = false;
                             selectedBBox.name = lastSelectedClassName;
-                            repaint();
-                            return;
+                        } else {
+                            isBBoxCancelled = true;
                         }
+                        repaint();
+                        return;
                     } else if (activatePolygon && selectedPolygon != null) {
                         String ret = setBoundingBoxProperties(selectedPolygon.name);
                         mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
@@ -682,18 +679,34 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     if (!isPolygonDragged) {
                         Point p = constraintMousePosition(e);
                         if (isReleasedNearStartPolygon(p, polygon)) {
-                            String ret = setBoundingBoxProperties("");
-                            mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
-                            lastSelectedClassName = ret.split(":")[0];
-                            lastSelectedPolygonColor = buildColor(ret.split(":")[1]);
-                            Polygon pol = FactoryUtils.clone(polygon);
-                            pol = unScaleWithZoomFactor(pol);
-                            PascalVocPolygon poly = new PascalVocPolygon(lastSelectedClassName, pol, 0, 0, lastSelectedPolygonColor);
-                            selectedPolygon = poly;
-                            listPascalVocObject.add(new PascalVocObject(selectedPolygon.name, "Unspecified", 0, 0, 0, null, selectedPolygon, null));
+                            if (lastSelectedClassName == null || lastSelectedClassName.isEmpty()) {
+                                String ret = setBoundingBoxProperties("");
+                                mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
+                                if (ret != null && !ret.split(":")[0].isEmpty()) {
+                                    lastSelectedClassName = ret.split(":")[0];
+                                    lastSelectedPolygonColor = buildColor(ret.split(":")[1]);
+                                    Polygon pol = FactoryUtils.clone(polygon);
+                                    pol = unScaleWithZoomFactor(pol);
+                                    PascalVocPolygon poly = new PascalVocPolygon(lastSelectedClassName, pol, 0, 0, lastSelectedPolygonColor);
+                                    selectedPolygon = poly;
+                                    listPascalVocObject.add(new PascalVocObject(selectedPolygon.name, "Unspecified", 0, 0, 0, null, selectedPolygon, null));
+                                } else {
+                                    isPolygonCancelled = true;
+                                }
+                            } else {
+                                Polygon pol = FactoryUtils.clone(polygon);
+                                pol = unScaleWithZoomFactor(pol);
+                                PascalVocPolygon poly = new PascalVocPolygon(lastSelectedClassName, pol, 0, 0, lastSelectedPolygonColor);
+                                selectedPolygon = poly;
+                                listPascalVocObject.add(new PascalVocObject(selectedPolygon.name, "Unspecified", 0, 0, 0, null, selectedPolygon, null));
+
+                            }
                             polygon.reset();
                             isPolygonPressed = false;
                             isFirstClickOutside = true;
+                            selectedPolygon = null;
+                            repaint();
+                            return;
                         } else {
                             polygon.addPoint(p.x, p.y);
                         }
@@ -754,18 +767,18 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         if (lastSelectedClassName == null || lastSelectedClassName.isEmpty()) {
                             String ret = setBoundingBoxProperties("");
                             mapBBoxColor = buildHashMap(currentFolderName + "/class_labels.txt");
-                            lastSelectedClassName = ret.split(":")[0];
-                            lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
+                            if (ret != null && !ret.split(":")[0].isEmpty()) {
+                                lastSelectedClassName = ret.split(":")[0];
+                                lastSelectedBoundingBoxColor = buildColor(ret.split(":")[1]);
+                                isBBoxCancelled = false;
+                            } else {
+                                isBBoxCancelled = true;
+                                selectedBBox = null;
+                                repaint();
+                                return;
+                            }
                         }
 
-                        if (lastSelectedClassName == null || lastSelectedClassName.isEmpty()) {
-                            isBBoxCancelled = true;
-                            selectedBBox = null;
-                            repaint();
-                            return;
-                        } else {
-                            isBBoxCancelled = false;
-                        }
                         //System.out.println("fromLeft:"+fromLeft+" fromTop:"+fromTop);
                         Rectangle r = new Rectangle(unScaleWithZoomFactor(mousePosTopLeft.x - fromLeft), unScaleWithZoomFactor(mousePosTopLeft.y - fromTop), w, h);
                         PascalVocBoundingBox bbox = new PascalVocBoundingBox(lastSelectedClassName, r, 0, 0, lastSelectedBoundingBoxColor);
@@ -1880,7 +1893,13 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             PascalVocBoundingBox bbox = obj.bndbox;
             PascalVocPolygon polygon = obj.polygonContainer;
             List<PascalVocAttribute> attributeList = obj.attributeList;
-            lstObject.add(new PascalVocObject(bbox.name, "", 0, 0, 0, bbox, polygon, attributeList));
+            String name = "";
+            if (activateBoundingBox) {
+                name = bbox.name;
+            } else if (activatePolygon) {
+                name = polygon.name;
+            }
+            lstObject.add(new PascalVocObject(name, "", 0, 0, 0, bbox, polygon, attributeList));
         }
         if (lstObject.size() > 0) {
             String xml = FactoryUtils.serializePascalVocXML(imageFolder, fileName, imagePath, new PascalVocSource(), lstObject);
@@ -1891,7 +1910,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
         }
         //loadNextImage();
-        activateBoundingBox = true;
+
     }
 
     public void setActivateStatistics(boolean activateStatistics) {
@@ -1947,6 +1966,17 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
                 rawImage = ImageProcess.clone(bf);
                 adjustImageToPanel(bf, true);
+            } else if (activatePolygon) {
+                savePascalVocXML();
+                imageIndex++;
+                if (!isSeqenceVideoFrame) {
+                    listPascalVocObject.clear();
+                    selectedBBox = null;
+                }
+                BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
+                rawImage = ImageProcess.clone(bf);
+                adjustImageToPanel(bf, true);
+
             }
             return;
         } else if (key == KeyEvent.VK_DELETE) {
@@ -1968,7 +1998,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 }
             } else if (activatePolygon) {
                 if (selectedPolygon != null) {
-                    PascalVocObject temp_obj = null;                    
+                    PascalVocObject temp_obj = null;
                     for (PascalVocObject obj : listPascalVocObject) {
                         if (obj.polygonContainer.equals(selectedPolygon)) {
                             temp_obj = obj;
@@ -1976,6 +2006,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         }
                     }
                     if (temp_obj != null) {
+                        temp_obj.polygonContainer.polygon=null;
+                        temp_obj.polygonContainer=null;
                         listPascalVocObject.remove(temp_obj);
                     }
                     selectedPolygon = null;

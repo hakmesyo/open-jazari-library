@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
 	<filename>dental_1.png</filename>
-	<path>images/dental_1.png</path>
+	<path>D:\Dropbox\NetbeansProjects\open-jazari-library\images\dental_1.png</path>
 	<source>
 		<database>Unknown</database>
 		<annotation>Unknown</annotation>
@@ -14,29 +14,114 @@
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>green_pul</name>
+		<name>dolgu</name>
 		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
+		<polygon>
+			<x1>960</x1>
+			<y1>421</y1>
+			<x2>901</x2>
+			<y2>539</y2>
+			<x3>903</x3>
+			<y3>624</y3>
+			<x4>955</x4>
+			<y4>624</y4>
+			<x5>980</x5>
+			<y5>592</y5>
+			<x6>1034</x6>
+			<y6>611</y6>
+			<x7>1087</x7>
+			<y7>602</y7>
+			<x8>1134</x8>
+			<y8>616</y8>
+			<x9>1189</x9>
+			<y9>645</y9>
+			<x10>1245</x10>
+			<y10>624</y10>
+			<x11>1272</x11>
+			<y11>560</y11>
+			<x12>1287</x12>
+			<y12>475</y12>
+			<x13>1222</x13>
+			<y13>409</y13>
+			<x14>1121</x14>
+			<y14>333</y14>
+			<x15>1054</x15>
+			<y15>364</y15>
+			<x16>1010</x16>
+			<y16>413</y16>
+		</polygon>
 		<bndbox>
-			<xmin>85</xmin>
-			<ymin>119</ymin>
-			<xmax>200</xmax>
-			<ymax>233</ymax>
+			<xmin>901</xmin>
+			<ymin>333</ymin>
+			<xmax>1287</xmax>
+			<ymax>645</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>green_pul</name>
+		<name>gaga</name>
 		<occluded>0</occluded>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
+		<polygon>
+			<x1>1330</x1>
+			<y1>781</y1>
+			<x2>1671</x2>
+			<y2>664</y2>
+			<x3>1822</x3>
+			<y3>918</y3>
+			<x4>1635</x4>
+			<y4>937</y4>
+			<x5>1528</x5>
+			<y5>981</y5>
+			<x6>1455</x6>
+			<y6>952</y6>
+			<x7>1355</x7>
+			<y7>1050</y7>
+			<x8>1315</x8>
+			<y8>1000</y8>
+			<x9>1286</x9>
+			<y9>868</y9>
+		</polygon>
 		<bndbox>
-			<xmin>972</xmin>
-			<ymin>405</ymin>
-			<xmax>1171</xmax>
-			<ymax>535</ymax>
+			<xmin>1286</xmin>
+			<ymin>664</ymin>
+			<xmax>1822</xmax>
+			<ymax>1050</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>red_pul</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>366</x1>
+			<y1>628</y1>
+			<x2>517</x2>
+			<y2>701</y2>
+			<x3>690</x3>
+			<y3>638</y3>
+			<x4>698</x4>
+			<y4>466</y4>
+			<x5>722</x5>
+			<y5>701</y5>
+			<x6>553</x6>
+			<y6>813</y6>
+			<x7>561</x7>
+			<y7>820</y7>
+			<x8>439</x8>
+			<y8>755</y8>
+		</polygon>
+		<bndbox>
+			<xmin>366</xmin>
+			<ymin>466</ymin>
+			<xmax>722</xmax>
+			<ymax>820</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -45,11 +130,123 @@
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
+		<polygon>
+			<x1>788</x1>
+			<y1>982</y1>
+			<x2>1154</x2>
+			<y2>847</y2>
+			<x3>1230</x3>
+			<y3>1074</y3>
+			<x4>968</x4>
+			<y4>1135</y4>
+			<x5>979</x5>
+			<y5>968</y5>
+			<x6>773</x6>
+			<y6>1014</y6>
+		</polygon>
 		<bndbox>
-			<xmin>719</xmin>
-			<ymin>854</ymin>
-			<xmax>1294</xmax>
-			<ymax>1215</ymax>
+			<xmin>773</xmin>
+			<ymin>847</ymin>
+			<xmax>1230</xmax>
+			<ymax>1135</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>dolgu</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>1343</x1>
+			<y1>289</y1>
+			<x2>1544</x2>
+			<y2>181</y2>
+			<x3>1668</x3>
+			<y3>262</y3>
+			<x4>1534</x4>
+			<y4>435</y4>
+			<x5>1552</x5>
+			<y5>270</y5>
+			<x6>1396</x6>
+			<y6>305</y6>
+		</polygon>
+		<bndbox>
+			<xmin>1343</xmin>
+			<ymin>181</ymin>
+			<xmax>1668</xmax>
+			<ymax>435</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>dolgu</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>1684</x1>
+			<y1>1354</y1>
+			<x2>1914</x2>
+			<y2>1339</y2>
+			<x3>1925</x3>
+			<y3>1185</y3>
+			<x4>1803</x4>
+			<y4>1158</y4>
+			<x5>1706</x5>
+			<y5>1312</y5>
+			<x6>1828</x6>
+			<y6>1299</y6>
+		</polygon>
+		<bndbox>
+			<xmin>1684</xmin>
+			<ymin>1158</ymin>
+			<xmax>1925</xmax>
+			<ymax>1354</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>dolgu</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>212</x1>
+			<y1>902</y1>
+			<x2>357</x2>
+			<y2>764</y2>
+			<x3>527</x3>
+			<y3>1027</y3>
+			<x4>353</x4>
+			<y4>1093</y4>
+		</polygon>
+		<bndbox>
+			<xmin>212</xmin>
+			<ymin>764</ymin>
+			<xmax>527</xmax>
+			<ymax>1093</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>orange_pul</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>579</x1>
+			<y1>191</y1>
+			<x2>809</x2>
+			<y2>102</y2>
+			<x3>744</x3>
+			<y3>318</y3>
+		</polygon>
+		<bndbox>
+			<xmin>579</xmin>
+			<ymin>102</ymin>
+			<xmax>809</xmax>
+			<ymax>318</ymax>
 		</bndbox>
 	</object>
 </annotation>

@@ -88,6 +88,10 @@ public class MyDialog extends JDialog implements ActionListener {
             FactoryUtils.writeToFile(imageFolder + "/class_labels.txt", "");
         }
         cs = FactoryUtils.readFile(imageFolder + "/class_labels.txt").split("\n");
+        
+        if (!descBox.getText().isEmpty()) {
+            selectedColor=resolveColor(cs,this.className);
+        }
 
         String[] names = buildClassNameList(cs);
         classNameList = new JList(names);
@@ -273,6 +277,16 @@ public class MyDialog extends JDialog implements ActionListener {
         String[] ret = new String[cs.length];
         for (int i = 0; i < cs.length; i++) {
             ret[i] = cs[i].split(":")[0];
+        }
+        return ret;
+    }
+
+    private String resolveColor(String[] cs, String className) {
+        String ret="";
+        for (String c : cs) {
+            if (c.split(":")[0].equals(className)) {
+                ret=c.split(":")[1];
+            }
         }
         return ret;
     }

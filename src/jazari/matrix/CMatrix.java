@@ -7540,13 +7540,34 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * Replicate/Duplicate the Matrix n times along row
+     * Replicate/Duplicate the Matrix n times along row and column
      *
      * @param nr
      * @param nc
      * @return
      */
     public CMatrix replicate(int nr, int nc) {
+        return replicateRow(nr).replicateColumn(nc);
+    }
+    
+    /**
+     * Replicate/Duplicate the Matrix n times along row
+     *
+     * @param n
+     * @return
+     */
+    public CMatrix repeat(int n) {
+        return replicateRow(n).replicateColumn(n);
+    }
+
+    /**
+     * Replicate/Duplicate the Matrix n times along row and column
+     *
+     * @param nr
+     * @param nc
+     * @return
+     */
+    public CMatrix repeat(int nr, int nc) {
         return replicateRow(nr).replicateColumn(nc);
     }
 
@@ -8251,8 +8272,16 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix negate(CMatrix indices) {
-        array = array.mul(-1);
-        return this;
+        //array = array.mul(-1);
+        CMatrix ret = this.clone();
+        float[][] d = FactoryMatrix.clone(ret.array.toFloatMatrix());
+        float[] index = indices.getArray1Dfloat();
+        float[] d2 = FactoryUtils.toFloatArray1D(d);
+        for (int i = 0; i < index.length; i++) {
+            d2[(int) index[i]] = -d2[(int) index[i]];
+        }
+        ret.setArray(d2).reshape(d.length, d[0].length);
+        return ret;
     }
 
     /**

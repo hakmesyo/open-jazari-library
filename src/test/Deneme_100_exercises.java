@@ -17,9 +17,81 @@ import jazari.types.TMatrixOperator;
  */
 public class Deneme_100_exercises {
     public static void main(String[] args) {
-        //diag sorunu
+        CMatrix cm = CMatrix.getInstance().rand(5, 1).println().replicate(3,2).println();
+        
+        
+//        //Q19- Extract the integer part of a random array using 4 different methods.
+//        //System.out.println(Math.floor(-58.0768));
+//        CMatrix cm = CMatrix.getInstance().rand(5, 3, 0, 100).println();
+//        
+//        cm.clone().trunc().println();
+//        cm.clone().floor().println();
+//        cm.clone().round().println();
+        
+        
+        //error Q17- Given a random 1D array with size 11 in range 0..10, negate all elements which are between 3 and 8, in place. 
+//        CMatrix cm = CMatrix.getInstance()
+//                .rand(1, 11,0,10)
+//                .println()
+//                ;
+//        CMatrix cm_index = cm.clone().findIndex(TMatrixOperator.BETWEEN, 3,8).dump();
+//        cm.clone().negate(cm_index).dump();
+//        //CMatrix cm1 = cm.clone().negate().dump();
+
+ 
+
+        
+        
+        //Q16_Extended- Multiply (dot product) a 5x3 matrix by a 5x3 matrix.
+//        CMatrix cm = CMatrix.getInstance()
+//                .rand(5,3)
+//                .dump()
+//                .dotProduct(CMatrix.getInstance().rand(5,3).dump())
+//                .dump()
+//                ;
+        
+        
+        
+//        //Q16- Multiply a 5x3 matrix by a 3x2 matrix (real matrix dot) .
+//        CMatrix cm1 = CMatrix.getInstance().rand(5, 2).dump();
+//        CMatrix cm2 = CMatrix.getInstance().rand(2, 2).dump();
+//        CMatrix cm = cm1.dot(cm2).dump();
+        
+        
+        
+        
+//        //Q15- Normalize as min-max a 5x5 random matrix [0..100] range.
+//        CMatrix cm = CMatrix.getInstance()
+//                .rand(5,1,-100,100)
+//                .replicateColumn(5)
+//                .dump();
+//        CMatrix cm1 = cm.clone()
+//                .normalizeMinMax()
+//                .dump() ;
+//        CMatrix cm2 = cm.clone()
+//                .map(0, 1)
+//                .dump() ;
+
+        
+        
+        
+//        //Round a 5x5 random matrix from double to int for [0..100] range
+//        
+//        CMatrix cm = CMatrix.getInstance()
+//                .rand(5, 5)
+//                .map(0, 100)
+//                .println()
+//                .round()
+//                .println()
+//                ;
+//        int[][] d=cm.toIntArray2D();
+//        System.out.println(Arrays.toString(d[0]));
+        
+        
+        
+        //Build a diagonal 5x5 matrix with values 0,1,2,3,4
         //CMatrix ret = CMatrix.getInstance().range(0, 5).replicateColumn(5).println();
-        CMatrix cm = CMatrix.getInstance().diag("1:11:2").println();
+        //CMatrix cm = CMatrix.getInstance().diag("1:11:2").println();
         
         
         //Build a diagonal 5x5 matrix with values 0,1,2,3,4
