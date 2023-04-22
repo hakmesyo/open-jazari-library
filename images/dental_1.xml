@@ -235,18 +235,18 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<polygon>
-			<x1>579</x1>
-			<y1>191</y1>
-			<x2>809</x2>
-			<y2>102</y2>
-			<x3>744</x3>
-			<y3>318</y3>
+			<x1>280</x1>
+			<y1>175</y1>
+			<x2>510</x2>
+			<y2>86</y2>
+			<x3>445</x3>
+			<y3>302</y3>
 		</polygon>
 		<bndbox>
-			<xmin>579</xmin>
-			<ymin>102</ymin>
-			<xmax>809</xmax>
-			<ymax>318</ymax>
+			<xmin>187</xmin>
+			<ymin>115</ymin>
+			<xmax>417</xmax>
+			<ymax>331</ymax>
 		</bndbox>
 	</object>
 </annotation>

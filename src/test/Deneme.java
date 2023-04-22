@@ -34,14 +34,15 @@ public class Deneme {
     }
 
     public static void main(String[] args) {
-//        boolean b = intersects(new Point(10, 10), new Point(10, 20), new Point(11, 15));
-        boolean b = intersects(20,10,10,20, new Point(15, 16));
-        System.out.println("b = " + b);
-//        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
-//        CMatrix cm = CMatrix.getInstance().imread(path_1+"/frame_000000.jpg").imresize(0.5f).imshow().imsave(path_1, "frame_000001.jpg");
-//        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
-        //String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
-        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
+        CMatrix cm = CMatrix.getInstance().annotateImage("images/dental_1.png");
+////        boolean b = intersects(new Point(10, 10), new Point(10, 20), new Point(11, 15));
+//        boolean b = intersects(20,10,10,20, new Point(15, 16));
+//        System.out.println("b = " + b);
+////        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images";
+////        CMatrix cm = CMatrix.getInstance().imread(path_1+"/frame_000000.jpg").imresize(0.5f).imshow().imsave(path_1, "frame_000001.jpg");
+////        String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
+//        //String path_1="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\gonderilecek_veriler\\B160519_V1_K1\\dilute";
+//        String path_1 = "D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\simulation\\_images";
         //        CMatrix cm = CMatrix.getInstance()
         //                .annotateImages(path_1);
         //        String path="D:\\DATASETS\\teknofest_2023_ulasimda_yapay_zeka\\last_years\\images\\0000002_00005_d_0000014.xml";

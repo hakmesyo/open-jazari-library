@@ -104,7 +104,7 @@ public class Matrix implements Serializable {
 //    }
     
     public Matrix multiply(Matrix m2) {
-        data = data.times(m2.data);
+        data = data.timesElement(m2.data);
         return new Matrix(data);
     }
 
@@ -136,22 +136,22 @@ public class Matrix implements Serializable {
     }
 
     public Matrix trans1mult(Matrix m2) {
-        data = data.transpose().times(m2.data);
+        data = data.transpose().timesElement(m2.data);
         return this;
     }
 
     public Matrix trans1mult(Matrix m2, Matrix res) {
-        data = m2.data.transpose().times(res.data);
+        data = m2.data.transpose().timesElement(res.data);
         return this;
     }
 
     public Matrix trans2mult(Matrix m2) {
-        data = data.times(m2.data.transpose());
+        data = data.timesElement(m2.data.transpose());
         return this;
     }
 
     public Matrix trans2mult(Matrix m2, Matrix res) {
-        data = m2.data.times(res.data.transpose());
+        data = m2.data.timesElement(res.data.transpose());
         return this;
     }
 

@@ -1226,7 +1226,7 @@ public final class CMatrix implements Serializable {
      * @param a : float[]
      * @return CMatrix
      */
-    public CMatrix setArray(float[] d) {
+    public CMatrix setArray(float ... d) {
         this.array = Nd4j.create(d, new int[]{d.length, 1});
         return this;
     }
@@ -3368,6 +3368,12 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    public CMatrix det() {
+        CMatrix ret = this.clone();
+        //ret.array = ret.array.(cm.array);
+        return ret;
+    }
+
     public CMatrix doti(CMatrix cm) {
         CMatrix ret = this.clone();
         ret.array = ret.array.mmuli(cm.array);
@@ -3438,6 +3444,10 @@ public final class CMatrix implements Serializable {
         return d.toFloatVector();
     }
 
+    public CMatrix magnitude() {
+       return getMagnitude();
+    }
+
     public CMatrix getMagnitude() {
         setArray(FactoryMatrix.getMagnitude(array.toFloatMatrix()));
         return this;
@@ -3498,7 +3508,7 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
-    public CMatrix times(CMatrix cm) {
+    public CMatrix timesElement(CMatrix cm) {
         if (this.getColumnNumber() != cm.getRowNumber()) {
             throw new InputMismatchException("can not multiply these two matrices please make sure both matrices obey the matrix multiplication rule i.e. column number of first matrix must equal to the colum number of the second matrix");
 //            return this;
@@ -3907,7 +3917,7 @@ public final class CMatrix implements Serializable {
     public CMatrix findItemsByIndex(int... p) {
         return getMatrixValueByIndex(p);
     }
-    
+
     /**
      * operates as Matlab's find method try to find 1D indexes of the matrix
      * based on the specified matrix operator logical conditions returns cloned
@@ -5537,14 +5547,14 @@ public final class CMatrix implements Serializable {
     public CMatrix cat(int dim, CMatrix cm) {
         if (dim == 1) {
             if (getRowNumber() != cm.getRowNumber()) {
-                System.out.println("Matrix first dimension (number of rows) should be the same as the base matrix");
+                System.err.println("Matrix first dimension (number of rows) should be the same as the base matrix");
                 return this;
             }
             array = Nd4j.concat(dim, array, cm.array);
         }
         if (dim == 2) {
             if (getColumnNumber() != cm.getColumnNumber()) {
-                System.out.println("Matrix second dimension (number of columns) should be the same as the base matrix");
+                System.err.println("Matrix second dimension (number of columns) should be the same as the base matrix");
                 return this;
             }
             array = Nd4j.concat(dim - 2, array, cm.array);
@@ -5576,17 +5586,17 @@ public final class CMatrix implements Serializable {
     public CMatrix catFirst(int dim, CMatrix cm) {
         if (dim == 1) {
             if (getRowNumber() != cm.getRowNumber()) {
-                System.out.println("Matrix first dimension (number of rows) should be the same as the base matrix");
+                System.err.println("Matrix first dimension (number of rows) should be the same as the base matrix");
                 return this;
             }
             array = Nd4j.concat(dim - 1, cm.array, array);
         }
         if (dim == 2) {
             if (getColumnNumber() != cm.getColumnNumber()) {
-                System.out.println("Matrix second dimension (number of columns) should be the same as the base matrix");
+                System.err.println("Matrix second dimension (number of columns) should be the same as the base matrix");
                 return this;
             }
-            array = Nd4j.concat(dim - 1, cm.array, array);
+            array = Nd4j.concat(dim - 2, cm.array, array);
         }
         image = null;
         return this;
@@ -7483,7 +7493,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateColumn(int n) {
         CMatrix ret = this.clone();
         CMatrix ret2 = this.clone();
-        for (int i = 0; i < n-1; i++) {
+        for (int i = 0; i < n - 1; i++) {
             ret = ret.cat(1, ret2);
         }
         return ret;
@@ -7523,7 +7533,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateRow(int n) {
         CMatrix ret = this.clone();
         CMatrix ret2 = this.clone();
-        for (int i = 0; i < n-1; i++) {
+        for (int i = 0; i < n - 1; i++) {
             ret = ret.cat(2, ret2);
         }
         return ret;
@@ -7549,7 +7559,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicate(int nr, int nc) {
         return replicateRow(nr).replicateColumn(nc);
     }
-    
+
     /**
      * Replicate/Duplicate the Matrix n times along row
      *
@@ -8759,7 +8769,9 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * try to divide image into 2D cropped images and save them on target folder
+     * with specified image format
+     *
      * @param nr : number of rows
      * @param nc : number of columns
      * @param destinationFolder : cropped images stored in that folder
@@ -8769,12 +8781,14 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix cropImageArray2D(int nr, int nc, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
-        FactoryUtils.cropImageArray2D(this.getImage(),nr,nc,destinationFolder,fileCaption,imageExtension,isShow);
+        FactoryUtils.cropImageArray2D(this.getImage(), nr, nc, destinationFolder, fileCaption, imageExtension, isShow);
         return this;
     }
-    
+
     /**
-     * try to divide image into 2D cropped images and save them on target folder with specified image format
+     * try to divide image into 2D cropped images and save them on target folder
+     * with specified image format
+     *
      * @param width : crop image width
      * @param height : crop image height
      * @param destinationFolder : cropped images stored in that folder
@@ -8784,12 +8798,14 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix cropImageArray2DByCropSize(int width, int height, String destinationFolder, String fileCaption, String imageExtension, boolean isShow) {
-        FactoryUtils.cropImageArray2DByCropSize(this.getImage(),width,height,destinationFolder,fileCaption,imageExtension,isShow);
+        FactoryUtils.cropImageArray2DByCropSize(this.getImage(), width, height, destinationFolder, fileCaption, imageExtension, isShow);
         return this;
     }
-    
+
     /**
-     * crop the specified region in image you can get same result by applying cmd(String s1,String s2) command as well
+     * crop the specified region in image you can get same result by applying
+     * cmd(String s1,String s2) command as well
+     *
      * @param px : top left x coordinate
      * @param py : top left y coordinate
      * @param width : crop width
@@ -8801,17 +8817,17 @@ public final class CMatrix implements Serializable {
         this.setImage(cropped_image);
         return this;
     }
-    
+
     /**
-     * crop the specified region in image you can get same result by applying cmd(String s1,String s2) command as well
+     * crop the specified region in image you can get same result by applying
+     * cmd(String s1,String s2) command as well
+     *
      * @param rect : crop rectangle
      * @return
      */
     public CMatrix cropImage(Rectangle rect) {
         return cropImage(rect.x, rect.y, rect.width, rect.height);
     }
-    
-    
 
     public CMatrix imageDataGenerator(String folderPath, int imageWidth, int imageHeight) {
         File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
@@ -8959,7 +8975,7 @@ public final class CMatrix implements Serializable {
      * @param folderPath : path of the image folder
      * @return
      */
-    public CMatrix annotateImages(String folderPath) {
+    public CMatrix annotateImagesByFolderPath(String folderPath) {
         File[] files = FactoryUtils.getFileArrayInFolderForImages(folderPath);
         this.imread(files[0]).imshow();
         return this;
@@ -8968,17 +8984,17 @@ public final class CMatrix implements Serializable {
     /**
      *
      * @param folderPath : path of the image folder
-     * @param filterKey  : filter folder based on this key parameter i.e. "Kopya"
+     * @param filterKey : filter folder based on this key parameter i.e. "Kopya"
      * @return
      */
     public CMatrix removeFilesContains(String folderPath, String filterKey) {
         FactoryUtils.removeFilesContains(folderPath, filterKey);
         return this;
     }
-    
+
     public CMatrix readJsonFile(String path) {
-        String str=FactoryUtils.readJSONFile(path);
-        this.valueString=str;
+        String str = FactoryUtils.readJSONFile(path);
+        this.valueString = str;
         return this;
     }
 
@@ -9040,7 +9056,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix reIndexFilesBasedOnPrefixAndTimeStamp(String pathFolder, String extensions) {
-        FactoryUtils.reIndexFilesBasedOnPrefixAndTimeStamp(pathFolder,extensions);
+        FactoryUtils.reIndexFilesBasedOnPrefixAndTimeStamp(pathFolder, extensions);
         System.out.println("b. successfully reindex all filenames to satify uniqueness");
         return this;
     }
@@ -9048,10 +9064,9 @@ public final class CMatrix implements Serializable {
     public CMatrix nonZeroIndices() {
         return this.findIndex(TMatrixOperator.NOT_EQUALS, 0);
     }
-    
+
     public CMatrix nonZeroValues() {
         return this.findItemsByIndex(findIndex(TMatrixOperator.NOT_EQUALS, 0));
     }
-
 
 }

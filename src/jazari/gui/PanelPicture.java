@@ -648,7 +648,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     isCropStarted = false;
                     mousePosBottomRight = constraintMousePosition(e);
                     cropImage();
-                } else if (activatePolygon && isCancelledPolygon && SwingUtilities.isRightMouseButton(e)) {
+                } else if (activatePolygon && polygon.npoints>0 && SwingUtilities.isRightMouseButton(e)) {
                     isPolygonPressed = false;
                     isCancelledPolygon = false;
                     polygon.reset();

@@ -2433,7 +2433,7 @@ public final class ImageProcess {
         JFileChooser chooser = new JFileChooser();
         //chooser.setCurrentDirectory(new java.io.File("images"));
         chooser.setCurrentDirectory(new java.io.File(FactoryUtils.getWorkingDirectory()));
-        chooser.setDialogTitle("select Data Set file");
+        chooser.setDialogTitle("select image file");
         chooser.setSize(new java.awt.Dimension(45, 37)); // Generated
         File file = null;
         BufferedImage ret = null;

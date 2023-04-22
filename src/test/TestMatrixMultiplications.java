@@ -30,8 +30,8 @@ public class TestMatrixMultiplications {
         double[] m2={-11,9,-3};
         CMatrix cm1 = CMatrix.getInstance(m1).println();
         CMatrix inv = CMatrix.getInstance(m1).inv().println();
-        CMatrix cmm = cm1.times(inv).println();
+        CMatrix cmm = cm1.timesElement(inv).println();
         CMatrix cm2=CMatrix.getInstance(m2).transpose();
-        CMatrix cm3 = inv.times(cm2).println();
+        CMatrix cm3 = inv.timesElement(cm2).println();
     }
 }
