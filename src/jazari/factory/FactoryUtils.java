@@ -1682,6 +1682,22 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static float[][][] toFloatArray3D(double[][][] m) {
+        int d1 = m.length;
+        int d2 = m[0].length;
+        int d3 = m[0][0].length;
+
+        float[][][] ret = new float[d1][d2][d3];
+        for (int i = 0; i < d1; i++) {
+            for (int j = 0; j < d2; j++) {
+                for (int k = 0; k < d3; k++) {
+                    ret[i][j][k] = (float) m[i][j][k];
+                }
+            }
+        }
+        return ret;
+    }
+
     /**
      * encrypt some value with salt value by means of xor knowing that float xor
      * with salt yields original value
@@ -5779,6 +5795,21 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static double[][][] toDoubleArray3D(float[][][] d) {
+        int d1 = d.length;
+        int d2 = d[0].length;
+        int d3 = d[0][0].length;
+        double[][][] ret = new double[d1][d2][d3];
+        for (int i = 0; i < d1; i++) {
+            for (int j = 0; j < d2; j++) {
+                for (int k = 0; k < d3; k++) {
+                    ret[i][j][k] = d[i][j][k];
+                }
+            }
+        }
+        return ret;
+    }
+
     public static double[] toDoubleArray1D(float[][] d) {
         int nr = d.length;
         int nc = d[0].length;
@@ -6329,6 +6360,18 @@ public final class FactoryUtils {
             p.ypoints[i] += dy;
         }
         return p;
+    }
+
+    public static float[] getDiagonalVector(float[][] d) {
+        if (d.length != d[0].length) {
+            throw new UnsupportedOperationException("matrix is not square");
+        }
+        int n = d.length;
+        float[] ret = new float[n];
+        for (int i = 0; i < n; i++) {
+            ret[i] = d[i][i];
+        }
+        return ret;
     }
 
 //    public static Rectangle getBoundingRectangle(Polygon polygon) {

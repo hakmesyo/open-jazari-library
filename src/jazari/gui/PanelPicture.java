@@ -157,6 +157,12 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         this.addMouseWheelListener(this);
     }
 
+    public PanelPicture() {
+        this.frame = (FrameImage) frame;
+        initialize();
+        this.addMouseWheelListener(this);
+    }
+
     private void setImagePath(String path) {
         if (path == null || path.equals("")) {
             imagePath = path;
@@ -252,6 +258,10 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
 
     public void setImage(BufferedImage image, String imagePath, String caption) {
         setImage(image, imagePath, caption, true);
+    }
+
+    public void setImage(BufferedImage image) {
+        setImage(image, "", "");
     }
 
     public void setZoomImage(BufferedImage image, String imagePath, String caption) {
@@ -648,7 +658,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     isCropStarted = false;
                     mousePosBottomRight = constraintMousePosition(e);
                     cropImage();
-                } else if (activatePolygon && polygon.npoints>0 && SwingUtilities.isRightMouseButton(e)) {
+                } else if (activatePolygon && polygon.npoints > 0 && SwingUtilities.isRightMouseButton(e)) {
                     isPolygonPressed = false;
                     isCancelledPolygon = false;
                     polygon.reset();
@@ -1478,7 +1488,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             zoom_factor = original_zoom_factor = 1.0f;
             frm.setZoomFactor(FactoryUtils.formatFloat(zoom_factor, 4));
         }
-        frm.setTitle(imageFiles[imageIndex].getPath() + "      [ " + imageIndex + " / " + imageFiles.length + " ]");
+        frm.setTitle(imageFiles[imageIndex].getPath() + "      [ " + (imageIndex + 1) + " / " + imageFiles.length + " ]");
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
 
@@ -1968,11 +1978,14 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 adjustImageToPanel(bf, true);
             } else if (activatePolygon) {
                 savePascalVocXML();
-                imageIndex++;
+                if (imageIndex + 1 >= imageFiles.length) {
+                    return;
+                }
                 if (!isSeqenceVideoFrame) {
                     listPascalVocObject.clear();
                     selectedBBox = null;
                 }
+                imageIndex++;
                 BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
                 rawImage = ImageProcess.clone(bf);
                 adjustImageToPanel(bf, true);
@@ -2006,8 +2019,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                         }
                     }
                     if (temp_obj != null) {
-                        temp_obj.polygonContainer.polygon=null;
-                        temp_obj.polygonContainer=null;
+                        temp_obj.polygonContainer.polygon = null;
+                        temp_obj.polygonContainer = null;
                         listPascalVocObject.remove(temp_obj);
                     }
                     selectedPolygon = null;

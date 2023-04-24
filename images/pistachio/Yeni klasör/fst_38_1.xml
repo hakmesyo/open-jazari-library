@@ -1,0 +1,53 @@
+<annotation>
+	<folder>images\pistachio\Yeni klasör</folder>
+	<filename>fst_38_1.jpg</filename>
+	<path>D:\Dropbox\NetbeansProjects\open-jazari-library\images\pistachio\Yeni klasör\fst_38_1.jpg</path>
+	<source>
+		<database>Unknown</database>
+		<annotation>Unknown</annotation>
+		<image>Unknown</image>
+	</source>
+	<size>
+		<width>640</width>
+		<height>480</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fistik</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>362</x1>
+			<y1>122</y1>
+			<x2>412</x2>
+			<y2>145</y2>
+			<x3>453</x3>
+			<y3>174</y3>
+			<x4>494</x4>
+			<y4>239</y4>
+			<x5>506</x5>
+			<y5>306</y5>
+			<x6>491</x6>
+			<y6>352</y6>
+			<x7>468</x7>
+			<y7>375</y7>
+			<x8>425</x8>
+			<y8>372</y8>
+			<x9>394</x9>
+			<y9>343</y9>
+			<x10>357</x10>
+			<y10>262</y10>
+			<x11>348</x11>
+			<y11>179</y11>
+		</polygon>
+		<bndbox>
+			<xmin>348</xmin>
+			<ymin>122</ymin>
+			<xmax>506</xmax>
+			<ymax>375</ymax>
+		</bndbox>
+	</object>
+</annotation>

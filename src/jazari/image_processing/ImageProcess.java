@@ -711,7 +711,7 @@ public final class ImageProcess {
      * @param image
      * @return
      */
-    public static float[][][] imageToPixelsColorDoubleFaster(BufferedImage image) {
+    public static float[][][] imageToPixelsColorFloatFaster(BufferedImage image) {
         // Java's peculiar way of extracting pixels is to give them
         // back as a one-dimensional array from which we will construct
         // our version.

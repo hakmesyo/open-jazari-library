@@ -1,0 +1,57 @@
+<annotation>
+	<folder>images\pistachio\Yeni klasör</folder>
+	<filename>fst_36_3.jpg</filename>
+	<path>images/pistachio/Yeni klasör\fst_36_3.jpg</path>
+	<source>
+		<database>Unknown</database>
+		<annotation>Unknown</annotation>
+		<image>Unknown</image>
+	</source>
+	<size>
+		<width>640</width>
+		<height>480</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fistik</name>
+		<occluded>0</occluded>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<polygon>
+			<x1>356</x1>
+			<y1>167</y1>
+			<x2>390</x2>
+			<y2>145</y2>
+			<x3>412</x3>
+			<y3>135</y3>
+			<x4>430</x4>
+			<y4>143</y4>
+			<x5>449</x5>
+			<y5>173</y5>
+			<x6>444</x6>
+			<y6>245</y6>
+			<x7>421</x7>
+			<y7>312</y7>
+			<x8>384</x8>
+			<y8>352</y8>
+			<x9>340</x9>
+			<y9>362</y9>
+			<x10>309</x10>
+			<y10>357</y10>
+			<x11>278</x11>
+			<y11>332</y11>
+			<x12>278</x12>
+			<y12>278</y12>
+			<x13>307</x13>
+			<y13>221</y13>
+		</polygon>
+		<bndbox>
+			<xmin>278</xmin>
+			<ymin>135</ymin>
+			<xmax>449</xmax>
+			<ymax>362</ymax>
+		</bndbox>
+	</object>
+</annotation>

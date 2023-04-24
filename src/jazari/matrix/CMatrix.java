@@ -139,6 +139,8 @@ import java.sql.SQLException;
 import java.util.stream.IntStream;
 import javax.swing.JPanel;
 import jazari.utils.DataAugmentationOpt;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -146,6 +148,7 @@ import org.nd4j.linalg.indexing.INDArrayIndex;
 import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.nd4j.linalg.inverse.InvertMatrix;
 import org.nd4j.linalg.ops.transforms.Transforms;
+import weka.core.matrix.SingularValueDecomposition;
 
 /**
  *
@@ -1201,10 +1204,19 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public float[][][] toFloatArray3D() {
-        return ImageProcess.imageToPixelsColorDoubleFaster(image);
-//        if (array.shape().length==3) {
-//            return array.
-//        }
+        return ImageProcess.imageToPixelsColorFloatFaster(image);
+    }
+
+    /**
+     * return Alpha, Red, Green and Blue values of original RGB image first
+     * dimension contains spectral information second dimension is image height
+     * (number of rows) third dimension is image width (number of columns)
+     *
+     * @return
+     */
+    public double[][][] toDoubleArray3D() {
+        float[][][] x = ImageProcess.imageToPixelsColorFloatFaster(image);
+        return FactoryUtils.toDoubleArray3D(x);
     }
 
     public String[] toStringArray1D() {
@@ -1226,7 +1238,7 @@ public final class CMatrix implements Serializable {
      * @param a : float[]
      * @return CMatrix
      */
-    public CMatrix setArray(float ... d) {
+    public CMatrix setArray(float... d) {
         this.array = Nd4j.create(d, new int[]{d.length, 1});
         return this;
     }
@@ -1244,7 +1256,7 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public CMatrix setArray(double[] d) {
+    public CMatrix setArray(double... d) {
         this.array = Nd4j.create(d, new int[]{d.length, 1});
         return this;
     }
@@ -1275,7 +1287,7 @@ public final class CMatrix implements Serializable {
      * @param a : int[]
      * @return CMatrix
      */
-    public CMatrix setArray(int[] dd) {
+    public CMatrix setArray(int... dd) {
         float[] d = FactoryUtils.toFloatArray1D(dd);
         this.array = Nd4j.create(d, new int[]{d.length, 1});
 //        int[] sh = {(int) array.length(), 1};
@@ -1333,6 +1345,18 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix setArray(float[][][] array) {
         return fromARGB(array);
+    }
+
+    /**
+     * set the array of current matrix note that clone is not calling anymore,
+     * current matrix structure will be changed
+     *
+     * @param array : float[][][]
+     * @return CMatrix
+     */
+    public CMatrix setArray(double[][][] array) {
+        float[][][] d = FactoryUtils.toFloatArray3D(array);
+        return fromARGB(d);
     }
 
     public CMatrix setValue(String p1, String p2, float val) {
@@ -1512,6 +1536,23 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix range2D(double from_inclusive, double to_exclusive, int nrows) {
+        array = Nd4j.create(FactoryMatrix.range2D((float) from_inclusive, (float) to_exclusive, nrows));
+        return this;
+    }
+
+    public CMatrix range2D(double from_inclusive, double to_exclusive, double step, int nrows) {
+        array = Nd4j.create(FactoryMatrix.range2D((float) from_inclusive, (float) to_exclusive, (float) step, nrows));
+        return this;
+    }
+
+    public CMatrix range(double to_exclusive) {
+        array = Nd4j.arange(to_exclusive);
+        int[] sh = {(int) array.length(), 1};
+        array = array.reshape(sh);
+        return this;
+    }
+
     public CMatrix range(String cmd) {
         if (cmd.isEmpty()) {
             System.err.println("String param should contain : as \"3:10\"");
@@ -1559,6 +1600,30 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix range(double from_inclusive, double to_exclusive) {
+        array = Nd4j.arange(from_inclusive, to_exclusive);
+        int[] sh = {(int) array.length(), 1};
+        array = array.reshape(sh);
+        return this;
+    }
+
+    public CMatrix range(double from_inclusive, double to_exclusive, double step) {
+        array = Nd4j.arange(from_inclusive, to_exclusive, step);
+        int[] sh = {(int) array.length(), 1};
+        array = array.reshape(sh);
+        return this;
+    }
+
+    public CMatrix range(double from_inclusive, double to_exclusive, int ncols) {
+        array = Nd4j.linspace((long) from_inclusive, (long) to_exclusive, ncols);
+        return this;
+    }
+
+    public CMatrix range(double from_inclusive, double to_exclusive, double step, int ncols) {
+        array = Nd4j.create(FactoryMatrix.range((float) from_inclusive, (float) to_exclusive, (float) step, ncols));
+        return this;
+    }
+
     public CMatrix range(int[] p) {
         array = Nd4j.create(p);
         int[] sh = {(int) array.length(), 1};
@@ -1587,6 +1652,15 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix linspace(float from, float to, float step) {
+        return range(from, to, step);
+    }
+
+    public CMatrix linspace(double from, double to, int n) {
+        double step = (to - from) / n;
+        return range(from, to, step);
+    }
+
+    public CMatrix linspace(double from, double to, float step) {
         return range(from, to, step);
     }
 
@@ -3103,6 +3177,11 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix pow(double n) {
+        array = Transforms.pow(array, n, false);
+        return this;
+    }
+
     public CMatrix sin() {
         array = Transforms.sin(array);
         return this;
@@ -3369,8 +3448,13 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix det() {
+        if (this.getRowNumber() != this.getColumnNumber()) {
+            throw new UnsupportedOperationException();
+        }
+        Array2DRowRealMatrix temp = new Array2DRowRealMatrix(this.getArray2Ddouble());
         CMatrix ret = this.clone();
-        //ret.array = ret.array.(cm.array);
+        double val = (new LUDecomposition(temp)).getDeterminant();
+        ret.setArray(val);
         return ret;
     }
 
@@ -3445,7 +3529,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix magnitude() {
-       return getMagnitude();
+        return getMagnitude();
     }
 
     public CMatrix getMagnitude() {
@@ -4147,6 +4231,65 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix eig() {
         return getEigenValueDecompistion();
+    }
+
+    /**
+     * Singular Value Decomposition
+     *
+     * @return
+     */
+    public CMatrix getSingularValueDecompistion() {
+        Matrix m = new Matrix(array.toDoubleMatrix());
+        SingularValueDecomposition svd = m.svd();
+        //System.out.println(svd.getS()+" "+svd.getU()+" "+ svd.getV());
+        double[] ret = svd.getSingularValues();
+        setArray(ret);
+        return this;
+    }
+    
+    /**
+     * Matlab compatible command: Singular Value Decomposition (return S values in a column vector format)
+     *
+     * @return CMatrix
+     */
+    public CMatrix svd() {
+        return getSingularValueDecompistion();
+    }
+
+    /**
+     * Singular Value Decomposition (return S values in a diagonal matrix format identical to svd)
+     *
+     * @return CMatrix
+     */
+    public CMatrix svdS() {
+        Matrix m = new Matrix(array.toDoubleMatrix());
+        SingularValueDecomposition svd = m.svd();
+        setArray(svd.getS().getArray());
+        return this;
+    }
+
+    /**
+     * Singular Value Decomposition (return U values in a diagonal matrix format)
+     *
+     * @return CMatrix
+     */
+    public CMatrix svdU() {
+        Matrix m = new Matrix(array.toDoubleMatrix());
+        SingularValueDecomposition svd = m.svd();
+        setArray(svd.getU().getArray());
+        return this;
+    }
+
+    /**
+     * Singular Value Decomposition (return V values in a diagonal matrix format)
+     *
+     * @return CMatrix
+     */
+    public CMatrix svdV() {
+        Matrix m = new Matrix(array.toDoubleMatrix());
+        SingularValueDecomposition svd = m.svd();
+        setArray(svd.getV().getArray());
+        return this;
     }
 
     public CMatrix fromWekaMatrix(Matrix m) {
@@ -6871,6 +7014,21 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix overlay(CMatrix cm, double alpha) {
+        image = ImageProcess.overlayImage(image, cm.image, (float) alpha);
+        return this;
+    }
+
+    public CMatrix overlay(BufferedImage bf, double alpha) {
+        image = ImageProcess.overlayImage(image, bf, (float) alpha);
+        return this;
+    }
+
+    public CMatrix overlay(CMatrix cm, double alpha, CRectangle cr) {
+        image = ImageProcess.overlayImage(image, cm.image, cr, 0);
+        return this;
+    }
+
     public CMatrix overlay(CMatrix cm, CPoint cp) {
         image = ImageProcess.overlayImage(image, cm.image, cp, 0);
         return this;
@@ -7190,10 +7348,10 @@ public final class CMatrix implements Serializable {
 
     public float[][][] getARGB() {
         if (image != null) {
-            return ImageProcess.imageToPixelsColorDoubleFaster(image);
+            return ImageProcess.imageToPixelsColorFloatFaster(image);
         } else {
             this.image = ImageProcess.pixelsToImageColor(array.toFloatMatrix());
-            return ImageProcess.imageToPixelsColorDoubleFaster(image);
+            return ImageProcess.imageToPixelsColorFloatFaster(image);
         }
     }
 
@@ -7857,6 +8015,92 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    /**
+     * generate mesh grid matrix along x axes it is used for applying 2D
+     * functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+
+    public CMatrix meshGridX(double from, double to) {
+        setArray(FactoryMatrix.meshGridX(array.toFloatMatrix(), (float) from, (float) to));
+        return this;
+    }
+
+    /**
+     * generate mesh grid matrix along x axes in default it is used for applying
+     * 2D functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+    public CMatrix meshGrid(double from, double to) {
+        return meshGridX(from, to);
+    }
+
+    /**
+     * generate mesh grid matrix along x axes yields square matrix of numberOf x
+     * numberOf it is used for applying 2D functions on the plane in a loop-less
+     * manner resembles to the Matlab meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGridX(double from, double to, int numberOf) {
+        setArray(FactoryMatrix.meshGridX((float) from, (float) to, numberOf));
+        return this;
+    }
+
+    /**
+     * generate mesh grid matrix along x axes in default yields square matrix of
+     * numberOf x numberOf it is used for applying 2D functions on the plane in
+     * a loop-less manner resembles to the Matlab meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGrid(double from, double to, int numberOf) {
+        return meshGridX(from, to, numberOf);
+    }
+
+    /**
+     * generate mesh grid matrix along y axes it is used for applying 2D
+     * functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+    public CMatrix meshGridY(double from, double to) {
+        setArray(FactoryMatrix.meshGridY(array.toFloatMatrix(), (float) from, (float) to));
+        return this;
+    }
+
+    /**
+     * generate mesh grid matrix along y axes yields square matrix of numberOf x
+     * numberOf it is used for applying 2D functions on the plane in a loop-less
+     * manner resembles to the Matlab meshgrid command
+     *
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGridY(double from, double to, int numberOf) {
+        setArray(FactoryMatrix.meshGridY((float) from, (float) to, numberOf));
+        return this;
+    }
+
     public CMatrix meshGridIterateForward() {
         setArray(FactoryMatrix.meshGridIterateForward(array.toFloatMatrix()));
         return this;
@@ -8168,7 +8412,29 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix diag(int n) {
         CMatrix ret = range(0, n).replicateColumn(n).multiplyElement(CMatrix.getInstance().eye(n));
+        //CMatrix ret = CMatrix.getInstance().eye(n).multiplyScalar(n);
         return ret;
+    }
+    
+    /**
+     * produces diagonal square matrix with specified size and scalar value
+     * @param size
+     * @param value
+     * @return
+     */
+    public CMatrix diag(int size, int value) {
+        //CMatrix ret = range(0, n).replicateColumn(n).multiplyElement(CMatrix.getInstance().eye(n));
+        CMatrix ret = CMatrix.getInstance().eye(size).multiplyScalar(value);
+        return ret;
+    }
+
+    /**
+     * get diagonal vector of current matrix
+     * @return
+     */
+    public CMatrix diag() {
+        float[] d=FactoryUtils.getDiagonalVector(this.toFloatArray2D());
+        return setArray(d);
     }
 
     /**
