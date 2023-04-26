@@ -32,6 +32,7 @@ public class TestAugmentedReality {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        /*
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 //        CMatrix cm = CMatrix.getInstance().imread("images\\yuzler.jpg").detectFaces("haar").imshow();
 
@@ -125,6 +126,7 @@ public class TestAugmentedReality {
             t1 = FactoryUtils.toc("frame set image:", t1);
             t2 = FactoryUtils.toc("each cycle:", t2);
         }
+*/
     }
 
     private static boolean isBigDifference(double threshold) {

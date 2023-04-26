@@ -812,10 +812,12 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix float type
      */
+    
+    /*
     public static CMatrix getInstance(Mat m) {
         float[][] d = ImageProcess.imageToPixels2DFromOpenCV(m);
         return new CMatrix(d);
-    }
+    }*/
 
     /**
      * generate a matrix from the text file choosen, assuming item separator is
@@ -2503,6 +2505,7 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    /*
     public CMatrix ocv_imhist(String title) {
         CMatrix ret = this.clone();
 
@@ -2516,6 +2519,7 @@ public final class CMatrix implements Serializable {
         frm.setVisible(true);
         return this;
     }
+    */
 
     /**
      * is used for revert or invert the image color
@@ -6909,6 +6913,7 @@ public final class CMatrix implements Serializable {
         return CMatrix.getInstance(FactoryMatrix.padarray(array.toFloatMatrix(), nr, nc, val));
     }
 
+    /*
     public CMatrix detectFaces(String type) {
         CMatrix ret = this.clone();
         ret.setImage(ImageProcess.detectFaces(type, this.image));
@@ -6925,6 +6930,7 @@ public final class CMatrix implements Serializable {
         CRectangle[] ret = ImageProcess.getFacesRectanglesAsCRectangle(type, this.image);
         return ret;
     }
+    */
 
     public CMatrix imupdate() {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {

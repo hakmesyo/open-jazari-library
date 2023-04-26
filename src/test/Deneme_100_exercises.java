@@ -18,10 +18,23 @@ import jazari.types.TMatrixOperator;
 public class Deneme_100_exercises {
 
     public static void main(String[] args) {
-        //Q24- How to stack two matrices vertically?
-        CMatrix cm1 = CMatrix.getInstance().rand(5,2).dump();
-        CMatrix cm2 = CMatrix.getInstance().rand(3,2).dump();
-        CMatrix cm = cm1.clone().catFirst(2,cm2).println();
+               CMatrix cm = CMatrix.getInstance()
+                    .ones(16)
+                    .setValue("1:17:2", "0:16:2", 0)
+                    .setValue("0:16:2", "1:17:2", 0)
+                    .resize(40)
+                    .map(0, 255)
+                    .imshow()
+                    .println()
+               ;
+
+        
+        
+        
+//        //Q24- How to stack two matrices vertically?
+//        CMatrix cm1 = CMatrix.getInstance().rand(5,2).dump();
+//        CMatrix cm2 = CMatrix.getInstance().rand(3,2).dump();
+//        CMatrix cm = cm1.clone().catFirst(2,cm2).println();
         
         
 //        //Q23- How to reshape a matrix of any shape to new shape?

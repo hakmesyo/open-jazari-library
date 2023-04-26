@@ -66,20 +66,20 @@ import javax.swing.GrayFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.dcm4che2.imageio.plugins.dcm.DicomImageReadParam;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
-import org.opencv.objdetect.CascadeClassifier;
+//import org.opencv.core.Core;
+//import org.opencv.core.CvType;
+//import org.opencv.core.Mat;
+//import org.opencv.core.MatOfFloat;
+//import org.opencv.core.MatOfInt;
+//import org.opencv.core.MatOfPoint;
+//import org.opencv.core.MatOfRect;
+//import org.opencv.core.Rect;
+//import org.opencv.core.Scalar;
+//import org.opencv.core.Size;
+//import org.opencv.imgcodecs.Imgcodecs;
+//import org.opencv.imgproc.Imgproc;
+//import org.opencv.imgproc.Moments;
+//import org.opencv.objdetect.CascadeClassifier;
 
 /**
  *
@@ -87,9 +87,9 @@ import org.opencv.objdetect.CascadeClassifier;
  */
 public final class ImageProcess {
 
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
+//    static {
+//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//    }
 
     /**
      * Conversion from RGB space to LAB space (CIE)
@@ -211,6 +211,7 @@ public final class ImageProcess {
         return imageToPixelsFloat(currBufferedImage);
     }
 
+    /*
     public static Mat ocv_edgeDetectionCanny(Mat imageGray) {
         Mat imageCanny = new Mat();
         Imgproc.Canny(imageGray, imageCanny, 10, 100, 3, true);
@@ -288,6 +289,7 @@ public final class ImageProcess {
         float[][] ret = imageToPixelsFloat(ocv_mat2Img(imageCanny));
         return ret;
     }
+    */
 
     /**
      * Musa Edge Detector
@@ -1361,6 +1363,7 @@ public final class ImageProcess {
         return toGrayLevel(img);
     }
 
+    /*
     public static BufferedImage ocv_rgb2gray(BufferedImage img) {
         Mat rgbImage = ocv_img2Mat(img);
         Mat imageGray = new Mat();
@@ -1439,6 +1442,7 @@ public final class ImageProcess {
         mat.put(0, 0, pixels);
         return mat;
     }
+    */
 
     public static float[][] rgb2gray2D(BufferedImage img) {
 //        BufferedImage retImg = toNewColorSpace(img, BufferedImage.TYPE_BYTE_GRAY);
@@ -2625,6 +2629,7 @@ public final class ImageProcess {
         return img;
     }
 
+    /*
     public static boolean ocv_saveImageWithFormat(BufferedImage img, String path) {
         Mat imgM = ocv_img2Mat(img);
         return Imgcodecs.imwrite(path, imgM);
@@ -2640,6 +2645,7 @@ public final class ImageProcess {
         Mat imgM = Imgcodecs.imread(path);
         return ocv_mat2Img(imgM);
     }
+    */
 
     public static void saveGridImage(BufferedImage gridImage, String filePath) {
         File output = new File(filePath);
@@ -3281,6 +3287,7 @@ public final class ImageProcess {
         return d;
     }
 
+    /*
     public static float[][] imageToPixels2DFromOpenCV(Mat m) {
         float[][] ret = new float[m.height()][m.width()];
         for (int i = 0; i < m.height(); i++) {
@@ -3290,6 +3297,7 @@ public final class ImageProcess {
         }
         return ret;
     }
+    */
 
 //    public static Rectangle[] detectFacesRectangles(String type, BufferedImage img) {
 //        
@@ -3506,6 +3514,7 @@ public final class ImageProcess {
         return img;
     }
 
+    /*
     public static BufferedImage detectFaces(String type, BufferedImage img) {
         String xml = "";
         if (type.equals("haar")) {
@@ -3592,6 +3601,7 @@ public final class ImageProcess {
         }
         return ret;
     }
+    */
 
     public static BufferedImage toARGB(BufferedImage image) {
         return toNewColorSpace(image, BufferedImage.TYPE_INT_ARGB);
@@ -3874,7 +3884,8 @@ public final class ImageProcess {
 //        BufferedImage img = ocv_mat2Img(hsvImage);
 //        return img;
 //        return ocv_rgb2hsv(bf);
-        return ocv_2_hsv(bf);
+//        return ocv_2_hsv(bf);
+        return bf;
     }
 
     public static BufferedImage ocv_rgb2hsv(BufferedImage bf) {
@@ -3883,10 +3894,11 @@ public final class ImageProcess {
 //        // convert the frame to HSV
 //        Imgproc.cvtColor(frame, hsvImage, Imgproc.COLOR_BGR2HSV);
 //        BufferedImage img = ocv_mat2Img(hsvImage);
-        BufferedImage img = ocv_2_hsv(bf);
-        return img;
+        //BufferedImage img = ocv_2_hsv(bf);
+        return bf;
     }
 
+    /*
     public static BufferedImage ocv_hsvThreshold(BufferedImage bf, int h1, int h2, int s1, int s2, int v1, int v2) {
         Mat frame = ImageProcess.ocv_img2Mat(bf);
 //        Mat hsvImage = new Mat();
@@ -3953,6 +3965,7 @@ public final class ImageProcess {
         BufferedImage out = ocv_mat2Img(cloneImage);
         return out;
     }
+*/
 
     public static BufferedImage cropBoundingBox(BufferedImage img) {
         BufferedImage bf = clone(img);
@@ -4040,6 +4053,7 @@ public final class ImageProcess {
         return bi;
     }
 
+    /*
     public static float[] getHuMoments(BufferedImage img) {
         double[] moments = new double[7];
         Mat imagenOriginal;
@@ -4114,6 +4128,7 @@ public final class ImageProcess {
 //                - (n20 - n02) * (n30 + n12) * (n03 + n21);
         return FactoryUtils.toFloatArray1D(moments);
     }
+*/
 
     public static int[][] rgb2lab(int[][] img) {
         int r = img.length;

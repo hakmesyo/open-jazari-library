@@ -32,7 +32,7 @@ public class TestOpenCVSelectiveSearch {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Pointer p=new Pointer();
 //        SelectiveSearchSegmentation s=SelectiveSearchSegmentation.__fromPtr__(p.address());
-        Mat mat=ImageProcess.ocv_img2Mat(ImageProcess.readImage("images/blob.jpg"));
+        //Mat mat=ImageProcess.ocv_img2Mat(ImageProcess.readImage("images/blob.jpg"));
 //        s.setBaseImage(mat);
         
         //CvMatNDArray p=new CvMatNDArray(12);
