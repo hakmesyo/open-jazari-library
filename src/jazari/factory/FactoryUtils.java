@@ -21,13 +21,30 @@ import jazari.utils.ReaderCSV;
 import jazari.utils.UniqueRandomNumbers;
 import jazari.websocket.SocketServer;
 import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_BGR;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ImageObserver;
+import java.awt.image.RenderedImage;
+import java.awt.image.renderable.RenderableImage;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -42,6 +59,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.AttributedCharacterIterator;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -6372,6 +6390,45 @@ public final class FactoryUtils {
             ret[i] = d[i][i];
         }
         return ret;
+    }
+
+    public static void generateSegmentationMasks(File[] imageFiles) {
+        Map<String, Color> colorMap = getClassLabelHashMap(imageFiles[0].getParent() + "/class_labels.txt");
+        String folderPath = imageFiles[0].getParent();
+        for (File imageFile : imageFiles) {
+            BufferedImage img = ImageProcess.imread(imageFile.getAbsolutePath());
+            int w = img.getWidth();
+            int h = img.getHeight();
+            BufferedImage imageMask = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D gr = imageMask.createGraphics();
+            gr.setColor(Color.BLACK);
+            gr.fillRect(0, 0, w, h);
+            String xmlFile = folderPath + "/" + getFileName(imageFile.getName()) + ".xml";
+            if (isFileExist(xmlFile)) {
+                AnnotationPascalVOCFormat apv = deserializePascalVocXML(xmlFile);
+                for (PascalVocObject pvo : apv.lstObjects) {
+                    gr.setColor(colorMap.get(pvo.polygonContainer.name));
+                    gr.fillPolygon(pvo.polygonContainer.polygon);
+                }
+                ImageProcess.saveImage(imageMask, folderPath+"/"+getFileName(imageFile.getName()) + "_mask.jpg");
+            }
+
+        }
+    }
+
+    public static Map<String, Color> getClassLabelHashMap(String path) {
+        String[] content = readFile(path).split("\n");
+        Map<String, Color> ret = new HashMap<String, Color>();
+        for (String str : content) {
+            String[] s = str.split(":");
+            String[] cols = s[1].split(" ");
+            ret.put(s[0], new Color(toInt(cols[1]), toInt(cols[2]), toInt(cols[3])));
+        }
+        return ret;
+    }
+
+    public static int toInt(String s) {
+        return Integer.parseInt(s);
     }
 
 //    public static Rectangle getBoundingRectangle(Polygon polygon) {

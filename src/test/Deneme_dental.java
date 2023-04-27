@@ -17,8 +17,9 @@ public class Deneme_dental {
                 //.imread("images/artificial.jpg")
                 //.imread("images/bird.jpg")
                 //.imread("C:\\Users\\cezerilab\\Desktop\\dataset\\ds_robotaksi\\robotaksi_dataset\\levhalar\\images\\train")
-                .imread("images/pistachio/Yeni klasör")
+                //.imread("images/pistachio/Yeni klasör")
                 //.imread("images/dental_1.png")
+                .imread("C:\\Users\\cezerilab\\Desktop\\istanbul dental\\arsiv_1")
                 .imshow()
                 ;
     }

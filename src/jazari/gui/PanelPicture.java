@@ -414,7 +414,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             "Equalize",
             "Smooth",
             "Sharpen",
-            "Crop",};
+            "Crop",
+            "Generate Segmentation Masks",};
 
         ButtonGroup itemsGroup = new ButtonGroup();
         items = new JRadioButtonMenuItem[elements.length];
@@ -957,8 +958,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
 
             Line2D line = new Line2D.Double(x_from, y_from, x_to, y_to);
-            //System.out.println("mesafe:" + line.ptLineDist(p));
-            if (line.ptLineDist(p) <= 5) {
+            if (line.ptSegDist(p) <= 3) {
                 return i - 1;
             }
         }
@@ -1309,11 +1309,15 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             lastPositionOfDraggedPolygon = calculateDraggingPolygonPosition();
             draggedSelectedPolygonOnScreen(gr, selectedPolygon, defaultStrokeWidth, lastPositionOfDraggedPolygon[0], lastPositionOfDraggedPolygon[1], Color.orange);
         }
+        float[] cols = new float[4];
         for (PascalVocObject pvo : listPascalVocObject) {
             Polygon poly = scaleWithZoomFactor(pvo.polygonContainer.polygon);
-            gr.setColor(mapBBoxColor.get(pvo.name));
-            gr.drawPolygon(poly);
-            drawPolygonNodesAsCircle(gr, poly, w, mapBBoxColor.get(pvo.name));
+            cols = mapBBoxColor.get(pvo.name).getRGBComponents(cols);
+            Color col = new Color(cols[0], cols[1], cols[2], 0.35f);
+
+            gr.setColor(col);
+            gr.fillPolygon(poly);
+            //drawPolygonNodesAsCircle(gr, poly, w, mapBBoxColor.get(pvo.name));
 
             Rectangle rect = poly.getBounds();
             int width = gr.getFontMetrics().stringWidth(pvo.name) + 8;
@@ -1849,8 +1853,10 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     activateAutoSizeAspect = true;
                 } else if (obj.getText().equals("Crop")) {
                     activateCrop = true;
-                } else if (obj.getText().equals("Save Bounding Box as Pascal VOC XML")) {
-                    savePascalVocXML();
+                } else if (obj.getText().equals("Generate Segmentation Masks")) {
+                    if (activatePolygon) {
+                        FactoryUtils.generateSegmentationMasks(imageFiles);
+                    }
                 }
                 repaint();
             } catch (Exception ex) {
