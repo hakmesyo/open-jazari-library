@@ -19,10 +19,10 @@ public class TestFaceLocation {
                 .imread("images/yuzler_3.jpg")               
                 ;
         //cm.detectFaces("haar").imshow();
-        CRectangle[] rects=cm.getFaceLocationsAsCRectangle("haar");
-        for (int i = 0; i < rects.length; i++) {
-            cm=cm.drawRect(rects[i], 5, Color.yellow);
-        }
-        cm.imshow();
+//        CRectangle[] rects=cm.getFaceLocationsAsCRectangle("haar");
+//        for (int i = 0; i < rects.length; i++) {
+//            cm=cm.drawRect(rects[i], 5, Color.yellow);
+//        }
+//        cm.imshow();
     }
 }

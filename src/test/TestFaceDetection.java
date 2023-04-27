@@ -19,6 +19,6 @@ public class TestFaceDetection {
         
 //        CMatrix cm = CMatrix.getInstance().imread("images\\yuzler.jpg").detectFaces("haar").imshow();
 //        CMatrix cm = CMatrix.getInstance().imread("images\\yuzler_2.jpg").detectFaces("haar").imshow();
-        CMatrix cm = CMatrix.getInstance().imread("images\\yuzler_3.jpg").detectFaces("haar").imshow();
+//        CMatrix cm = CMatrix.getInstance().imread("images\\yuzler_3.jpg").detectFaces("haar").imshow();
     }
 }

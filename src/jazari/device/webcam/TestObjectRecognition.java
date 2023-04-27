@@ -92,68 +92,68 @@ public class TestObjectRecognition {
         }
     }
 
-    public BufferedImage doOpenCV_via_OCL(BufferedImage img) {
-        t = FactoryUtils.toc("enterance:", t);
-//        BufferedImage out = ImageProcess.ocv_hsvThreshold(img, 14, 70, 150, 255, 150, 255);
-        BufferedImage out = ImageProcess.ocv_2_hsv(img);
-        t = FactoryUtils.toc("hsv threshold:", t);
-
-        System.out.println("--------------------------------");
-        tt = FactoryUtils.toc("overall cost:", tt);
-        System.out.println("--------------------------------");
-        return out;
-    }
-
-    public BufferedImage doOpenCV(BufferedImage img) {
-        Mat blurredImage = new Mat();
-        Mat hsvImage = new Mat();
-        Mat mask = new Mat();
-        Mat morphOutput = new Mat();
-        t = FactoryUtils.toc("enterance:", t);
-        Mat frame = ImageProcess.ocv_img2Mat(img);
-        t = FactoryUtils.toc("img to mat:", t);
-
-        // remove some noise
-        Imgproc.blur(frame, blurredImage, new Size(7, 7));
-        t = FactoryUtils.toc("blur:", t);
-
-        // convert the frame to HSV
-        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
-        t = FactoryUtils.toc("hsv conversion:", t);
-
-        // get thresholding values from the UI
-        // remember: H ranges 0-180, S and V range 0-255
-        Scalar minValues = new Scalar(0, 150, 150);
-        Scalar maxValues = new Scalar(50, 255, 255);
-
-        // show the current selected HSV range
-        String valuesToPrint = "Hue range: " + minValues.val[0] + "-" + maxValues.val[0]
-                + "\tSaturation range: " + minValues.val[1] + "-" + maxValues.val[1] + "\tValue range: "
-                + minValues.val[2] + "-" + maxValues.val[2];
-
-        // threshold HSV image to select tennis balls
-        Core.inRange(hsvImage, minValues, maxValues, mask);
-        t = FactoryUtils.toc("hsv threshold:", t);
-
-//        // morphological operators
-//        // dilate with large element, erode with small ones
-//        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(24, 24));
-//        Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
+//    public BufferedImage doOpenCV_via_OCL(BufferedImage img) {
+//        t = FactoryUtils.toc("enterance:", t);
+////        BufferedImage out = ImageProcess.ocv_hsvThreshold(img, 14, 70, 150, 255, 150, 255);
+//        BufferedImage out = ImageProcess.ocv_2_hsv(img);
+//        t = FactoryUtils.toc("hsv threshold:", t);
 //
-//        Imgproc.erode(mask, morphOutput, erodeElement);
-//        Imgproc.erode(mask, morphOutput, erodeElement);
+//        System.out.println("--------------------------------");
+//        tt = FactoryUtils.toc("overall cost:", tt);
+//        System.out.println("--------------------------------");
+//        return out;
+//    }
 //
-//        Imgproc.dilate(mask, morphOutput, dilateElement);
-//        Imgproc.dilate(mask, morphOutput, dilateElement);
-//        t = FactoryUtils.toc("morphological operations::", t);
-        // convert the Mat object (OpenCV) to Image (JavaFX)
-//        BufferedImage bf = ImageProcess.ocv_mat2Img(frame);
-        BufferedImage bf = ImageProcess.ocv_mat2Img(hsvImage);
-        System.out.println("--------------------------------");
-        tt = FactoryUtils.toc("overall cost:", tt);
-        System.out.println("--------------------------------");
-        return bf;
-    }
+//    public BufferedImage doOpenCV(BufferedImage img) {
+//        Mat blurredImage = new Mat();
+//        Mat hsvImage = new Mat();
+//        Mat mask = new Mat();
+//        Mat morphOutput = new Mat();
+//        t = FactoryUtils.toc("enterance:", t);
+//        Mat frame = ImageProcess.ocv_img2Mat(img);
+//        t = FactoryUtils.toc("img to mat:", t);
+//
+//        // remove some noise
+//        Imgproc.blur(frame, blurredImage, new Size(7, 7));
+//        t = FactoryUtils.toc("blur:", t);
+//
+//        // convert the frame to HSV
+//        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
+//        t = FactoryUtils.toc("hsv conversion:", t);
+//
+//        // get thresholding values from the UI
+//        // remember: H ranges 0-180, S and V range 0-255
+//        Scalar minValues = new Scalar(0, 150, 150);
+//        Scalar maxValues = new Scalar(50, 255, 255);
+//
+//        // show the current selected HSV range
+//        String valuesToPrint = "Hue range: " + minValues.val[0] + "-" + maxValues.val[0]
+//                + "\tSaturation range: " + minValues.val[1] + "-" + maxValues.val[1] + "\tValue range: "
+//                + minValues.val[2] + "-" + maxValues.val[2];
+//
+//        // threshold HSV image to select tennis balls
+//        Core.inRange(hsvImage, minValues, maxValues, mask);
+//        t = FactoryUtils.toc("hsv threshold:", t);
+//
+////        // morphological operators
+////        // dilate with large element, erode with small ones
+////        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(24, 24));
+////        Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
+////
+////        Imgproc.erode(mask, morphOutput, erodeElement);
+////        Imgproc.erode(mask, morphOutput, erodeElement);
+////
+////        Imgproc.dilate(mask, morphOutput, dilateElement);
+////        Imgproc.dilate(mask, morphOutput, dilateElement);
+////        t = FactoryUtils.toc("morphological operations::", t);
+//        // convert the Mat object (OpenCV) to Image (JavaFX)
+////        BufferedImage bf = ImageProcess.ocv_mat2Img(frame);
+//        BufferedImage bf = ImageProcess.ocv_mat2Img(hsvImage);
+//        System.out.println("--------------------------------");
+//        tt = FactoryUtils.toc("overall cost:", tt);
+//        System.out.println("--------------------------------");
+//        return bf;
+//    }
 
     private BufferedImage doOCL(BufferedImage bf) {
         t = FactoryUtils.toc("entrance:", t);
@@ -172,7 +172,7 @@ public class TestObjectRecognition {
 //        bf=ImageProcess.ocv_medianFilter(bf);
 //        t = FactoryUtils.toc("medain filter:", t);
 //        bf = ImageProcess.ocv_hsvThreshold(bf, 14, 50, 150, 255, 150, 255);
-        bf = ImageProcess.ocv_2_hsv(bf);
+//        bf = ImageProcess.ocv_2_hsv(bf);
         t = FactoryUtils.toc("hsvThreshold:", t);
 //        CPoint cp = ImageProcess.getCenterOfGravityGray(bf);
 //        t = FactoryUtils.toc("center:", t);
