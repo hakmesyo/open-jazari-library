@@ -181,7 +181,10 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             }
         }
         frame.imagePath = imagePath;
-        frame.setTitle(imagePath);
+        String[] s = FactoryUtils.splitPath(imagePath);
+        frame.setTitle(s[s.length - 1]);
+
+        //frame.setTitle(imagePath);
     }
 
     public File[] sortFileListByNumber(File[] files) {
@@ -414,8 +417,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             "Equalize",
             "Smooth",
             "Sharpen",
-            "Crop",
-            "Generate Segmentation Masks",};
+            "Crop", //"Generate Segmentation Masks",
+        };
 
         ButtonGroup itemsGroup = new ButtonGroup();
         items = new JRadioButtonMenuItem[elements.length];
@@ -495,7 +498,8 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                             selectedPolygon.color = lastSelectedPolygonColor;
                             for (PascalVocObject pvo : listPascalVocObject) {
                                 if (pvo.polygonContainer.equals(selectedPolygon)) {
-                                    pvo.name = lastSelectedClassName;
+                                    pvo.bndbox.name = pvo.name = lastSelectedClassName;
+
                                 }
                             }
                             repaint();
@@ -585,6 +589,10 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     lastPolygonPoint = constraintMousePosition(e);
                     Point p = new Point(e.getPoint().x - fromLeft, e.getPoint().y - fromTop);
                     int t = 10;
+                    if (polygon.npoints > 0) {
+                        return;
+                    }
+                    selectedPolygon = getSelectedPolygon(constraintMousePosition(e));
                     if (selectedPolygon != null) {
                         int n = selectedPolygon.polygon.npoints;
                         Polygon poly = selectedPolygon.polygon;
@@ -618,7 +626,6 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     } else {
                         isPolygonCancelled = false;
                         isPolygonDragged = false;
-                        selectedPolygon = getSelectedPolygon(constraintMousePosition(e));
                     }
                 }
                 if (activatePolygon && isPolygonPressed && SwingUtilities.isRightMouseButton(e)) {
@@ -641,7 +648,10 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                 if (activatePolygon && e.getButton() == MouseEvent.BUTTON1) {
                     Point p = constraintMousePosition(e);
                     if (!isPolygonDragged && selectedNodeIndexLeftMouse == -1) {
-                        selectedPolygon = getSelectedPolygon(p);
+                        if (polygon.npoints == 0) {
+                            selectedPolygon = getSelectedPolygon(p);
+                        }
+
                         if (selectedPolygon != null) {
                             repaint();
                             return;
@@ -968,6 +978,9 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     private PascalVocPolygon getSelectedPolygon(Point mp) {
         selectedPolygon = null;
         for (PascalVocObject pvo : listPascalVocObject) {
+            if (pvo.polygonContainer == null) {
+                continue;
+            }
             Polygon poly = scaleWithZoomFactor(FactoryUtils.clone(pvo.polygonContainer.polygon));
             if (poly.contains(mp)) {
                 selectedPolygon = pvo.polygonContainer;
@@ -1301,7 +1314,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
     }
 
     private void paintPolygons(Graphics2D gr) {
-        int w = 12;
+        int w = 10;
         gr.setStroke(new BasicStroke(2));
         if (selectedPolygon != null && isPolygonDragged && isMouseDraggedForPolygonMovement) {
             //eğer bbox tutulup hareket ettiriliyorsa
@@ -1311,18 +1324,28 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         }
         float[] cols = new float[4];
         for (PascalVocObject pvo : listPascalVocObject) {
+            if (pvo.polygonContainer == null) {
+                continue;
+            }
             Polygon poly = scaleWithZoomFactor(pvo.polygonContainer.polygon);
-            cols = mapBBoxColor.get(pvo.name).getRGBComponents(cols);
-            Color col = new Color(cols[0], cols[1], cols[2], 0.35f);
+            Color col = Color.yellow;
+            if (mapBBoxColor.get(pvo.name) != null) {
+                cols = mapBBoxColor.get(pvo.name).getRGBComponents(cols);
+                col = new Color(cols[0], cols[1], cols[2], 0.35f);
+            }
 
+            gr.setColor(mapBBoxColor.get(pvo.name));
+            gr.drawPolygon(poly);
             gr.setColor(col);
             gr.fillPolygon(poly);
             //drawPolygonNodesAsCircle(gr, poly, w, mapBBoxColor.get(pvo.name));
 
+            gr.setColor(Color.white);
             Rectangle rect = poly.getBounds();
             int width = gr.getFontMetrics().stringWidth(pvo.name) + 8;
             gr.fillRect(rect.x + (rect.width - width) / 2, rect.y + (rect.height - 22) / 2, width, 22);
             gr.setColor(Color.BLACK);
+            gr.drawRect(rect.x + (rect.width - width) / 2, rect.y + (rect.height - 22) / 2, width, 22);
             gr.setFont(new Font("Dialog", Font.BOLD, 12));
             gr.drawString(pvo.name, rect.x + (rect.width - width) / 2 + 3, rect.y + rect.height / 2 + 4);
         }
@@ -1342,7 +1365,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
                     gr.setColor(Color.green);
                     gr.drawOval(polygon.xpoints[i] - w / 2, polygon.ypoints[i] - w / 2, w, w);
                 }
-                w = 30;
+                w = 20;
                 gr.setColor(Color.red);
                 gr.fillOval(mousePos.x - w / 2, mousePos.y - w / 2, w, w);
                 gr.setColor(Color.green);
@@ -1492,7 +1515,7 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             zoom_factor = original_zoom_factor = 1.0f;
             frm.setZoomFactor(FactoryUtils.formatFloat(zoom_factor, 4));
         }
-        frm.setTitle(imageFiles[imageIndex].getPath() + "      [ " + (imageIndex + 1) + " / " + imageFiles.length + " ]");
+        frm.setTitle(imageFiles[imageIndex].getName() + "      [ " + (imageIndex + 1) + " / " + imageFiles.length + " ]");
         fileName = imageFiles[imageIndex].getName();
         imagePath = imageFiles[imageIndex].getAbsolutePath();
 
@@ -1696,14 +1719,13 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         colorDashedLine = JColorChooser.showDialog(null, "Choose Color for BoundingBox", colorDashedLine);
     }
 
-    private void drawPolygonNodesAsCircle(Graphics2D gr, Polygon poly, int r, Color color) {
-        gr.setColor(color);
-        int n = poly.npoints;
-        for (int i = 0; i < n; i++) {
-            gr.fillOval(poly.xpoints[i] - r / 2, poly.ypoints[i] - r / 2, r, r);
-        }
-    }
-
+//    private void drawPolygonNodesAsCircle(Graphics2D gr, Polygon poly, int r, Color color) {
+//        gr.setColor(color);
+//        int n = poly.npoints;
+//        for (int i = 0; i < n; i++) {
+//            gr.fillOval(poly.xpoints[i] - r / 2, poly.ypoints[i] - r / 2, r, r);
+//        }
+//    }
     private void drawSelectedPolygonNode(Graphics2D gr, Polygon poly, int r) {
         int n = poly.npoints;
         gr.setColor(Color.green);
@@ -1913,7 +1935,12 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
             if (activateBoundingBox) {
                 name = bbox.name;
             } else if (activatePolygon) {
-                name = polygon.name;
+                if (polygon != null) {
+                    name = polygon.name;
+                    if (bbox != null) {
+                        name = bbox.name;
+                    }
+                }
             }
             lstObject.add(new PascalVocObject(name, "", 0, 0, 0, bbox, polygon, attributeList));
         }
@@ -1974,11 +2001,14 @@ public class PanelPicture extends JPanel implements KeyListener, MouseWheelListe
         } else if (key == KeyEvent.VK_S) {
             if (activateBoundingBox) {
                 savePascalVocXML();
-                imageIndex++;
+                if (imageIndex + 1 >= imageFiles.length) {
+                    return;
+                }
                 if (!isSeqenceVideoFrame) {
                     listPascalVocObject.clear();
                     selectedBBox = null;
                 }
+                imageIndex++;
                 BufferedImage bf = ImageProcess.readImageFromFile(imageFiles[imageIndex]);
                 rawImage = ImageProcess.clone(bf);
                 adjustImageToPanel(bf, true);

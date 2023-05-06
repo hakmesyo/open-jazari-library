@@ -58,10 +58,10 @@ public class OverlayLevhaOnImages {
         String p_test="C:\\ds_teknofest\\recorded_images\\ds_cv\\images\\test";
         String p_data="C:\\ds_teknofest\\recorded_images\\ds_cv\\data";
         
-        String sTrain=FactoryUtils.convertPascalVoc2CsvFormat(p_train);
+        String sTrain=FactoryUtils.convertPascalVoc2CsvFormatBndBox(p_train);
         FactoryUtils.writeToFile(p_data+"/train_labels.csv", sTrain);
         
-        String sTest=FactoryUtils.convertPascalVoc2CsvFormat(p_test);
+        String sTest=FactoryUtils.convertPascalVoc2CsvFormatBndBox(p_test);
         FactoryUtils.writeToFile(p_data+"/test_labels.csv", sTest);
     }
 }

@@ -33,7 +33,7 @@ public class TestBoundingBox {
         System.out.println(bb.lstObjects.get(0).bndbox);
         
         //pascal voc formatından csv formatına almak için
-        String csvString=FactoryUtils.convertPascalVoc2CsvFormat(pathXML,"D:/train.csv");
+        String csvString=FactoryUtils.convertPascalVoc2CsvFormatBndBox(pathXML,"D:/train.csv");
         System.out.println("csvString = " + csvString);
         
         //resimden bounding box yapmak için

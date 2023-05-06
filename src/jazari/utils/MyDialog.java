@@ -217,7 +217,7 @@ public class MyDialog extends JDialog implements ActionListener {
         Object source = ae.getSource();
         boolean isFound = false;
         if (source == btnOk) {
-            selectedColor = (selectedColor == null) ? "Color 255 255 0" : selectedColor;
+            selectedColor = (selectedColor == null || selectedColor.isEmpty()) ? "Color 255 255 0" : selectedColor;
             data = descBox.getText() + ":" + selectedColor;
             int k=0;
             for (String c : cs) {

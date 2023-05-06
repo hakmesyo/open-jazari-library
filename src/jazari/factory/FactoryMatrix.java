@@ -1223,7 +1223,7 @@ public final class FactoryMatrix implements Serializable {
                         .boxed() // <-- converts them to Integers
                         .collect(Collectors.toList());          // <-- collects the values to a list
 
-        Collections.shuffle(lst);
+        Collections.shuffle(lst,new Random(123));
 //        int[] m = new int[n];
 //        List<Integer> lst=Arrays.asList(IntStream.range(6, 10));
 //        Collections.shuffle(Arrays.asList(m));

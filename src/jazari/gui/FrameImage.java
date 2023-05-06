@@ -62,7 +62,7 @@ public class FrameImage extends javax.swing.JFrame {
      */
     public FrameImage(CMatrix cm, String imagePath, String caption) {
         initComponents();
-        loadImage(cm,imagePath,caption);
+        loadImage(cm, imagePath, caption);
     }
 
     public void setImage(BufferedImage img, String imagePath, String caption) {
@@ -72,8 +72,8 @@ public class FrameImage extends javax.swing.JFrame {
         getPicturePanel().setFrame(this);
         this.setSize(img.getWidth() + 300, img.getHeight() + 183);
         String[] s = FactoryUtils.splitPath(imagePath);
-        //this.setTitle(s[s.length-1]);
-        this.setTitle(imagePath + "/" + caption);
+        this.setTitle(s[s.length - 1]);
+        //this.setTitle(imagePath + "/" + caption);
     }
 
     public void setImage(BufferedImage img) {
@@ -351,13 +351,13 @@ public class FrameImage extends javax.swing.JFrame {
     }
 
     public void saveImageAs() {
-        String imagePath=FactoryUtils.saveImageAs(getPicturePanel().getImage(), txt_dpi.getText());
+        String imagePath = FactoryUtils.saveImageAs(getPicturePanel().getImage(), txt_dpi.getText());
         CMatrix cm = CMatrix.getInstance().imread(imagePath);
         loadImage(cm, imagePath, imagePath);
     }
-    
-    public void setZoomFactor(double z){
-        lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat((float)z,4));
+
+    public void setZoomFactor(double z) {
+        lbl_zoom_factor.setText("zoom factor:" + FactoryUtils.formatFloat((float) z, 4));
     }
 
     /**
@@ -411,7 +411,7 @@ public class FrameImage extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public void setFrameSize(BufferedImage img) {
-        if (img.getWidth()*img.getHeight()<550*550) {
+        if (img.getWidth() * img.getHeight() < 550 * 550) {
             return;
         }
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -433,19 +433,22 @@ public class FrameImage extends javax.swing.JFrame {
     }
 
     private void loadImage(CMatrix cm, String imagePath, String caption) {
-        this.setTitle(caption);
+        String[] s = FactoryUtils.splitPath(imagePath);
+        this.setTitle(s[s.length - 1]);
+
+        //this.setTitle(caption);
         this.cm = cm;
         this.img = cm.getImage();
         this.imagePath = imagePath;
         getPicturePanel().activateBoundingBox = isBBox.isSelected();
-        if (img.getHeight()>950) {
-            float zoom_factor=950.0f/img.getHeight();
-            int w=(int)(img.getWidth()*zoom_factor);
-            int h=(int)(img.getHeight()*zoom_factor);
-            this.lbl_zoom_factor.setText("zoom factor:"+FactoryUtils.formatFloat(zoom_factor,4));
-            getPicturePanel().original_zoom_factor=FactoryUtils.formatFloat(zoom_factor,4);
-            getPicturePanel().rawImage=ImageProcess.clone(img);
-            img=ImageProcess.resizeAspectRatio(img, w, h);
+        if (img.getHeight() > 950) {
+            float zoom_factor = 950.0f / img.getHeight();
+            int w = (int) (img.getWidth() * zoom_factor);
+            int h = (int) (img.getHeight() * zoom_factor);
+            this.lbl_zoom_factor.setText("zoom factor:" + FactoryUtils.formatFloat(zoom_factor, 4));
+            getPicturePanel().original_zoom_factor = FactoryUtils.formatFloat(zoom_factor, 4);
+            getPicturePanel().rawImage = ImageProcess.clone(img);
+            img = ImageProcess.resizeAspectRatio(img, w, h);
         }
         getPicturePanel().setImage(img, imagePath, caption);
         getPicturePanel().setFrame(this);

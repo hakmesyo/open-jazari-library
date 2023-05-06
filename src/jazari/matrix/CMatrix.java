@@ -2529,7 +2529,7 @@ public final class CMatrix implements Serializable {
     public CMatrix imcomplement() {
         CMatrix ret = this.clone();
 
-        ret = ret.rgb2gray();
+        //ret = ret.rgb2gray();
         BufferedImage bf = ImageProcess.revert(ret.image);
         ret.setImage(bf);
         return ret;
@@ -4737,7 +4737,8 @@ public final class CMatrix implements Serializable {
         File file = new File(path);
         String ek;
         if (file.getName().indexOf(".") == -1) {
-            File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
+            //File[] files = FactoryUtils.getFileArrayInFolderForImages(path);
+            File[] files = FactoryUtils.getFileArrayInFolderByExtension(path,"png","jpg","bmp","jpeg","JPG","JPEG","PNG");
             if (files.length >= 0) {
                 path += "\\" + files[0].getName();
             }
@@ -9276,7 +9277,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix convertPascalVoc2Yolo(String pathFolder, String[] labels) {
-        FactoryUtils.convertPascalVoc2YoloFormat(pathFolder, labels);
+        FactoryUtils.convertPascalVoc2YoloFormatBndBox(pathFolder, labels);
         return this;
     }
 
@@ -9299,8 +9300,7 @@ public final class CMatrix implements Serializable {
 
     /**
      *
-     * @param pathSource : source directory should contain image and pascalvoc
-     * formatted xml files
+     * @param pathSource : source directory should contain image and pascalvoc formatted xml files
      * @param pathTarget : target directory
      * @param trainRatio : ie 0.7f
      * @param valRatio : ie 0.1f

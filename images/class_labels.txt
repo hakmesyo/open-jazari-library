@@ -1,4 +1,4 @@
-kelebek:Color 255 255 0
+kelebek:Color 255 51 51
 goz:Color 255 255 0
 red_pul:Color 255 51 51
 yellow_pul:Color 255 255 102
@@ -7,3 +7,5 @@ orange_pul:Color 255 153 51
 green_pul:Color 255 51 255
 gaga:Color 102 255 204
 dolgu:Color 255 255 0
+flower:Color 153 153 255
+kafa:Color 0 204 204

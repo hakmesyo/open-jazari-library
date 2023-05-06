@@ -16,7 +16,7 @@ public class TFRecordCSV {
     public static void main(String[] args) {
         String path="C:\\Users\\cezerilab\\Downloads\\archive (3)";
         //422 train, 107 test
-        String[] ret=FactoryUtils.convertPascalVoc2CsvFormat(path+"\\annotations",0.8f,0.2f);
+        String[] ret=FactoryUtils.convertPascalVoc2CsvFormatBndBox(path+"\\annotations",0.8f,0.2f);
         FactoryUtils.writeToFile(path+"\\train_labels.csv", ret[0]);
         FactoryUtils.writeToFile(path+"\\test_labels.csv", ret[1]);
     }
