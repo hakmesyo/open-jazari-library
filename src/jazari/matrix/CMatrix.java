@@ -107,7 +107,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import org.opencv.core.Mat;
 import jazari.transform.TransformFFT;
 import jazari.transform.TransformRadon;
 import jazari.utils.BruteForce;
